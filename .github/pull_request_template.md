@@ -3,8 +3,11 @@
 - 변경사항에 대해서 간단히 요약 해주세요.
 
 ### Feature
+
 ### Refactor
+
 ### Chore
+
 ### Test
 
 ## 상세 설명

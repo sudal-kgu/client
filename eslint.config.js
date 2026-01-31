@@ -1,4 +1,3 @@
-import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -23,21 +22,28 @@ export default [
         ...globals.es2020,
       },
     },
-    // 추천 설정을 '...'으로 가져오지 않고, 가장 핵심적인 것만 직접 타이핑했습니다.
     rules: {
-      // 핵심 JS/TS 규칙
-      'no-unused-vars': 'off', // TS 버전 규칙을 쓰기 위해 원본은 끕니다.
+      // [js.configs.recommended]
+      'no-undef': 'error',
+      'no-const-assign': 'error',
+      'no-duplicate-case': 'error',
+      'no-unused-vars': 'off',
+      'no-debugger': 'warn',
+
+      // [tseslint.configs.recommended]
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'off',
 
-      // React 규칙
+      // [reactHooks.configs.flat.recommended]
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+
+      // [reactRefresh.configs.vite]
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
       // 기타
       'no-console': 'off',
-      'no-debugger': 'warn',
     },
   },
   prettier,
