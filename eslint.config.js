@@ -26,7 +26,7 @@ export default defineConfig([
       'eqeqeq': 'warn',
       'no-unused-vars': 'warn',
       'react/prop-types': 'off',
-      'no-console': 'off',
+      'no-console': 'warn',
       'curly': ['error', 'multi-line']
     },
   }
