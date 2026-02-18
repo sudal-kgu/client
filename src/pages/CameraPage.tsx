@@ -1,6 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 
-import cameraImg from '../assets/Plastic bottle on a wooden surface for waste recognition.jpg';
+import cameraImg from '../assets/bottle.jpg';
 import { AnalyzingIndicator } from '../components/camera/AnalyzingIndicator';
 import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
