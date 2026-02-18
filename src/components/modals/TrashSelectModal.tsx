@@ -4,9 +4,10 @@ import Modal from 'react-modal';
 type Props = {
     isOpen: boolean;
     onClose: () => void;
+    detectedCount: number;
 };
 
-const TrashSelectModal = ({ isOpen, onClose }: Props) => {
+const TrashSelectModal = ({ isOpen, onClose, detectedCount }: Props) => {
     return (
         <Modal
             isOpen={isOpen}
@@ -16,6 +17,7 @@ const TrashSelectModal = ({ isOpen, onClose }: Props) => {
             className="absolute inset-0 bg-white"
         >
             <h1>Trash Select Modal</h1>
+            <p>쓰레기 개수: {detectedCount}</p>
             <button onClick={onClose}>닫기</button>
         </Modal>
     );
