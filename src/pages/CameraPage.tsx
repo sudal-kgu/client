@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import cameraImg from '../assets/bottle.jpg';
@@ -8,6 +10,8 @@ import { TrashBasketBar } from '../components/camera/TrashBasketBar';
 
 const CameraPage = () => {
     const navigate = useNavigate();
+    const [detectedCount, setDetectedCount] = useState<number>(3);
+
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#102216]">
             <img
@@ -15,7 +19,7 @@ const CameraPage = () => {
                 alt="Camera Preview"
                 className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 flex flex-col p-4">
+            <div className="relative z-10 flex h-full flex-col p-4">
                 <CameraHeader />
 
                 <div className="flex flex-1 items-end justify-center pb-[16px]">
@@ -23,11 +27,11 @@ const CameraPage = () => {
                 </div>
 
                 <div className="flex flex-col items-center gap-[32px] px-[8px] pb-[32px]">
-                    <TrashBasketBar count={3} onClick={() => navigate('select')} />
+                    <TrashBasketBar count={detectedCount} onClick={() => navigate('select')} />
                     <CameraControls />
                 </div>
             </div>
-            <Outlet />
+            <Outlet context={{ detectedCount, setDetectedCount }} />
         </div>
     );
 };
