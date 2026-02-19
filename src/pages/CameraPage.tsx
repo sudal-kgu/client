@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { Outlet, useNavigate } from 'react-router-dom';
 
-import cameraImg from '../assets/bottle.jpg';
 import { AnalyzingIndicator } from '../components/camera/AnalyzingIndicator';
 import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
@@ -12,12 +12,50 @@ const CameraPage = () => {
     const navigate = useNavigate();
     const [detectedCount, setDetectedCount] = useState<number>(3);
 
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
+
+    const stopCamera = useCallback(() => {
+        if (streamRef.current) {
+            streamRef.current?.getTracks().forEach((t) => t.stop());
+            streamRef.current = null;
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+    }, []);
+
+    const startCamera = useCallback(async () => {
+        stopCamera();
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' },
+            audio: false,
+        });
+
+        if (!videoRef.current) {
+            stream.getTracks().forEach((t) => t.stop());
+            return;
+        }
+
+        streamRef.current = stream;
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+    }, [stopCamera]);
+
+    useEffect(() => {
+        startCamera();
+        return () => stopCamera();
+    }, [startCamera, stopCamera]);
+
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#102216]">
-            <img
-                src={cameraImg}
-                alt="Camera Preview"
-                className="absolute inset-0 h-full w-full object-cover"
+            <video
+                ref={videoRef}
+                className="absolute inset-0 z-0 h-full w-full object-cover"
+                autoPlay
+                muted
+                playsInline
             />
             <div className="relative z-10 flex h-full flex-col p-4">
                 <CameraHeader />
