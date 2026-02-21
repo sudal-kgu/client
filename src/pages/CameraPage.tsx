@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { Outlet, useNavigate } from 'react-router-dom';
 
@@ -15,38 +15,37 @@ const CameraPage = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
 
-    const stopCamera = useCallback(() => {
-        if (streamRef.current) {
-            streamRef.current?.getTracks().forEach((t) => t.stop());
-            streamRef.current = null;
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null;
-        }
-    }, []);
-
-    const startCamera = useCallback(async () => {
-        stopCamera();
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment' },
-            audio: false,
-        });
-
-        if (!videoRef.current) {
-            stream.getTracks().forEach((t) => t.stop());
-            return;
-        }
-
-        streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-    }, [stopCamera]);
-
     useEffect(() => {
+        const stopCamera = () => {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach((t) => t.stop());
+                streamRef.current = null;
+            }
+            if (videoRef.current) {
+                videoRef.current.srcObject = null;
+            }
+        };
+
+        const startCamera = async () => {
+            stopCamera();
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' },
+                audio: false,
+            });
+
+            if (!videoRef.current) {
+                stream.getTracks().forEach((t) => t.stop());
+                return;
+            }
+
+            streamRef.current = stream;
+            videoRef.current.srcObject = stream;
+            await videoRef.current.play();
+        };
         startCamera();
         return () => stopCamera();
-    }, [startCamera, stopCamera]);
+    }, []);
 
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#102216]">
