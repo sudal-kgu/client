@@ -1,12 +1,73 @@
-import { useState } from 'react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import { AnalyzingIndicator } from '../components/camera/AnalyzingIndicator';
+import {
+    CameraAccessOverlay,
+    type CameraErrorCode,
+    type CameraErrorState,
+} from '../components/camera/CameraAccessOverlay';
 import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
 import { TrashBasketBar } from '../components/camera/TrashBasketBar';
+
+const mapCameraError = (err: unknown): CameraErrorState => {
+    const name =
+        err instanceof DOMException ? err.name : err instanceof Error ? err.name : undefined;
+
+    const make = (code: CameraErrorCode, title: string, description: string): CameraErrorState => ({
+        code,
+        title,
+        description,
+    });
+
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        return make(
+            'PERMISSION_DENIED',
+            '카메라 권한이 필요해요',
+            '카메라 접근이 차단되어 있어요. 카메라 권한을 허용으로 바꾼 뒤 다시 시도해 주세요.',
+        );
+    }
+
+    if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        return make(
+            'NO_DEVICE',
+            '카메라를 찾을 수 없어요',
+            '이 기기에서 사용할 수 있는 카메라가 없어요.\n기기 연결 상태를 확인해 주세요.',
+        );
+    }
+
+    if (name === 'SecurityError') {
+        return make(
+            'SECURITY',
+            '보안 문제로 카메라에\n접근할 수 없어요',
+            '접속 경로를 확인해 주세요.',
+        );
+    }
+
+    if (name === 'NotSupportedError') {
+        return make(
+            'NOT_SUPPORTED',
+            '이 브라우저에서는\n카메라를 지원하지 않아요',
+            '다른 브라우저에서 다시 시도해주세요.',
+        );
+    }
+
+    if (name === 'NotReadableError' || name === 'TrackStartError') {
+        return make(
+            'DEVICE_IN_USE',
+            '카메라를 사용할 수 없어요',
+            '다른 앱에서 카메라를 사용 중입니다.\n카메라를 사용하는 앱을 종료한 뒤\n다시 시도해 주세요.',
+        );
+    }
+
+    return make(
+        'UNKNOWN',
+        '카메라 실행 중 오류가 발생했어요',
+        '카메라에 접근하는 과정에서 문제가 생겼어요.\n잠시 후 다시 시도해 주세요.',
+    );
+};
 
 const CameraPage = () => {
     const navigate = useNavigate();
@@ -15,24 +76,41 @@ const CameraPage = () => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
 
-    useEffect(() => {
-        const stopCamera = () => {
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach((t) => t.stop());
-                streamRef.current = null;
-            }
-            if (videoRef.current) {
-                videoRef.current.srcObject = null;
-            }
-        };
+    const [cameraError, setCameraError] = useState<CameraErrorState | null>(null);
+    const mountedRef = useRef(true);
+    const startSeqRef = useRef(0);
 
-        const startCamera = async () => {
-            stopCamera();
+    const stopCamera = useCallback(() => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((t) => t.stop());
+            streamRef.current = null;
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+    }, []);
+
+    const startCamera = useCallback(async () => {
+        const seq = ++startSeqRef.current;
+        setCameraError(null);
+        stopCamera();
+        try {
+            if (!window.isSecureContext) {
+                throw new DOMException('보안 문제로 카메라에 접근 불가', 'SecurityError');
+            }
+            if (!navigator.mediaDevices?.getUserMedia) {
+                throw new DOMException('해당 브라우저에서 카메라 미지원', 'NotSupportedError');
+            }
 
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' },
+                video: { facingMode: { ideal: 'environment' } },
                 audio: false,
             });
+
+            if (!mountedRef.current || seq !== startSeqRef.current) {
+                stream.getTracks().forEach((t) => t.stop());
+                return;
+            }
 
             if (!videoRef.current) {
                 stream.getTracks().forEach((t) => t.stop());
@@ -42,10 +120,27 @@ const CameraPage = () => {
             streamRef.current = stream;
             videoRef.current.srcObject = stream;
             await videoRef.current.play();
-        };
+        } catch (err) {
+            if (!mountedRef.current || seq !== startSeqRef.current) return;
+            stopCamera();
+            setCameraError(mapCameraError(err));
+        }
+    }, [stopCamera]);
+
+    useEffect(() => {
+        mountedRef.current = true;
         startCamera();
-        return () => stopCamera();
-    }, []);
+        return () => {
+            mountedRef.current = false;
+            stopCamera();
+        };
+    }, [startCamera, stopCamera]);
+
+    const showRetry =
+        !!cameraError &&
+        (cameraError.code === 'PERMISSION_DENIED' ||
+            cameraError.code === 'DEVICE_IN_USE' ||
+            cameraError.code === 'UNKNOWN');
 
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#102216]">
@@ -68,6 +163,15 @@ const CameraPage = () => {
                     <CameraControls />
                 </div>
             </div>
+
+            {cameraError && (
+                <CameraAccessOverlay
+                    error={cameraError}
+                    onRetry={showRetry ? startCamera : undefined}
+                    onBack={() => navigate(-1)}
+                />
+            )}
+
             <Outlet context={{ detectedCount, setDetectedCount }} />
         </div>
     );
