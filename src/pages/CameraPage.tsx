@@ -96,24 +96,6 @@ const CameraPage = () => {
         }
     }, []);
 
-    const updateShowSwitchButton = useCallback(async () => {
-        if (!navigator.mediaDevices?.enumerateDevices) {
-            setShowSwitchButton(false);
-            return;
-        }
-
-        try {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-
-            if (!mountedRef.current) return;
-            setShowSwitchButton(videoInputs.length > 1);
-        } catch {
-            if (!mountedRef.current) return;
-            setShowSwitchButton(false);
-        }
-    }, []);
-
     const startCamera = useCallback(async () => {
         const seq = ++startSeqRef.current;
         setCameraError(null);
@@ -145,14 +127,28 @@ const CameraPage = () => {
             videoRef.current.srcObject = stream;
             await videoRef.current.play();
 
-            await updateShowSwitchButton();
+            if (!navigator.mediaDevices?.enumerateDevices) {
+                setShowSwitchButton(false);
+                return;
+            }
+
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoInputs = devices.filter((device) => device.kind === 'videoinput');
+
+                if (!mountedRef.current || seq !== startSeqRef.current) return;
+                setShowSwitchButton(videoInputs.length > 1);
+            } catch {
+                if (!mountedRef.current || seq !== startSeqRef.current) return;
+                setShowSwitchButton(false);
+            }
         } catch (err) {
             if (!mountedRef.current || seq !== startSeqRef.current) return;
             stopCamera();
             setShowSwitchButton(false);
             setCameraError(mapCameraError(err));
         }
-    }, [stopCamera, facingMode, updateShowSwitchButton]);
+    }, [stopCamera, facingMode]);
 
     const handleSwitchCamera = () => {
         setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
