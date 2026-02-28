@@ -26,7 +26,7 @@ const mapCameraError = (err: unknown): CameraErrorState => {
         return make(
             'PERMISSION_DENIED',
             '카메라 권한이 필요해요',
-            '카메라 접근이 차단되어 있어요. 카메라 권한을 허용으로 바꾼 뒤 다시 시도해 주세요.',
+            '카메라 접근이 차단되어 있어요. 카메라 권한을\n허용으로 바꾼 뒤 다시 시도해 주세요.',
         );
     }
 
@@ -69,6 +69,8 @@ const mapCameraError = (err: unknown): CameraErrorState => {
     );
 };
 
+type FacingMode = 'user' | 'environment';
+
 const CameraPage = () => {
     const navigate = useNavigate();
     const [detectedCount, setDetectedCount] = useState<number>(3);
@@ -80,6 +82,10 @@ const CameraPage = () => {
     const mountedRef = useRef(true);
     const startSeqRef = useRef(0);
 
+    const [facingMode, setFacingMode] = useState<FacingMode>('environment');
+
+    const [showSwitchButton, setShowSwitchButton] = useState(false);
+
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((t) => t.stop());
@@ -87,6 +93,24 @@ const CameraPage = () => {
         }
         if (videoRef.current) {
             videoRef.current.srcObject = null;
+        }
+    }, []);
+
+    const updateShowSwitchButton = useCallback(async () => {
+        if (!navigator.mediaDevices?.enumerateDevices) {
+            setShowSwitchButton(false);
+            return;
+        }
+
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoInputs = devices.filter((device) => device.kind === 'videoinput');
+
+            if (!mountedRef.current) return;
+            setShowSwitchButton(videoInputs.length > 1);
+        } catch {
+            if (!mountedRef.current) return;
+            setShowSwitchButton(false);
         }
     }, []);
 
@@ -103,7 +127,7 @@ const CameraPage = () => {
             }
 
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: 'environment' } },
+                video: { facingMode: { ideal: facingMode } },
                 audio: false,
             });
 
@@ -120,16 +144,24 @@ const CameraPage = () => {
             streamRef.current = stream;
             videoRef.current.srcObject = stream;
             await videoRef.current.play();
+
+            await updateShowSwitchButton();
         } catch (err) {
             if (!mountedRef.current || seq !== startSeqRef.current) return;
             stopCamera();
+            setShowSwitchButton(false);
             setCameraError(mapCameraError(err));
         }
-    }, [stopCamera]);
+    }, [stopCamera, facingMode, updateShowSwitchButton]);
+
+    const handleSwitchCamera = () => {
+        setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+    };
 
     useEffect(() => {
         mountedRef.current = true;
         startCamera();
+
         return () => {
             mountedRef.current = false;
             stopCamera();
@@ -147,6 +179,7 @@ const CameraPage = () => {
             <video
                 ref={videoRef}
                 className="absolute inset-0 z-0 h-full w-full object-cover"
+                style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none' }}
                 autoPlay
                 muted
                 playsInline
@@ -160,7 +193,9 @@ const CameraPage = () => {
 
                 <div className="flex flex-col items-center gap-[32px] px-[8px] pb-[32px]">
                     <TrashBasketBar count={detectedCount} onClick={() => navigate('select')} />
-                    <CameraControls />
+                    <CameraControls
+                        onSwitchCamera={showSwitchButton ? handleSwitchCamera : undefined}
+                    />
                 </div>
             </div>
 
