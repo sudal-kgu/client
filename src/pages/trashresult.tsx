@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 
+import btnsvg from '../assets/Vector.svg';
+
 type TrashItem = {
     id: number;
     name: string;
@@ -44,10 +46,9 @@ export default function TrashResult() {
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    aria-label="back"
                     className="h-[34px] w-[34px] place-items-center rounded-[10px] border border-white/10 bg-white/[0.06] text-[18px] text-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
                 >
-                    ←
+                    <img src={btnsvg} />
                 </button>
                 <div className="text-[14px] text-white/95">쓰레기 분류 결과</div>
             </div>

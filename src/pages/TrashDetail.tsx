@@ -1,5 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
+import btnsvg from '../assets/Vector.svg';
+
 type Step = {
     title: string;
     desc: string;
@@ -60,10 +62,9 @@ export default function TrashDetail() {
                     <button
                         type="button"
                         onClick={() => navigate(-1)}
-                        aria-label="back"
                         className="grid h-[34px] w-[34px] place-items-center rounded-[10px] border border-white/10 bg-white/[0.06] text-[18px] text-white"
                     >
-                        ←
+                        <img src={btnsvg} />
                     </button>
                     <div className="text-[14px] text-white/95">분리수거 상세</div>
                 </div>
@@ -80,10 +81,9 @@ export default function TrashDetail() {
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    aria-label="back"
                     className="grid h-[34px] w-[34px] place-items-center rounded-[10px] border border-white/10 bg-white/[0.06] text-white"
                 >
-                    ←
+                    <img src={btnsvg} />
                 </button>
                 <div className="text-[14px] text-white/95">{item.name}</div>
             </div>
