@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 
 import { AnalyzingIndicator } from '../components/camera/AnalyzingIndicator';
 import {
@@ -11,6 +11,7 @@ import {
 import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
 import { TrashBasketBar } from '../components/camera/TrashBasketBar';
+import TrashSelectModal from '../components/modals/TrashSelectModal';
 
 const mapCameraError = (err: unknown): CameraErrorState => {
     const name =
@@ -73,7 +74,7 @@ type FacingMode = 'user' | 'environment';
 
 const CameraPage = () => {
     const navigate = useNavigate();
-    const [detectedCount, setDetectedCount] = useState<number>(3);
+    const [detectedCount] = useState<number>(3);
 
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
@@ -85,6 +86,8 @@ const CameraPage = () => {
     const [facingMode, setFacingMode] = useState<FacingMode>('environment');
 
     const [showSwitchButton, setShowSwitchButton] = useState(false);
+
+    const isSelectModalRoute = useMatch('/camera/select');
 
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
@@ -207,7 +210,11 @@ const CameraPage = () => {
                 />
             )}
 
-            <Outlet context={{ detectedCount, setDetectedCount }} />
+            <TrashSelectModal
+                isOpen={!!isSelectModalRoute}
+                onClose={() => navigate('/camera', { replace: true })}
+                detectedCount={detectedCount}
+            />
         </div>
     );
 };
