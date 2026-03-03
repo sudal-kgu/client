@@ -96,6 +96,24 @@ const CameraPage = () => {
         }
     }, []);
 
+    const updateShowSwitchButton = useCallback(async (currentSeq: number) => {
+        if (!navigator.mediaDevices?.enumerateDevices) {
+            setShowSwitchButton(false);
+            return;
+        }
+
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoInputs = devices.filter((divice) => divice.kind === 'videoinput');
+
+            if (!mountedRef.current || currentSeq !== startSeqRef.current) return;
+            setShowSwitchButton(videoInputs.length > 1);
+        } catch {
+            if (!mountedRef.current || currentSeq !== startSeqRef.current) return;
+            setShowSwitchButton(false);
+        }
+    }, []);
+
     const startCamera = useCallback(async () => {
         const seq = ++startSeqRef.current;
         setCameraError(null);
@@ -127,28 +145,14 @@ const CameraPage = () => {
             videoRef.current.srcObject = stream;
             await videoRef.current.play();
 
-            if (!navigator.mediaDevices?.enumerateDevices) {
-                setShowSwitchButton(false);
-                return;
-            }
-
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const videoInputs = devices.filter((device) => device.kind === 'videoinput');
-
-                if (!mountedRef.current || seq !== startSeqRef.current) return;
-                setShowSwitchButton(videoInputs.length > 1);
-            } catch {
-                if (!mountedRef.current || seq !== startSeqRef.current) return;
-                setShowSwitchButton(false);
-            }
+            await updateShowSwitchButton(seq);
         } catch (err) {
             if (!mountedRef.current || seq !== startSeqRef.current) return;
             stopCamera();
             setShowSwitchButton(false);
             setCameraError(mapCameraError(err));
         }
-    }, [stopCamera, facingMode]);
+    }, [stopCamera, facingMode, updateShowSwitchButton]);
 
     const handleSwitchCamera = () => {
         setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
