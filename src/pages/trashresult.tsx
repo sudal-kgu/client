@@ -1,34 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
 import btnsvg from '../assets/Vector.svg';
-
-type TrashItem = {
-    id: number;
-    name: string;
-    type: string;
-    img: string;
-};
-
-const MOCK_ITEMS: TrashItem[] = [
-    {
-        id: 1,
-        name: 'Clear PET Bottle',
-        type: 'PLASTIC',
-        img: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20170310_116%2Fdameun2015_1489110502755e4vcC_JPEG%2F13454740554212189_-723787167.jpg&type=sc960_832',
-    },
-    {
-        id: 2,
-        name: 'Aluminum Can',
-        type: 'METAL',
-        img: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20220318_255%2F1647565816861fUECG_JPEG%2F48701662564627048_1656266575.jpg&type=a340',
-    },
-    {
-        id: 3,
-        name: 'Cardboard Box',
-        type: 'PAPER',
-        img: 'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_8916534%2F89165343334.jpg&type=f372_372',
-    },
-];
+import { MOCK_ITEMS } from '../mock/resultMock';
 
 function tagClass(type: string) {
     const t = type.toUpperCase();
@@ -40,6 +15,39 @@ function tagClass(type: string) {
 
 export default function TrashResult() {
     const navigate = useNavigate();
+
+    const limit = 10;
+    const [page, setPage] = useState(1);
+
+    const [bottom, setBottom] = useState<HTMLDivElement | null>(null);
+    const bottomObserver = useRef<IntersectionObserver | null>(null);
+    const visibleItems = MOCK_ITEMS.slice(0, page * limit);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (!entries[0].isIntersecting) return;
+                if (page * limit >= MOCK_ITEMS.length) return;
+                setPage((prev) => prev + 1);
+            },
+            { threshold: 0.25, rootMargin: '80px' },
+        );
+        bottomObserver.current = observer;
+    }, [page]);
+
+    useEffect(() => {
+        const observer = bottomObserver.current;
+        if (!observer) return;
+        if (bottom) {
+            observer.observe(bottom);
+        }
+        return () => {
+            if (bottom) {
+                observer.unobserve(bottom);
+            }
+        };
+    }, [bottom]);
+
     return (
         <div>
             <div className="mb-4 flex items-center gap-2">
@@ -52,8 +60,8 @@ export default function TrashResult() {
                 </button>
                 <div className="text-[14px] text-white/95">쓰레기 분류 결과</div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-                {MOCK_ITEMS.map((item) => (
+            <div className="grid grid-cols-2 gap-6 lg:grid-cols-3">
+                {visibleItems.map((item) => (
                     <button
                         key={item.id}
                         type="button"
@@ -81,6 +89,7 @@ export default function TrashResult() {
                     </button>
                 ))}
             </div>
+            <div ref={setBottom} className="h-10" />
         </div>
     );
 }

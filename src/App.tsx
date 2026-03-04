@@ -18,6 +18,7 @@ export default function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <div className="min-h-screen bg-[#0e1412] text-white">
+                {/* <div className="mx-auto w-full max-w-[420px] px-6 py-6"></div> */}
                 <div className="mx-auto w-full px-6 py-6">
                     <RouterProvider router={router} />
                 </div>

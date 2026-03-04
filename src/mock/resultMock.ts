@@ -26,7 +26,7 @@ const BASE_ITEMS = [
     },
 ];
 
-export const DETAIL_MOCK: TrashItem[] = Array.from({ length: 100 }, (_, i) => {
+export const MOCK_ITEMS: TrashItem[] = Array.from({ length: 100 }, (_, i) => {
     const base = BASE_ITEMS[i % 3];
 
     return {
