@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import btnsvg from '../assets/Vector.svg';
+import ExitModal from '../components/ExitModal';
 import { MOCK_ITEMS } from '../mock/resultMock';
 
 function tagClass(type: string) {
@@ -21,7 +22,16 @@ export default function TrashResult() {
 
     const [bottom, setBottom] = useState<HTMLDivElement | null>(null);
     const bottomObserver = useRef<IntersectionObserver | null>(null);
+
     const visibleItems = MOCK_ITEMS.slice(0, page * limit);
+    const exitModalRef = useRef<HTMLDivElement | null>(null);
+
+    const openExitModal = () => {
+        const wrap = exitModalRef.current;
+        if (!wrap) return;
+        const hiddenTrigger = wrap.querySelector('button') as HTMLButtonElement | null;
+        hiddenTrigger?.click();
+    };
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -50,10 +60,13 @@ export default function TrashResult() {
 
     return (
         <div>
+            <div ref={exitModalRef} className="exit-modal-wrap">
+                <ExitModal />
+            </div>{' '}
             <div className="mb-4 flex items-center gap-2">
                 <button
                     type="button"
-                    onClick={() => navigate(-1)}
+                    onClick={openExitModal}
                     className="h-[34px] w-[34px] place-items-center rounded-[10px] border border-white/10 bg-white/[0.06] text-[18px] text-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
                 >
                     <img src={btnsvg} />
@@ -79,7 +92,9 @@ export default function TrashResult() {
                         </div>
 
                         <div className="mt-3">
-                            <span className="inline-flex items-center rounded-full border bg-white/10 px-3 py-1 text-[11px] font-medium text-white/70">
+                            <span
+                                className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium ${tagClass(item.type)}`}
+                            >
                                 {item.type}
                             </span>
                         </div>
