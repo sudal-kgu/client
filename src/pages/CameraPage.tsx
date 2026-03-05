@@ -12,6 +12,7 @@ import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
 import { TrashBasketBar } from '../components/camera/TrashBasketBar';
 import TrashSelectModal from '../components/modals/TrashSelectModal';
+import { captureFrame } from '../utils/camera/captureFrame';
 
 const mapCameraError = (err: unknown): CameraErrorState => {
     const name =
@@ -89,6 +90,13 @@ const CameraPage = () => {
 
     const isSelectModalRoute = useMatch('/camera/select');
 
+    const [isCapturing, setIsCapturing] = useState(false);
+
+    const [capturePreviewUrl, setCapturePreviewUrl] = useState<string | null>(null);
+    const previewUrlRef = useRef<string | null>(null);
+
+    const captureFileRef = useRef<File | null>(null);
+
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((t) => t.stop());
@@ -161,6 +169,45 @@ const CameraPage = () => {
         setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
     };
 
+    const handleCapture = useCallback(async () => {
+        if (!videoRef.current || cameraError || isCapturing) return;
+
+        try {
+            setIsCapturing(true);
+
+            const { file, width, height } = await captureFrame(videoRef.current, {
+                mirror: facingMode === 'user',
+                maxWidth: 1280,
+                maxHeight: 1280,
+            });
+
+            stopCamera();
+
+            captureFileRef.current = file;
+
+            const nextPreviewUrl = URL.createObjectURL(file);
+
+            if (previewUrlRef.current) {
+                URL.revokeObjectURL(previewUrlRef.current);
+            }
+
+            previewUrlRef.current = nextPreviewUrl;
+            setCapturePreviewUrl(nextPreviewUrl);
+
+            console.log('캡처 완료');
+            console.log({
+                name: file.name,
+                type: file.type,
+                width,
+                height,
+            });
+        } catch (error) {
+            console.error('캡처 실패', error);
+        } finally {
+            setIsCapturing(false);
+        }
+    }, [cameraError, facingMode, isCapturing, stopCamera]);
+
     useEffect(() => {
         mountedRef.current = true;
         startCamera();
@@ -170,6 +217,15 @@ const CameraPage = () => {
             stopCamera();
         };
     }, [startCamera, stopCamera]);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrlRef.current) {
+                URL.revokeObjectURL(previewUrlRef.current);
+                previewUrlRef.current = null;
+            }
+        };
+    }, []);
 
     const showRetry =
         !!cameraError &&
@@ -187,7 +243,18 @@ const CameraPage = () => {
                 muted
                 playsInline
             />
-            <div className="relative z-10 flex h-full flex-col p-4">
+
+            {capturePreviewUrl && (
+                <div className="absolute inset-0 z-10">
+                    <img
+                        src={capturePreviewUrl}
+                        alt="캡쳐 미리보기"
+                        className="h-full w-full object-cover"
+                    />
+                </div>
+            )}
+
+            <div className="relative z-20 flex h-full flex-col p-4">
                 <CameraHeader />
 
                 <div className="flex flex-1 items-end justify-center pb-[16px]">
@@ -197,6 +264,8 @@ const CameraPage = () => {
                 <div className="flex flex-col items-center gap-[32px] px-[8px] pb-[32px]">
                     <TrashBasketBar count={detectedCount} onClick={() => navigate('select')} />
                     <CameraControls
+                        onCapture={handleCapture}
+                        disabled={!!cameraError || isCapturing}
                         onSwitchCamera={showSwitchButton ? handleSwitchCamera : undefined}
                     />
                 </div>
