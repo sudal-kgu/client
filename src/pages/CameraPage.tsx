@@ -12,6 +12,7 @@ import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
 import { TrashBasketBar } from '../components/camera/TrashBasketBar';
 import TrashSelectModal from '../components/modals/TrashSelectModal';
+import { useImageUpload } from '../hooks/useImageUpload';
 import { captureFrame } from '../utils/camera/captureFrame';
 
 const mapCameraError = (err: unknown): CameraErrorState => {
@@ -95,7 +96,7 @@ const CameraPage = () => {
     const [capturePreviewUrl, setCapturePreviewUrl] = useState<string | null>(null);
     const previewUrlRef = useRef<string | null>(null);
 
-    const captureFileRef = useRef<File | null>(null);
+    const { mutateAsync: uploadImageMutate, isPending: isUploading } = useImageUpload();
 
     const stopCamera = useCallback(() => {
         if (streamRef.current) {
@@ -175,15 +176,13 @@ const CameraPage = () => {
         try {
             setIsCapturing(true);
 
-            const { file, width, height } = await captureFrame(videoRef.current, {
+            const { file } = await captureFrame(videoRef.current, {
                 mirror: facingMode === 'user',
                 maxWidth: 1280,
                 maxHeight: 1280,
             });
 
             stopCamera();
-
-            captureFileRef.current = file;
 
             const nextPreviewUrl = URL.createObjectURL(file);
 
@@ -194,19 +193,14 @@ const CameraPage = () => {
             previewUrlRef.current = nextPreviewUrl;
             setCapturePreviewUrl(nextPreviewUrl);
 
-            console.log('캡처 완료');
-            console.log({
-                name: file.name,
-                type: file.type,
-                width,
-                height,
-            });
+            const requestId = await uploadImageMutate(file);
+            console.log('서버 requestId 수신: ', requestId);
         } catch (error) {
-            console.error('캡처 실패', error);
+            console.error('캡처 또는 업로드 실패', error);
         } finally {
             setIsCapturing(false);
         }
-    }, [cameraError, facingMode, isCapturing, stopCamera]);
+    }, [cameraError, facingMode, isCapturing, stopCamera, uploadImageMutate]);
 
     useEffect(() => {
         mountedRef.current = true;
@@ -258,7 +252,7 @@ const CameraPage = () => {
                 <CameraHeader />
 
                 <div className="flex flex-1 items-end justify-center pb-[16px]">
-                    <AnalyzingIndicator />
+                    {isUploading && <AnalyzingIndicator />}
                 </div>
 
                 <div className="flex flex-col items-center gap-[32px] px-[8px] pb-[32px]">
