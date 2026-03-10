@@ -14,7 +14,9 @@ export type AnalysisResult = {
 export type UploadImageResponse = {
     code: string;
     message: string;
-    data: string;
+    data: {
+        request_id: string;
+    };
 };
 
 export type AnalysisResultResponse = {
