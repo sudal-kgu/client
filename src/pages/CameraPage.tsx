@@ -86,15 +86,12 @@ const CameraPage = () => {
     const startSeqRef = useRef(0);
 
     const [facingMode, setFacingMode] = useState<FacingMode>('environment');
-
     const [showSwitchButton, setShowSwitchButton] = useState(false);
 
     const isSelectModalRoute = useMatch('/camera/select');
 
     const [isCapturing, setIsCapturing] = useState(false);
-
-    const [capturePreviewUrl, setCapturePreviewUrl] = useState<string | null>(null);
-    const previewUrlRef = useRef<string | null>(null);
+    const [isFlashing, setIsFlashing] = useState(false);
 
     const { mutateAsync: uploadImageMutate, isPending: isUploading } = useImageUpload();
 
@@ -176,22 +173,14 @@ const CameraPage = () => {
         try {
             setIsCapturing(true);
 
+            setIsFlashing(true);
+            setTimeout(() => setIsFlashing(false), 75);
+
             const { file } = await captureFrame(videoRef.current, {
                 mirror: facingMode === 'user',
                 maxWidth: 1280,
                 maxHeight: 1280,
             });
-
-            stopCamera();
-
-            const nextPreviewUrl = URL.createObjectURL(file);
-
-            if (previewUrlRef.current) {
-                URL.revokeObjectURL(previewUrlRef.current);
-            }
-
-            previewUrlRef.current = nextPreviewUrl;
-            setCapturePreviewUrl(nextPreviewUrl);
 
             const requestId = await uploadImageMutate(file);
             console.log('서버 requestId 수신: ', requestId);
@@ -200,7 +189,7 @@ const CameraPage = () => {
         } finally {
             setIsCapturing(false);
         }
-    }, [cameraError, facingMode, isCapturing, stopCamera, uploadImageMutate]);
+    }, [cameraError, facingMode, isCapturing, uploadImageMutate]);
 
     useEffect(() => {
         mountedRef.current = true;
@@ -211,15 +200,6 @@ const CameraPage = () => {
             stopCamera();
         };
     }, [startCamera, stopCamera]);
-
-    useEffect(() => {
-        return () => {
-            if (previewUrlRef.current) {
-                URL.revokeObjectURL(previewUrlRef.current);
-                previewUrlRef.current = null;
-            }
-        };
-    }, []);
 
     const showRetry =
         !!cameraError &&
@@ -238,15 +218,9 @@ const CameraPage = () => {
                 playsInline
             />
 
-            {capturePreviewUrl && (
-                <div className="absolute inset-0 z-10">
-                    <img
-                        src={capturePreviewUrl}
-                        alt="캡쳐 미리보기"
-                        className="h-full w-full object-cover"
-                    />
-                </div>
-            )}
+            <div
+                className={`pointer-events-none absolute inset-0 z-10 bg-black transition-opacity duration-75 ${isFlashing ? 'opacity-80' : 'opacity-0'}`}
+            />
 
             <div className="relative z-20 flex h-full flex-col p-4">
                 <CameraHeader />
