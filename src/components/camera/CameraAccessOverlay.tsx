@@ -31,7 +31,7 @@ export const CameraAccessOverlay = (props: CameraErrorProps) => {
         >
             <div className="flex h-[340px] w-[320px] flex-col items-center gap-[16px] rounded-[16px] border border-white/10 bg-[#1A2A21] p-[24px] text-white">
                 <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-[#F97316]/10">
-                    <IconWarning />
+                    <IconWarning className="h-[24px] w-[28px]" />
                 </div>
                 <div className="whitespace-pre-line text-center text-[18px] leading-[24px] text-white">
                     {error.title}

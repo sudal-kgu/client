@@ -10,6 +10,7 @@ import {
 } from '../components/camera/CameraAccessOverlay';
 import { CameraControls } from '../components/camera/CameraControls';
 import { CameraHeader } from '../components/camera/CameraHeader';
+import { ErrorToast } from '../components/camera/ErrorToast';
 import { TrashBasketBar } from '../components/camera/TrashBasketBar';
 import TrashSelectModal from '../components/modals/TrashSelectModal';
 import { useImageUpload } from '../hooks/useImageUpload';
@@ -93,6 +94,9 @@ const CameraPage = () => {
     const [isCapturing, setIsCapturing] = useState(false);
     const [isFlashing, setIsFlashing] = useState(false);
 
+    const [showUploadError, setShowUploadError] = useState(false);
+    const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const { mutateAsync: uploadImageMutate, isPending: isUploading } = useImageUpload();
 
     const stopCamera = useCallback(() => {
@@ -169,9 +173,11 @@ const CameraPage = () => {
 
     const handleCapture = useCallback(async () => {
         if (!videoRef.current || cameraError || isCapturing) return;
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
 
         try {
             setIsCapturing(true);
+            setShowUploadError(false);
 
             setIsFlashing(true);
             setTimeout(() => setIsFlashing(false), 75);
@@ -186,6 +192,8 @@ const CameraPage = () => {
             console.log('서버 requestId 수신: ', requestId);
         } catch (error) {
             console.error('캡처 또는 업로드 실패', error);
+            setShowUploadError(true);
+            toastTimerRef.current = setTimeout(() => setShowUploadError(false), 3000);
         } finally {
             setIsCapturing(false);
         }
@@ -227,6 +235,10 @@ const CameraPage = () => {
 
                 <div className="flex flex-1 items-end justify-center pb-[16px]">
                     {isUploading && <AnalyzingIndicator />}
+
+                    {showUploadError && (
+                        <ErrorToast message="이미지 업로드에 실패했어요. 다시 시도해 주세요." />
+                    )}
                 </div>
 
                 <div className="flex flex-col items-center gap-[32px] px-[8px] pb-[32px]">
