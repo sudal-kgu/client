@@ -15,7 +15,7 @@ const BASE_DETAIL = [
     {
         id: 1,
         name: 'Clear PET Bottle',
-        type: 'PLASTIC',
+        type: '일반페트병',
         img: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20170310_116%2Fdameun2015_1489110502755e4vcC_JPEG%2F13454740554212189_-723787167.jpg&type=sc960_832',
         steps: [
             { title: '내용물 비우기', desc: '음료/이물질을 비우고 가볍게 헹궈주세요.' },
@@ -26,7 +26,7 @@ const BASE_DETAIL = [
     {
         id: 2,
         name: 'Aluminum Can',
-        type: 'METAL',
+        type: '음료',
         img: 'https://search.pstatic.net/common/?src=http%3A%2F%2Fshop1.phinf.naver.net%2F20220318_255%2F1647565816861fUECG_JPEG%2F48701662564627048_1656266575.jpg&type=a340',
         steps: [
             { title: '비우고 헹구기', desc: '내용물을 비우고 간단히 헹궈주세요.' },
@@ -37,7 +37,7 @@ const BASE_DETAIL = [
     {
         id: 3,
         name: 'Cardboard Box',
-        type: 'PAPER',
+        type: '포장상자',
         img: 'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_8916534%2F89165343334.jpg&type=f372_372',
         steps: [
             { title: '테이프 제거', desc: '테이프/스티커는 최대한 제거해주세요.' },

@@ -1,20 +1,16 @@
-import React from 'react';
+import { useRef, useState } from 'react';
 
 import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 
 import overlay from '../assets/Overlay.svg';
 
-Modal.setAppElement('#root');
 export default function ExitModal() {
     const navigate = useNavigate();
-    const [modalIsOpen, setIsOpen] = React.useState(false);
-    const subtitleRef = React.useRef<HTMLHeadingElement | null>(null);
+    const [modalIsOpen, setIsOpen] = useState(false);
+    const subtitleRef = useRef<HTMLHeadingElement | null>(null);
     function openModal() {
         setIsOpen(true);
-    }
-    function afterOpenModal() {
-        if (subtitleRef.current) subtitleRef.current.style.color = '#00ff14';
     }
     function closeModal() {
         setIsOpen(false);
@@ -28,7 +24,6 @@ export default function ExitModal() {
             <button onClick={openModal} />
             <Modal
                 isOpen={modalIsOpen}
-                onAfterOpen={afterOpenModal}
                 onRequestClose={closeModal}
                 contentLabel="Exit Modal"
                 className="outline-none"
@@ -40,7 +35,7 @@ export default function ExitModal() {
                     </div>
                     <h2
                         ref={subtitleRef}
-                        className="text-center text-[16px] font-semibold leading-6"
+                        className="text-center text-[16px] font-semibold leading-6 text-[#00ff14]"
                     >
                         지금 돌아가면 분석 결과가 사라져요!
                     </h2>
