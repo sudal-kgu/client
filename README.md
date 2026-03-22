@@ -5,6 +5,6 @@
 - **Framework**: React 19 (Vite)
 - **Language**: TypeScript
 - **State Management**: TanStack Query v5
-- **Styling**: Tailwind CSS
+- **Styling**: Emotion
 - **HTTP Client**: Axios
 - **Code Quality**: ESLint, Prettier, Husky, lint-staged
