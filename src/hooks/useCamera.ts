@@ -5,13 +5,14 @@ const FacingMode = {
     ENVIRONMENT: 'environment',
 } as const;
 
-const useCamera = () => {
+const useCamera = (captureCallback: (blob: Blob | null) => Promise<void>) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [rejected, setRejected] = useState(false);
 
     const onCapture = () => {
         const canvas = canvasRef.current;
         if (!canvas || rejected) return;
+        canvas.toBlob(captureCallback);
     };
 
     useEffect(() => {
