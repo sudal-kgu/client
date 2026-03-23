@@ -20,7 +20,7 @@ const CameraControls = ({ items, analysis }: Props) => {
             <StyledButton
                 className="basket"
                 $number={items.length}
-                onClick={() => navigate('/capture/basket')}
+                onClick={() => navigate('/camera/basket')}
             >
                 <MdOutlineShoppingBasket className="basket" />
             </StyledButton>

@@ -6,8 +6,20 @@ export interface Response<T> {
     message: string;
 }
 
-export interface AnalysisRequest {
+export interface AnalaysisRequest {
     request_id: string;
+}
+
+export interface AnalaysisResultPage {
+    totalPage: number;
+    currentPage: number;
+    content: AnalaysisResultItem[];
+}
+export interface AnalaysisResultItem {
+    uuid: string;
+    image: string;
+    category: string;
+    subcategory: string;
 }
 
 const TrashItemSchema = z.object({
