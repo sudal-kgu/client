@@ -7,6 +7,7 @@ interface Theme {
         primary500: string;
         primary400: string;
         white: string;
+        badge: string;
     };
 }
 
