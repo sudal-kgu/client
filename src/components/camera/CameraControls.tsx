@@ -2,12 +2,20 @@ import { ImSpinner2 } from 'react-icons/im';
 import { MdOutlineShoppingBasket } from 'react-icons/md';
 import styled from 'styled-components';
 
-const CameraControls = () => {
-    const basket = 9;
-    const loading = 3;
+import type { AnalysisItem } from '../../api/types';
+import type { Analysis } from '../../hooks/types';
+
+interface Props {
+    basket: AnalysisItem[];
+    analysis: Analysis;
+}
+
+const CameraControls = ({ basket, analysis }: Props) => {
+    const loading = Object.keys(analysis).length;
+
     return (
         <StyledContainer>
-            <StyledButton className="basket" $number={basket}>
+            <StyledButton className="basket" $number={basket.length}>
                 <MdOutlineShoppingBasket className="basket" />
             </StyledButton>
             {loading > 0 && (

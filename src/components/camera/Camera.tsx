@@ -2,8 +2,12 @@ import styled from 'styled-components';
 
 import useCamera from '../../hooks/useCamera';
 
-const Camera = () => {
-    const { canvasRef, onCapture } = useCamera();
+interface Props {
+    captureCallback: (blob: Blob | null) => Promise<void>;
+}
+
+const Camera = ({ captureCallback }: Props) => {
+    const { canvasRef, onCapture } = useCamera(captureCallback);
 
     return (
         <StyledContainer>
