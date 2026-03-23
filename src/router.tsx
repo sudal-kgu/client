@@ -1,3 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-export const router = createBrowserRouter([]);
+import TrashCapture from './pages/TrashCapture';
+
+export const router = createBrowserRouter([
+    {
+        path: '/capture',
+        element: <TrashCapture />,
+    },
+]);
