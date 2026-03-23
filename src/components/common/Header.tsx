@@ -30,7 +30,6 @@ const StyledContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     background-color: ${({ theme }) => theme.colors.primary500};
-    border-bottom: 1px solid ${({ theme }) => theme.colors.primary700};
 
     button {
         width: 24px;

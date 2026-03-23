@@ -5,7 +5,7 @@ const theme: DefaultTheme = {
         primary800: '#213729',
         primary700: '#286C34',
         primary600: '#2E7D32',
-        primary500: '#E8F5E9',
+        primary500: '#FFFEF8',
         primary400: '#F1F8E9',
         gray400: '#444444',
         gray200: '#f0f0f0',
