@@ -34,16 +34,23 @@ const useCamera = (captureCallback: (blob: Blob | null) => Promise<void>) => {
                     canvas.width = canvas.offsetWidth;
                     canvas.height = canvas.offsetHeight;
 
-                    const sW = videoRef.videoWidth;
-                    const sH = videoRef.videoWidth * (canvas.height / canvas.width);
+                    const vW = videoRef.videoWidth;
+                    const vH = videoRef.videoHeight;
+                    const cW = canvas.width;
+                    const cH = canvas.height;
 
-                    const sx = 0;
-                    const sy = (videoRef.videoHeight - sH) / 2;
+                    const scale = Math.min(cW / vW, cH / vH);
 
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const dW = vW * scale;
+                    const dH = vH * scale;
+
+                    const dx = (cW - dW) / 2;
+                    const dy = (cH - dH) / 2;
+
+                    ctx.clearRect(0, 0, cW, cH);
                     ctx.fillStyle = '#000000';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(videoRef, sx, sy, sW, sH, 0, 0, canvas.width, canvas.height);
+                    ctx.fillRect(0, 0, cW, cH);
+                    ctx.drawImage(videoRef, 0, 0, vW, vH, dx, dy, dW, dH);
                 }
                 requestAnimationFrame(draw);
             };

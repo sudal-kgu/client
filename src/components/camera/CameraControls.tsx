@@ -1,21 +1,27 @@
 import { ImSpinner2 } from 'react-icons/im';
 import { MdOutlineShoppingBasket } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import type { AnalysisItem } from '../../api/types';
 import type { Analysis } from '../../hooks/types';
 
 interface Props {
-    basket: AnalysisItem[];
+    items: AnalysisItem[];
     analysis: Analysis;
 }
 
-const CameraControls = ({ basket, analysis }: Props) => {
+const CameraControls = ({ items, analysis }: Props) => {
     const loading = Object.keys(analysis).length;
+    const navigate = useNavigate();
 
     return (
         <StyledContainer>
-            <StyledButton className="basket" $number={basket.length}>
+            <StyledButton
+                className="basket"
+                $number={items.length}
+                onClick={() => navigate('/capture/basket')}
+            >
                 <MdOutlineShoppingBasket className="basket" />
             </StyledButton>
             {loading > 0 && (
