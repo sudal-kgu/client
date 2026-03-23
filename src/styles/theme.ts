@@ -7,6 +7,7 @@ const theme: DefaultTheme = {
         primary500: '#E8F5E9',
         primary400: '#F1F8E9',
         white: '#FFFFFF',
+        badge: '#A73B21',
     },
 };
 
