@@ -12,7 +12,7 @@ const event = {
 
 const useAnalysis = () => {
     const [analysis, setAnalysis] = useState<Analysis>({});
-    const [basket, setBasket] = useState<AnalysisItem[]>([]);
+    const [items, setItems] = useState<AnalysisItem[]>([]);
 
     const subscribe = async (blob: Blob | null) => {
         if (!blob) throw new Error();
@@ -29,7 +29,7 @@ const useAnalysis = () => {
 
         eventSource.addEventListener(event.ANALYSIS_RESULT, (ev) => {
             const result = ParseUtils.safeParse(ResultSchema, ev.data);
-            setBasket((prev) => [...prev, ...result.trashItems]);
+            setItems((prev) => [...prev, ...result.trashItems]);
             clear();
         });
         eventSource.addEventListener(event.ERROR, () => clear());
@@ -38,7 +38,7 @@ const useAnalysis = () => {
         setAnalysis((prev) => ({ ...prev, [requestId]: eventSource }));
     };
 
-    return { basket, analysis, subscribe };
+    return { items, analysis, subscribe };
 };
 
 export default useAnalysis;
