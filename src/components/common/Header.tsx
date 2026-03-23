@@ -22,7 +22,7 @@ const Header = ({ onBack }: Props) => {
 };
 
 const StyledContainer = styled.div`
-    padding: 0 32px;
+    padding: 0 16px;
     width: 100%;
     height: 72px;
     min-height: 72px;
@@ -30,6 +30,9 @@ const StyledContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     background-color: ${({ theme }) => theme.colors.primary500};
+    position: sticky;
+    top: 0;
+    z-index: 3;
 
     button {
         width: 24px;

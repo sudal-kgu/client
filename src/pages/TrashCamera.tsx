@@ -5,7 +5,7 @@ import CameraControls from '../components/camera/CameraControls';
 import PageContainer from '../components/common/PageContainer';
 import useAnalysis from '../hooks/useAnalysis';
 
-const TrashCapture = () => {
+const TrashCamera = () => {
     const { analysis, items, subscribe } = useAnalysis();
 
     return (
@@ -17,4 +17,4 @@ const TrashCapture = () => {
     );
 };
 
-export default TrashCapture;
+export default TrashCamera;

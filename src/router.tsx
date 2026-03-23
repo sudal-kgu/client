@@ -1,17 +1,22 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import Basket from './components/camera/Basket';
-import TrashCapture from './pages/TrashCapture';
+import TrashAnalysisResult from './pages/TrashAnalysisResult';
+import TrashCamera from './pages/TrashCamera';
 
 export const router = createBrowserRouter([
     {
-        path: '/capture',
-        element: <TrashCapture />,
+        path: '/camera',
+        element: <TrashCamera />,
         children: [
             {
                 path: 'basket',
                 element: <Basket />,
             },
         ],
+    },
+    {
+        path: '/analysis/:id',
+        element: <TrashAnalysisResult />,
     },
 ]);

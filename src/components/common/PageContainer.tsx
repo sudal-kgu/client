@@ -21,6 +21,7 @@ const PageContainer = ({ children }: Props) => {
 
 const StyledContainer = styled.div`
     height: 100dvh;
+    background-color: ${({ theme }) => theme.colors.primary500};
 
     #page {
         margin: 0 auto;
@@ -29,12 +30,14 @@ const StyledContainer = styled.div`
         display: flex;
         flex-direction: column;
         align-items: center;
+        position: relative;
     }
 
     #page-container {
         position: relative;
         width: 100%;
         height: 100%;
+        overflow: auto;
     }
 `;
 
