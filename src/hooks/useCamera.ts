@@ -8,10 +8,13 @@ const FacingMode = {
 const useCamera = (captureCallback: (blob: Blob | null) => Promise<void>) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [rejected, setRejected] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const onCapture = () => {
         const canvas = canvasRef.current;
-        if (!canvas || rejected) return;
+        if (!canvas || rejected || loading) return;
+        setLoading(true);
+        setTimeout(() => setLoading(false), 300);
         canvas.toBlob(captureCallback);
     };
 
