@@ -16,6 +16,7 @@ const useAnalysis = () => {
 
     const subscribe = async (blob: Blob | null) => {
         if (!blob) throw new Error();
+        if (Object.keys(analysis).length >= 3) return;
         const formData = new FormData();
         formData.append('image', blob, `${crypto.randomUUID()}.jpg`);
         const result = await AnalysisAPI.request(formData);
