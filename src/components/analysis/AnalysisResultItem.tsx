@@ -26,8 +26,25 @@ const StyledContainer = styled(Link)`
     display: flex;
     gap: 12px;
     flex-direction: column;
-    background-color: ${({ theme }) => theme.colors.primary400};
+    background-color: ${({ theme }) => theme.colors.primary200};
     border-radius: 12px;
+    box-shadow: ${({ theme }) => theme.shadows.default};
+
+    &:hover {
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+            0% {
+                transform: translateY(0);
+            }
+        }
+
+        animation: bounce 0.5s ease-in-out infinite;
+    }
 
     img {
         aspect-ratio: 1;
@@ -37,16 +54,26 @@ const StyledContainer = styled(Link)`
 
     .label {
         display: flex;
-        gap: 4px;
+        gap: 8px;
         flex-direction: column;
 
         .category {
+            padding: 2px 8px;
+            width: fit-content;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-size: 12px;
+            color: ${({ theme }) => theme.colors.primary800};
+            background-color: ${({ theme }) => theme.colors.white};
+            border-radius: 48px;
+            box-shadow: ${({ theme }) => theme.shadows.default};
         }
 
         .subcategory {
             font-weight: 700;
             font-size: 14px;
+            color: ${({ theme }) => theme.colors.black};
         }
     }
 `;

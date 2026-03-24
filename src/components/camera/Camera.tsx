@@ -58,7 +58,7 @@ const StyledContainer = styled.div`
             width: 85%;
             height: 85%;
             border-radius: 50%;
-            background-color: ${({ theme }) => theme.colors.white};
+            background-color: ${({ theme }) => theme.colors.primary200};
 
             &:active {
                 opacity: 0.7;

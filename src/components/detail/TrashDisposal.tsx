@@ -58,7 +58,6 @@ const StyledContainer = styled.div`
     display: flex;
     gap: 24px;
     flex-direction: column;
-    background-color: ${({ theme }) => theme.colors.primary400};
 
     .disposal {
         padding: 24px;
@@ -67,6 +66,7 @@ const StyledContainer = styled.div`
         flex-direction: column;
         background-color: ${({ theme }) => theme.colors.white};
         border-radius: 16px;
+        box-shadow: ${({ theme }) => theme.shadows.default};
 
         .title {
             font-size: 20px;
@@ -101,9 +101,9 @@ const StyledStep = styled.div<{ $isOdd: boolean; $isLast: boolean }>`
             font-weight: 500;
             border-radius: 50%;
             color: ${(props) =>
-                props.$isOdd ? props.theme.colors.primary700 : props.theme.colors.white};
+                props.$isOdd ? props.theme.colors.white : props.theme.colors.primary700};
             background-color: ${(props) =>
-                props.$isOdd ? props.theme.colors.primary400 : props.theme.colors.primary800};
+                props.$isOdd ? props.theme.colors.primary800 : props.theme.colors.primary200};
             z-index: 1;
         }
 
@@ -114,7 +114,7 @@ const StyledStep = styled.div<{ $isOdd: boolean; $isLast: boolean }>`
             left: 50%;
             width: 1px;
             height: calc(100% + 40px);
-            border-left: 1px solid ${({ theme }) => theme.colors.primary600};
+            border-left: 1px solid ${({ theme }) => theme.colors.primary300};
         }
     }
 

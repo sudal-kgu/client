@@ -81,14 +81,14 @@ const StyledContainer = styled.div<{ $isSelectAll: boolean }>`
     align-items: flex-end;
     position: absolute;
     top: -72px;
-    background-color: ${({ theme }) => theme.colors.backdrop};
+    background-color: ${({ theme }) => theme.colors.black_op_70};
 
     .basket {
-        padding: 48px 24px 0 24px;
+        padding: 36px 18px 0 18px;
         width: 100%;
-        height: 600px;
-        max-height: 600px;
-        background-color: ${({ theme }) => theme.colors.white};
+        height: 400px;
+        max-height: 400px;
+        background-color: ${({ theme }) => theme.colors.background};
         border-top-left-radius: 48px;
         border-top-right-radius: 48px;
         overflow: hidden;
@@ -102,13 +102,13 @@ const StyledContainer = styled.div<{ $isSelectAll: boolean }>`
                 width: 36px;
                 height: 36px;
                 font-size: 36px;
-                color: ${({ theme }) => theme.colors.primary700};
+                color: ${({ theme }) => theme.colors.black};
             }
 
             .title {
                 font-size: 24px;
                 font-weight: 700;
-                color: ${({ theme }) => theme.colors.primary800};
+                color: ${({ theme }) => theme.colors.black};
             }
 
             .invisible {
@@ -129,7 +129,7 @@ const StyledContainer = styled.div<{ $isSelectAll: boolean }>`
                 .total {
                     font-size: 16px;
                     font-weight: 700;
-                    color: ${({ theme }) => theme.colors.primary700};
+                    color: ${({ theme }) => theme.colors.black};
                 }
 
                 .select-all {
@@ -141,25 +141,19 @@ const StyledContainer = styled.div<{ $isSelectAll: boolean }>`
                     color: ${(props) =>
                         props.$isSelectAll
                             ? props.theme.colors.primary700
-                            : props.theme.colors.gray400};
-                    background-color: ${(props) =>
-                        props.$isSelectAll
-                            ? props.theme.colors.primary500
-                            : props.theme.colors.gray200};
-                    border: 1px solid
-                        ${(props) =>
-                            props.$isSelectAll
-                                ? props.theme.colors.primary700
-                                : props.theme.colors.gray400};
-                    border-radius: 16px;
+                            : props.theme.colors.black_op_70};
+
+                    font-size: 14px;
                 }
             }
 
             .items {
+                padding: 0 8px;
+                min-height: 200px;
+                max-height: 200px;
                 display: flex;
                 gap: 16px;
                 flex-direction: column;
-                max-height: 330px;
                 overflow: auto;
 
                 scrollbar-width: none;

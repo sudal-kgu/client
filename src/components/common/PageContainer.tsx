@@ -21,7 +21,7 @@ const PageContainer = ({ children }: Props) => {
 
 const StyledContainer = styled.div`
     height: 100dvh;
-    background-color: ${({ theme }) => theme.colors.primary500};
+    background-color: ${({ theme }) => theme.colors.background};
 
     #page {
         margin: 0 auto;

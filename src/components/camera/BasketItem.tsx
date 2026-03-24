@@ -29,7 +29,8 @@ const StyledContainer = styled.div<{ $isSelected: boolean }>`
     display: flex;
     align-items: center;
     border-radius: 12px;
-    background-color: ${({ theme }) => theme.colors.primary500};
+    background-color: ${({ theme }) => theme.colors.primary200};
+    box-shadow: ${({ theme }) => theme.shadows.default};
 
     .item {
         width: 100%;
@@ -48,7 +49,7 @@ const StyledContainer = styled.div<{ $isSelected: boolean }>`
             .category {
                 font-size: 16px;
                 font-weight: 700;
-                color: ${({ theme }) => theme.colors.primary700};
+                color: ${({ theme }) => theme.colors.black};
             }
 
             .subcategory {
