@@ -29,7 +29,7 @@ const StyledContainer = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: ${({ theme }) => theme.colors.primary500};
+    background-color: ${({ theme }) => theme.colors.background};
     position: sticky;
     top: 0;
     z-index: 3;

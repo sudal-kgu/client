@@ -54,26 +54,19 @@ const TrashAnalysisResult = () => {
 const StyledContainer = styled.div`
     padding: 0 16px;
     height: 100%;
-    background-color: ${({ theme }) => theme.colors.primary500};
     padding-bottom: 32px;
 
     .total {
-        padding: 8px 12px;
-        width: 128px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        margin-top: 24px;
         font-size: 16px;
         font-weight: 600;
         color: ${({ theme }) => theme.colors.primary800};
-        border-radius: 24px;
-        background-color: ${({ theme }) => theme.colors.primary400};
     }
 
     .grid {
-        margin-top: 16px;
+        margin-top: 32px;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 12px;
         justify-content: center;
     }
@@ -83,6 +76,7 @@ const StyledContainer = styled.div`
         display: flex;
         justify-content: center;
     }
+
     .spinner {
         @keyframes loop {
             0% {

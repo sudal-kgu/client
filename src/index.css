@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
 body,
 h1,
 h2,

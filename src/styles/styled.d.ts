@@ -4,14 +4,21 @@ interface Theme {
     colors: {
         primary800: string;
         primary700: string;
-        primary600: string;
         primary500: string;
         primary400: string;
-        gray400: string;
-        gray200: string;
+        primary400_op_70: string;
+        primary300: string;
+        primary200: string;
+        primary200_op_70: string;
+        primary100: string;
+        black: string;
+        black_op_70: string;
+        background: string;
         white: string;
         badge: string;
-        backdrop: string;
+    };
+    shadows: {
+        default: string;
     };
 }
 

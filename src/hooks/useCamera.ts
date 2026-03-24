@@ -15,65 +15,103 @@ const useCamera = (captureCallback: (blob: Blob | null) => Promise<void>) => {
         if (!canvas || rejected || loading) return;
         setLoading(true);
         setTimeout(() => setLoading(false), 300);
-        canvas.toBlob(captureCallback);
+        canvas.toBlob(captureCallback, 'image/jpeg', 0.95);
     };
 
     useEffect(() => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+        
+        let animationFrameId: number;
+        let videoStream: MediaStream | null = null;
         const videoRef = document.createElement('video');
+        videoRef.setAttribute('playsinline', 'true'); 
+
         const onFullfiled = (stream: MediaStream) => {
+            videoStream = stream;
             const canvas = canvasRef.current;
             if (canvas === null) return;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { alpha: false });
             if (ctx === null) return;
+            
             videoRef.srcObject = stream;
             videoRef.play();
 
             const draw = () => {
                 if (videoRef.readyState >= videoRef.HAVE_METADATA) {
-                    canvas.width = canvas.offsetWidth;
-                    canvas.height = canvas.offsetHeight;
+                    const displayW = canvas.clientWidth;
+                    const displayH = canvas.clientHeight;
+                    
+                    if (displayW === 0 || displayH === 0) {
+                        animationFrameId = requestAnimationFrame(draw);
+                        return;
+                    }
+
+                    const dpr = window.devicePixelRatio || 1;
+                    const canvasW = displayW * dpr;
+                    const canvasH = displayH * dpr;
+
+                    if (canvas.width !== canvasW || canvas.height !== canvasH) {
+                        canvas.width = canvasW;
+                        canvas.height = canvasH;
+                    }
 
                     const vW = videoRef.videoWidth;
                     const vH = videoRef.videoHeight;
-                    const cW = canvas.width;
-                    const cH = canvas.height;
+                    
+                    const vRatio = vW / vH;
+                    const cRatio = canvasW / canvasH;
 
-                    const scale = Math.min(cW / vW, cH / vH);
+                    let sX, sY, sW, sH;
 
-                    const dW = vW * scale;
-                    const dH = vH * scale;
+                    if (vRatio > cRatio) {
+                        sH = vH;
+                        sW = vH * cRatio;
+                        sX = (vW - sW) / 2;
+                        sY = 0;
+                    } 
+                    else {
+                        sW = vW;
+                        sH = vW / cRatio;
+                        sX = 0;
+                        sY = (vH - sH) / 2;
+                    }
 
-                    const dx = (cW - dW) / 2;
-                    const dy = (cH - dH) / 2;
-
-                    ctx.clearRect(0, 0, cW, cH);
-                    ctx.fillStyle = '#000000';
-                    ctx.fillRect(0, 0, cW, cH);
-                    ctx.drawImage(videoRef, 0, 0, vW, vH, dx, dy, dW, dH);
+                    ctx.drawImage(
+                        videoRef, 
+                        sX, sY, sW, sH,
+                        0, 0, canvasW, canvasH
+                    );
                 }
-                requestAnimationFrame(draw);
+                animationFrameId = requestAnimationFrame(draw);
             };
             draw();
         };
-        const onRejected = (reason: string) => {
-            const canvas = canvasRef.current;
-            if (canvas === null) return;
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            if (ctx === null) return;
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            console.log(reason);
+
+        const onRejected = (reason: any) => {
+            console.error('Camera access rejected:', reason);
             setRejected(true);
         };
 
         navigator.mediaDevices
             .getUserMedia({
-                video: { facingMode: FacingMode.ENVIRONMENT, width: 720, height: 1280 },
+                video: { 
+                    facingMode: FacingMode.ENVIRONMENT,
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 },
+                },
             })
             .then(onFullfiled, onRejected);
+
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+            videoRef.pause();
+            videoRef.srcObject = null;
+        };
     }, []);
 
     return { canvasRef, rejected, onCapture };

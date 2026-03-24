@@ -59,7 +59,6 @@ const StyledContainer = styled.div<{ $image: string }>`
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        opacity: 0.7;
 
         .icon {
             font-size: 24px;
@@ -75,11 +74,12 @@ const StyledContainer = styled.div<{ $image: string }>`
             .title {
                 font-size: 14px;
                 font-weight: 700;
-                color: ${({ theme }) => theme.colors.primary600};
+                color: ${({ theme }) => theme.colors.primary700};
+                opacity: 0.7;
             }
 
             .name {
-                font-size: 18px;
+                font-size: 20px;
                 font-weight: 700;
                 color: ${({ theme }) => theme.colors.primary800};
             }
@@ -87,11 +87,11 @@ const StyledContainer = styled.div<{ $image: string }>`
     }
 
     .category {
-        background-color: ${({ theme }) => theme.colors.primary400};
+        background-color: ${({ theme }) => theme.colors.primary400_op_70};
     }
 
     .subcategory {
-        background-color: ${({ theme }) => theme.colors.primary500};
+        background-color: ${({ theme }) => theme.colors.primary200_op_70};
     }
 `;
 
