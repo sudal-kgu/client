@@ -21,6 +21,15 @@ export interface AnalaysisResultItem {
     category: string;
     subcategory: string;
 }
+export interface TrashDetail {
+    category: string;
+    subcategory: string;
+    image: string;
+    disposal: {
+        category: string[];
+        subcategory?: string[];
+    };
+}
 
 const TrashItemSchema = z.object({
     trashUuid: z.string(),
