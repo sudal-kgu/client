@@ -29,6 +29,10 @@ pipeline {
         }
 
         stage('Deploy') {
+            when {
+                branch 'develop'
+            }
+            
             steps {
                 sh "docker compose up -d --remove-orphans"
             }
