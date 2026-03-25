@@ -39,9 +39,16 @@ const TrashItemSchema = z.object({
 });
 
 export const ResultSchema = z.object({
-    requestId: z.string(),
-    trashItems: z.array(TrashItemSchema),
+    request_id: z.string(),
+    trash_items: z.array(TrashItemSchema),
 });
+
+export const createResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+    z.object({
+        code: z.string(),
+        message: z.string(),
+        data: dataSchema,
+    });
 
 export type AnalysisResult = z.infer<typeof ResultSchema>;
 export type AnalysisItem = z.infer<typeof TrashItemSchema>;
