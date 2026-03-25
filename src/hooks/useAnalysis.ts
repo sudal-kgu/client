@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import AnalysisAPI from '../api/analysis';
-import { type AnalysisItem, ResultSchema } from '../api/types';
+import { type AnalysisItem, ResultSchema, createResponseSchema } from '../api/types';
 import ParseUtils from '../utils/parse-utils';
 import type { Analysis } from './types';
 
@@ -28,8 +28,8 @@ const useAnalysis = () => {
         };
 
         eventSource.addEventListener(event.ANALYSIS_RESULT, (ev) => {
-            const result = ParseUtils.safeParse(ResultSchema, ev.data);
-            setItems((prev) => [...prev, ...result.trashItems]);
+            const result = ParseUtils.safeParse(createResponseSchema(ResultSchema), ev.data).data;
+            setItems((prev) => [...prev, ...result.trash_items]);
             clear();
         });
         eventSource.addEventListener(event.ERROR, () => clear());
