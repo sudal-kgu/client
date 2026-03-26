@@ -6,6 +6,7 @@ import { IoCheckmarkDone } from 'react-icons/io5';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 
+import TrashesAPI from '../../api/trashes';
 import type { AnalysisItem } from '../../api/types';
 import BasketItem from './BasketItem';
 
@@ -22,6 +23,12 @@ const Basket = () => {
         );
     const onSelectAll = () =>
         isSelectAll ? setSelected([]) : setSelected(items.map((item) => item.trashUuid));
+
+    const onConfirm = async () => {
+        if (selected.length === 0) return;
+        const result = await TrashesAPI.confirm(selected);
+        navigate(`/analysis/${result.serial}`);
+    };
 
     return (
         <StyledContainer onClick={back} $isSelectAll={isSelectAll}>
@@ -65,7 +72,7 @@ const Basket = () => {
                             </div>
                         </main>
                         <footer>
-                            <button>결과 보기</button>
+                            <button onClick={onConfirm}>결과 보기</button>
                         </footer>
                     </>
                 )}
