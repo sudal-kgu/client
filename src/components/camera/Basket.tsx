@@ -86,8 +86,8 @@ const StyledContainer = styled.div<{ $isSelectAll: boolean }>`
     .basket {
         padding: 36px 18px 0 18px;
         width: 100%;
-        height: 400px;
-        max-height: 400px;
+        height: 450px;
+        max-height: 450px;
         background-color: ${({ theme }) => theme.colors.background};
         border-top-left-radius: 48px;
         border-top-right-radius: 48px;
