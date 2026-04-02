@@ -1,13 +1,17 @@
+import { BiSolidCameraOff } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import useCamera from '../../hooks/useCamera';
+import CommonModal from '../common/CommonModal';
 
 interface Props {
     captureCallback: (blob: Blob | null) => Promise<void>;
 }
 
 const Camera = ({ captureCallback }: Props) => {
-    const { canvasRef, onCapture } = useCamera(captureCallback);
+    const { canvasRef, rejected, onCapture } = useCamera(captureCallback);
+    const navigate = useNavigate();
 
     return (
         <StyledContainer>
@@ -16,6 +20,14 @@ const Camera = ({ captureCallback }: Props) => {
                 <div className="outer"></div>
                 <div className="inner"></div>
             </button>
+            <CommonModal
+                isOpen={rejected}
+                btnText="새로고침"
+                title="카메라 권한이 필요합니다."
+                description={`서비스 사용을 위해 설정에서 \n카메라 권한을 부여 후 새로고침 해주세요.`}
+                onClick={() => navigate(0)}
+                icon={<BiSolidCameraOff />}
+            />
         </StyledContainer>
     );
 };
