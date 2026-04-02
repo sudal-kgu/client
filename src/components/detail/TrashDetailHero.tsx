@@ -9,7 +9,9 @@ interface Props {
 
 const TrashDetailHero = ({ image, category, subcategory }: Props) => {
     return (
-        <StyledContainer $image={image}>
+        <StyledContainer>
+            <StyledBackground $image={image} />
+            <img src={image} />
             <div className="cards">
                 <div className="card category">
                     <div className="icon">
@@ -34,19 +36,27 @@ const TrashDetailHero = ({ image, category, subcategory }: Props) => {
     );
 };
 
-const StyledContainer = styled.div<{ $image: string }>`
+const StyledContainer = styled.div`
     display: flex;
     align-items: flex-end;
+    position: relative;
     aspect-ratio: 12 / 9;
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    background-image: url(${(props) => props.$image});
+    overflow: hidden;
+
+    img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 2;
+    }
 
     .cards {
         width: 100%;
         padding: 16px;
         display: flex;
         gap: 18px;
+        z-index: 2;
     }
 
     .card {
@@ -93,6 +103,20 @@ const StyledContainer = styled.div<{ $image: string }>`
     .subcategory {
         background-color: ${({ theme }) => theme.colors.primary200_op_70};
     }
+`;
+
+const StyledBackground = styled.div<{ $image: string }>`
+    width: 100%;
+    height: 100%;
+    top: 0;
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url(${(props) => props.$image});
+    transform: scale(1.2);
+    filter: blur(40px);
+    z-index: 1;
 `;
 
 export default TrashDetailHero;

@@ -58,6 +58,7 @@ const StyledContainer = styled.div`
     display: flex;
     gap: 24px;
     flex-direction: column;
+    z-index: 2;
 
     .disposal {
         padding: 24px;
