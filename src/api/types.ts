@@ -14,6 +14,7 @@ export interface AnalaysisResultPage {
     totalPage: number;
     currentPage: number;
     content: AnalaysisResultItem[];
+    totalItems: number;
 }
 export interface AnalaysisResultItem {
     uuid: string;

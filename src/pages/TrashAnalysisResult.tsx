@@ -14,7 +14,10 @@ const TrashAnalysisResult = () => {
 
     if (!id) throw new Error();
 
-    const { results, fetchNextPage, isFetching, hasNextPage } = useAnalysisResult({ id, size: 8 });
+    const { results, totalItems, fetchNextPage, isFetching, hasNextPage } = useAnalysisResult({
+        id,
+        size: 8,
+    });
 
     useEffect(() => {
         if (!targetRef.current || isFetching || !hasNextPage) return;
@@ -33,7 +36,7 @@ const TrashAnalysisResult = () => {
     return (
         <PageContainer>
             <StyledContainer>
-                <div className="total">{`총 N개`}</div>
+                <div className="total">{`총 ${totalItems}개`}</div>
                 <div className="grid">
                     {results.map((result) => (
                         <AnalysisResultItem key={result.uuid} result={result} analysisId={id} />
@@ -46,6 +49,7 @@ const TrashAnalysisResult = () => {
                     </div>
                 )}
                 {hasNextPage && <div ref={targetRef} />}
+                {!hasNextPage && <div className="eoc">모든 콘텐츠를 확인했습니다!</div>}
             </StyledContainer>
         </PageContainer>
     );
@@ -90,6 +94,13 @@ const StyledContainer = styled.div`
         font-size: 32px;
         color: ${({ theme }) => theme.colors.primary700};
         animation: loop ease-in-out 1s infinite;
+    }
+
+    .eoc {
+        padding: 24px;
+        text-align: center;
+        font-weight: 500;
+        color: ${({ theme }) => theme.colors.black};
     }
 `;
 

@@ -17,7 +17,9 @@ const useAnalysisResult = ({ id, size }: Option) => {
     });
 
     const results = data?.pages.flatMap((page) => page.content) ?? [];
-    return { results, fetchNextPage, isFetching: isFetchingNextPage, hasNextPage };
+    const totalItems = data?.pages?.[0].totalItems ?? 0;
+
+    return { results, fetchNextPage, isFetching: isFetchingNextPage, hasNextPage, totalItems };
 };
 
 export default useAnalysisResult;
