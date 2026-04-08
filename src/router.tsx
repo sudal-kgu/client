@@ -1,11 +1,25 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import Basket from './components/camera/Basket';
+import KakaoRedirect from './pages/KakaoRedirect';
+import Login from './pages/Login';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
 import TrashCamera from './pages/TrashCamera';
 import TrashDetail from './pages/TrashDetail';
 
 export const router = createBrowserRouter([
+    {
+        path: '/',
+        element: <></>,
+    },
+    {
+        path: '/login',
+        element: <Login />,
+    },
+    {
+        path: '/kakao/redirect',
+        element: <KakaoRedirect />,
+    },
     {
         path: '/camera',
         element: <TrashCamera />,

@@ -6,13 +6,14 @@ import Header from './Header';
 
 interface Props {
     children?: React.ReactNode;
+    showHeader?: boolean;
 }
 
-const PageContainer = ({ children }: Props) => {
+const PageContainer = ({ children, showHeader = true }: Props) => {
     return (
         <StyledContainer>
             <div id="page">
-                <Header />
+                {showHeader && <Header />}
                 <div id="page-container">{children}</div>
             </div>
         </StyledContainer>
