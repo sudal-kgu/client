@@ -36,6 +36,12 @@ export interface Confirm {
     serial: string;
 }
 
+export interface Me {
+    id: number;
+    exp: number;
+    nickname: string;
+}
+
 const TrashItemSchema = z.object({
     trashUuid: z.string(),
     filename: z.string(),

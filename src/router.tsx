@@ -1,6 +1,7 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { Outlet, createBrowserRouter } from 'react-router-dom';
 
 import Basket from './components/camera/Basket';
+import MeProvider from './components/provider/MeProvider';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
@@ -9,33 +10,42 @@ import TrashDetail from './pages/TrashDetail';
 
 export const router = createBrowserRouter([
     {
-        path: '/',
-        element: <></>,
-    },
-    {
-        path: '/login',
-        element: <Login />,
-    },
-    {
-        path: '/kakao/redirect',
-        element: <KakaoRedirect />,
-    },
-    {
-        path: '/camera',
-        element: <TrashCamera />,
+        element: (
+            <MeProvider>
+                <Outlet />
+            </MeProvider>
+        ),
         children: [
             {
-                path: 'basket',
-                element: <Basket />,
+                path: '/',
+                element: <></>,
+            },
+            {
+                path: '/login',
+                element: <Login />,
+            },
+            {
+                path: '/kakao/redirect',
+                element: <KakaoRedirect />,
+            },
+            {
+                path: '/camera',
+                element: <TrashCamera />,
+                children: [
+                    {
+                        path: 'basket',
+                        element: <Basket />,
+                    },
+                ],
+            },
+            {
+                path: '/analysis/:id',
+                element: <TrashAnalysisResult />,
+            },
+            {
+                path: '/analysis/:analysisId/trashes/:trashId',
+                element: <TrashDetail />,
             },
         ],
-    },
-    {
-        path: '/analysis/:id',
-        element: <TrashAnalysisResult />,
-    },
-    {
-        path: '/analysis/:analysisId/trashes/:trashId',
-        element: <TrashDetail />,
     },
 ]);
