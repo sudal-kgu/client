@@ -43,18 +43,11 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
 const Quiz = () => {
     const navigate = useNavigate();
 
-    const {
-        currentQuestion,
-        currentIndex,
-        totalCount,
-        progressPercent,
-        selectedOptionId,
-        selectOption,
-        goNext,
-    } = useQuiz({
-        questions: QUIZ_QUESTIONS,
-        onFinish: () => navigate('/quiz/result'),
-    });
+    const { currentQuestion, currentIndex, totalCount, selectedOptionId, selectOption, goNext } =
+        useQuiz({
+            questions: QUIZ_QUESTIONS,
+            onFinish: () => navigate('/quiz/result'),
+        });
 
     const isLastQuestion = currentIndex + 1 === totalCount;
 
@@ -62,11 +55,7 @@ const Quiz = () => {
         <PageContainer>
             <StyledContainer>
                 <div className="content">
-                    <QuizProgress
-                        current={currentIndex + 1}
-                        total={totalCount}
-                        percent={progressPercent}
-                    />
+                    <QuizProgress current={currentIndex + 1} total={totalCount} />
                     <div className="question">{currentQuestion.question}</div>
                     <div className="options">
                         {currentQuestion.options.map((option, index) => (

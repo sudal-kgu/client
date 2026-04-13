@@ -3,10 +3,10 @@ import styled from 'styled-components';
 interface Props {
     current: number;
     total: number;
-    percent: number;
 }
 
-const QuizProgress = ({ current, total, percent }: Props) => {
+const QuizProgress = ({ current, total }: Props) => {
+    const percent = Math.floor((current / total) * 100);
     return (
         <StyledContainer>
             <div className="label">
