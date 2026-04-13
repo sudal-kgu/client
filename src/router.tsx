@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
                 element: <TrashDetail />,
             },
             {
-                path: '/quiz',
+                path: '/analysis/:analysisId/trashes/:trashId/quiz',
                 element: <Quiz />,
             },
         ],
