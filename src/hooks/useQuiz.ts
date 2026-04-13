@@ -25,7 +25,6 @@ const useQuiz = ({ questions, onFinish }: UseQuizProps) => {
 
     const currentQuestion = questions[currentIndex];
     const totalCount = questions.length;
-    const progressPercent = Math.round(((currentIndex + 1) / totalCount) * 100);
     const selectedOptionId = selectedOptionIds[currentIndex];
 
     const selectOption = (optionId: number) => {
@@ -48,7 +47,6 @@ const useQuiz = ({ questions, onFinish }: UseQuizProps) => {
         currentQuestion,
         currentIndex,
         totalCount,
-        progressPercent,
         selectedOptionId,
         selectOption,
         goNext,
