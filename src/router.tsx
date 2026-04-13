@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
 import TrashCamera from './pages/TrashCamera';
 import TrashDetail from './pages/TrashDetail';
+import Checklist from './pages/Checklist';
 
 export const router = createBrowserRouter([
     {
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
             {
                 path: '/analysis/:analysisId/trashes/:trashId',
                 element: <TrashDetail />,
+            },
+            {
+                path: '/checklist/:trashId',
+                element: <Checklist />,
             },
         ],
     },
