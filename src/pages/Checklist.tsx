@@ -9,10 +9,15 @@ import ChecklistPointBanner from '../components/checklist/ChecklistPointBanner';
 import PageContainer from '../components/common/PageContainer';
 
 const Checklist = () => {
-    const { trashId } = useParams();
+    const { trashId, analysisId } = useParams();
     const navigate = useNavigate();
 
     if (!trashId) {
+        navigate('/analysis/${analysisId}', { replace: true });
+        throw new Error();
+    }
+
+    if (!analysisId) {
         navigate('/camera', { replace: true });
         throw new Error();
     }

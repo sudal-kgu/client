@@ -2,12 +2,12 @@ import { Outlet, createBrowserRouter } from 'react-router-dom';
 
 import Basket from './components/camera/Basket';
 import MeProvider from './components/provider/MeProvider';
+import Checklist from './pages/Checklist';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
 import TrashCamera from './pages/TrashCamera';
 import TrashDetail from './pages/TrashDetail';
-import Checklist from './pages/Checklist';
 
 export const router = createBrowserRouter([
     {
@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
                 element: <TrashDetail />,
             },
             {
-                path: '/checklist/:trashId',
+                path: '/checklist/:analysisId/:trashId',
                 element: <Checklist />,
             },
         ],
