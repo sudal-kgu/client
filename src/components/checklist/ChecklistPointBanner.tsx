@@ -1,14 +1,18 @@
 import styled from 'styled-components';
 
-const ChecklistPointBanner = () => {
+interface Props {
+    onClick?: () => void;
+}
+
+const ChecklistPointBanner = ({ onClick }: Props) => {
     return (
-        <StyledContainer>
+        <StyledButton onClick={onClick}>
             <button className="point-button">퀴즈 풀고 포인트 받기</button>
-        </StyledContainer>
+        </StyledButton>
     );
 };
 
-const StyledContainer = styled.div`
+const StyledButton = styled.button`
     .point-button {
         width: 100%;
         height: 48px;

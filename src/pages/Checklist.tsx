@@ -55,7 +55,9 @@ const Checklist = () => {
             </StyledContainer>
 
             <StyledFooter>
-                <ChecklistPointBanner />
+                <ChecklistPointBanner
+                    onClick={() => navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz`)}
+                />
             </StyledFooter>
         </PageContainer>
     );
