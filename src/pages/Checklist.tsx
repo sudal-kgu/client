@@ -13,12 +13,12 @@ const Checklist = () => {
     const navigate = useNavigate();
 
     if (!trashId) {
-        navigate('/analysis/${analysisId}', { replace: true });
+        navigate(`/analysis/${analysisId}`, { replace: true });
         throw new Error();
     }
 
     if (!analysisId) {
-        navigate('/camera', { replace: true });
+        navigate(`/camera`, { replace: true });
         throw new Error();
     }
 
