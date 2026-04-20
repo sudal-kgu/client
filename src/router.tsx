@@ -1,7 +1,7 @@
-import { Outlet, createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 
 import Basket from './components/camera/Basket';
-import MeProvider from './components/provider/MeProvider';
+import RootLayout from './components/layout/RootLayout';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
@@ -10,11 +10,7 @@ import TrashDetail from './pages/TrashDetail';
 
 export const router = createBrowserRouter([
     {
-        element: (
-            <MeProvider>
-                <Outlet />
-            </MeProvider>
-        ),
+        element: <RootLayout />,
         children: [
             {
                 path: '/',

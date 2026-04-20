@@ -1,10 +1,14 @@
 import api from './axios';
-import type { Me, Response } from './types';
+import type { Island, Response } from './types';
 
 const MemberAPI = {
     me: async () => {
-        const result = await api.get<Response<Me>>('/v1/members/me');
+        const result = await api.get<Response<Island>>('/v1/islands');
         return result.data.data;
+    },
+    createMe: async (nickname: string) => {
+        const reslut = await api.post<Response<Island>>(`/v1/islands`, { nickname });
+        return reslut.data.data;
     },
 };
 
