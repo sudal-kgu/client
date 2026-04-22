@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,15 +12,14 @@ const Checklist = () => {
     const { trashId, analysisId } = useParams();
     const navigate = useNavigate();
 
-    if (!trashId) {
-        navigate(`/analysis/${analysisId}`, { replace: true });
-        throw new Error();
-    }
-
-    if (!analysisId) {
-        navigate(`/camera`, { replace: true });
-        throw new Error();
-    }
+    useEffect(() => {
+        if (!trashId) {
+            navigate(`/analysis/${analysisId}`, { replace: true });
+        }
+        if (!analysisId) {
+            navigate(`/camera`, { replace: true });
+        }
+    }, [trashId, analysisId]);
 
     const { detail } = useTrashDetail(trashId);
     const allSteps = detail?.disposal.category ?? [];
