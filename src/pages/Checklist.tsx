@@ -13,11 +13,11 @@ const Checklist = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!trashId) {
-            navigate(`/analysis/${analysisId}`, { replace: true });
-        }
         if (!analysisId) {
             navigate(`/camera`, { replace: true });
+        }
+        if (!trashId) {
+            navigate(`/analysis/${analysisId}`, { replace: true });
         }
     }, [trashId, analysisId]);
 
