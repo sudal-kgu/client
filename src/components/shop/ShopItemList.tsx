@@ -29,6 +29,7 @@ const ShopItemList = ({ activeTab, currentLevel }: Props) => {
         console.log('구매:', id);
     };
 
+    // API 연동 후 서버에서 내려주는 경험치 기반 해금 조건으로 교체 필요
     return (
         <StyledContainer>
             {items.map((item) => (

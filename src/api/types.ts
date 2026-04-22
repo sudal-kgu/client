@@ -61,5 +61,11 @@ export const createResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
         data: dataSchema,
     });
 
+export interface Currency {
+    shell: number;
+    gem: number;
+    fuel: number;
+}
+
 export type AnalysisResult = z.infer<typeof ResultSchema>;
 export type AnalysisItem = z.infer<typeof TrashItemSchema>;

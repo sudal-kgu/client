@@ -1,10 +1,6 @@
 import styled from 'styled-components';
 
-interface Currency {
-    shell: number;
-    gem: number;
-    fuel: number;
-}
+import type { Currency } from '../../api/types';
 
 interface Props {
     currency: Currency;
