@@ -18,7 +18,7 @@ const Checklist = () => {
     }
 
     const { detail } = useTrashDetail(trashId);
-    const allSteps = detail?.disposal.category ?? [];
+    const allSteps = detail?.disposal.subcategory ?? detail?.disposal.category ?? [];
     const [checked, setChecked] = useState<number[]>([]);
     const onToggle = (index: number) => {
         setChecked((prev) =>
