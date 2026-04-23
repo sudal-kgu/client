@@ -36,10 +36,12 @@ export interface Confirm {
     serial: string;
 }
 
-export interface Me {
-    id: number;
-    exp: number;
+export interface Island {
+    cumulativeExp: number;
+    itemContributionExp: number;
+    level: number;
     nickname: string;
+    recyclingContributionExp: number;
 }
 
 const TrashItemSchema = z.object({

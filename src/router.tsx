@@ -1,21 +1,18 @@
-import { Outlet, createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 
 import Basket from './components/camera/Basket';
-import MeProvider from './components/provider/MeProvider';
+import RootLayout from './components/layout/RootLayout';
+import Checklist from './pages/Checklist';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
+import Quiz from './pages/Quiz';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
 import TrashCamera from './pages/TrashCamera';
 import TrashDetail from './pages/TrashDetail';
-import Checklist from './pages/Checklist';
 
 export const router = createBrowserRouter([
     {
-        element: (
-            <MeProvider>
-                <Outlet />
-            </MeProvider>
-        ),
+        element: <RootLayout />,
         children: [
             {
                 path: '/',
@@ -48,8 +45,12 @@ export const router = createBrowserRouter([
                 element: <TrashDetail />,
             },
             {
-                path: '/checklist/:trashId',
+                path: '/analysis/:analysisId/trashes/:trashId/checklist',
                 element: <Checklist />,
+            },
+            {
+                path: '/analysis/:analysisId/trashes/:trashId/quiz',
+                element: <Quiz />,
             },
         ],
     },
