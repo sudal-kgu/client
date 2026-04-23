@@ -21,7 +21,9 @@ const useAnalysis = () => {
         formData.append('image', blob, `${crypto.randomUUID()}.jpg`);
         const result = await AnalysisAPI.request(formData);
         const requestId = result.data.request_id;
-        const eventSource = new EventSource(AnalysisAPI.getSubscribePath(requestId));
+        const eventSource = new EventSource(AnalysisAPI.getSubscribePath(requestId), {
+            withCredentials: true,
+        });
         const clear = () => {
             eventSource.close();
             setAnalysis(({ [requestId]: _, ...rest }) => rest);
