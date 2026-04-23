@@ -19,6 +19,7 @@ const IslandCreateModal = () => {
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     maxWidth: 380,
+                    height: 400,
                     width: '90%',
                     borderRadius: 24,
                     overflow: 'hidden',
