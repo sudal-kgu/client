@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import PageContainer from '../components/common/PageContainer';
@@ -42,11 +42,15 @@ const QUIZ_QUESTIONS: QuizQuestion[] = [
 
 const Quiz = () => {
     const navigate = useNavigate();
+    const { analysisId, trashId } = useParams();
 
     const { currentQuestion, currentIndex, totalCount, selectedOptionId, selectOption, goNext } =
         useQuiz({
             questions: QUIZ_QUESTIONS,
-            onFinish: () => navigate('/quiz/result'),
+            onFinish: (selectedOptionIds) =>
+                navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz/result`, {
+                    state: { questions: QUIZ_QUESTIONS, selectedOptionIds },
+                }),
         });
 
     const isLastQuestion = currentIndex + 1 === totalCount;

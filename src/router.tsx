@@ -6,6 +6,7 @@ import Checklist from './pages/Checklist';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
 import Quiz from './pages/Quiz';
+import QuizResult from './pages/QuizResult';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
 import TrashCamera from './pages/TrashCamera';
 import TrashDetail from './pages/TrashDetail';
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
             {
                 path: '/analysis/:analysisId/trashes/:trashId/quiz',
                 element: <Quiz />,
+            },
+            {
+                path: '/analysis/:analysisId/trashes/:trashId/quiz/result',
+                element: <QuizResult />,
             },
         ],
     },
