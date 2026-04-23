@@ -5,6 +5,7 @@ import RootLayout from './components/layout/RootLayout';
 import Checklist from './pages/Checklist';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
+import Main from './pages/Main';
 import Quiz from './pages/Quiz';
 import QuizResult from './pages/QuizResult';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
@@ -17,7 +18,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: '/',
-                element: <></>,
+                element: <Main />,
             },
             {
                 path: '/login',
