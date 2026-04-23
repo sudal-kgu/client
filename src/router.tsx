@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
                 element: <TrashDetail />,
             },
             {
-                path: '/checklist/:analysisId/:trashId',
+                path: '/analysis/:analysisId/trashes/:trashId/checklist',
                 element: <Checklist />,
             },
         ],
