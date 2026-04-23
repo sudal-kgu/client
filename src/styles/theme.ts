@@ -16,6 +16,7 @@ const theme: DefaultTheme = {
         black_op_70: '#222222B3',
         white: '#FAFAFA',
         badge: '#A73B21',
+        error_op_10: '#FD795A1A',
     },
     shadows: {
         default: '2px 2px 4px 0px rgba(34, 34, 34, 0.25)',

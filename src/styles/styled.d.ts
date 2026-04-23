@@ -16,6 +16,7 @@ interface Theme {
         background: string;
         white: string;
         badge: string;
+        error_op_10: string;
     };
     shadows: {
         default: string;
