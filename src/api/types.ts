@@ -67,5 +67,14 @@ export interface Currency {
     fuel: number;
 }
 
+export interface IslandInfo {
+    level: number;
+    islandName: string;
+    recycleExp: number;
+    recycleExpCap: number;
+    recycleCount: number;
+    recycleCountMax: number;
+}
+
 export type AnalysisResult = z.infer<typeof ResultSchema>;
 export type AnalysisItem = z.infer<typeof TrashItemSchema>;

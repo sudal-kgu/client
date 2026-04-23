@@ -90,12 +90,19 @@ export const FACILITY_ITEMS: ShopItem[] = [
     },
     {
         id: 105,
+        name: '옷 재활용 공장',
+        description: '퀴즈 보상 ☢️+25%',
+        cost: 10000,
+        imageEmoji: '👕',
+        requiredLevel: 4,
+    },
+    {
+        id: 106,
         name: '플라스틱 재활용 공장',
         description: '💎50/h · 섬 전체 생산량 +10%',
         cost: 100000,
         imageEmoji: '🏗️',
         requiredLevel: 5,
-        locked: true,
     },
 ];
 
