@@ -32,7 +32,11 @@ const TrashDetail = () => {
                             subcategory={detail.subcategory}
                         />
                         <TrashDisposal disposal={detail.disposal} />
-                        <StyledButton onClick={() => navigate(`/checklist/${trashId}`)}>
+                        <StyledButton
+                            onClick={() =>
+                                navigate(`/analysis/${analysisId}/trashes/${trashId}/checklist`)
+                            }
+                        >
                             체크리스트
                         </StyledButton>
                     </>

@@ -1,9 +1,18 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 const ChecklistPointBanner = () => {
+    const navigate = useNavigate();
+    const { trashId, analysisId } = useParams();
+
     return (
         <StyledContainer>
-            <button className="point-button">퀴즈 풀고 포인트 받기</button>
+            <button
+                className="point-button"
+                onClick={() => navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz`)}
+            >
+                퀴즈 풀고 포인트 받기
+            </button>
         </StyledContainer>
     );
 };
