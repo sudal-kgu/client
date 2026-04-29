@@ -11,7 +11,7 @@ const PointShop = () => {
     return (
         <PageContainer>
             <ShopTabBar activeTab={activeTab} onChange={setActiveTab} />
-            <ShopItemList activeTab={activeTab} currentLevel={1} />
+            <ShopItemList activeTab={activeTab} currentLevel={1} shell={0} gem={200000} />
         </PageContainer>
     );
 };

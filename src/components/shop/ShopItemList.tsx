@@ -6,6 +6,8 @@ import { FACILITY_ITEMS, PURIFY_ITEMS, REWARD_ITEMS, type TabType } from './shop
 interface Props {
     activeTab: TabType;
     currentLevel: number;
+    shell: number;
+    gem: number;
 }
 
 const TAB_CONFIG: Record<TabType, { costIcon: string; buttonLabel: string }> = {
@@ -20,10 +22,10 @@ const ITEMS_BY_TAB = {
     상품: REWARD_ITEMS,
 };
 
-const ShopItemList = ({ activeTab, currentLevel }: Props) => {
+const ShopItemList = ({ activeTab, currentLevel, shell, gem }: Props) => {
     const items = ITEMS_BY_TAB[activeTab];
     const { costIcon, buttonLabel } = TAB_CONFIG[activeTab];
-
+    const currentCurrency = activeTab === '상품' ? gem : shell;
     const handleAction = (id: number) => {
         // 구매 API 연동
         console.log('구매:', id);
@@ -38,7 +40,9 @@ const ShopItemList = ({ activeTab, currentLevel }: Props) => {
                     item={{
                         ...item,
                         locked:
-                            item.requiredLevel !== undefined && currentLevel < item.requiredLevel,
+                            (item.requiredLevel !== undefined &&
+                                currentLevel < item.requiredLevel) ||
+                            currentCurrency < item.cost,
                     }}
                     costIcon={costIcon}
                     buttonLabel={buttonLabel}
