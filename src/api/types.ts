@@ -86,3 +86,24 @@ export interface IslandInfo {
 
 export type AnalysisResult = z.infer<typeof ResultSchema>;
 export type AnalysisItem = z.infer<typeof TrashItemSchema>;
+
+export interface QuizChoice {
+    id: number;
+    description: string;
+    order: number;
+}
+
+export interface QuizProblem {
+    sessionId: number;
+    problemId: number;
+    description: string;
+    choices: QuizChoice[];
+    expiredAt: string;
+    answer: number;
+    choice: number;
+}
+
+export interface QuizSession {
+    sessionId: number;
+    problems: number[];
+}
