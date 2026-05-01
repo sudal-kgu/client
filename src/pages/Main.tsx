@@ -1,15 +1,12 @@
-import { useEffect } from 'react';
-
-import { useNavigate } from 'react-router-dom';
+import PageContainer from '../components/common/PageContainer';
+import IslandScene from '../components/island/model/IslandScene';
 
 const Main = () => {
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        navigate('/camera');
-    }, []);
-
-    return <div />;
+    return (
+        <PageContainer>
+            <IslandScene />
+        </PageContainer>
+    );
 };
 
 export default Main;
