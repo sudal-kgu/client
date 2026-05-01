@@ -116,23 +116,23 @@ export const REWARD_ITEMS: ShopItem[] = [
     },
     {
         id: 202,
-        name: '아메리카노 1잔 무료',
-        description: '다회용컵 사용 카페',
-        cost: 1000000,
-        imageEmoji: '☕',
-    },
-    {
-        id: 203,
         name: '교통 마일리지 1,000점',
         description: '지자체 교통카드, 따릉이',
         cost: 200000,
         imageEmoji: '🚌',
     },
     {
-        id: 204,
+        id: 203,
         name: '온라인 적립금 2,000원',
         description: '네이버쇼핑, 에코 전문몰',
         cost: 400000,
         imageEmoji: '🛍️',
+    },
+    {
+        id: 204,
+        name: '아메리카노 1잔 무료',
+        description: '다회용컵 사용 카페',
+        cost: 1000000,
+        imageEmoji: '☕',
     },
 ];
