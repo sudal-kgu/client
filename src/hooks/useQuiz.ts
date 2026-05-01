@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface QuizOption {
     id: number;
@@ -10,22 +10,41 @@ export interface QuizQuestion {
     question: string;
     options: QuizOption[];
     correctOptionId: number;
+    expiredAt: string | null;
 }
 
 interface UseQuizProps {
     questions: QuizQuestion[];
-    onFinish?: (selectedOptionIds: (number | null)[]) => void;
+    initialChoices?: (number | null)[];
+    initialIndex?: number;
+    onBeforeNext?: (problemId: number, choiceId: number, nextIndex: number) => void | Promise<void>;
+    onFinish?: (selectedOptionIds: (number | null)[]) => void | Promise<void>;
 }
 
-const useQuiz = ({ questions, onFinish }: UseQuizProps) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+const useQuiz = ({
+    questions,
+    initialChoices,
+    initialIndex = 0,
+    onBeforeNext,
+    onFinish,
+}: UseQuizProps) => {
+    const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [selectedOptionIds, setSelectedOptionIds] = useState<(number | null)[]>(
         Array(questions.length).fill(null),
     );
 
-    const currentQuestion = questions[currentIndex];
+    useEffect(() => {
+        setCurrentIndex(initialIndex);
+        setSelectedOptionIds(
+            initialChoices && initialChoices.length === questions.length
+                ? [...initialChoices]
+                : Array(questions.length).fill(null),
+        );
+    }, [questions]);
+
+    const currentQuestion = questions[currentIndex] ?? null;
     const totalCount = questions.length;
-    const selectedOptionId = selectedOptionIds[currentIndex];
+    const selectedOptionId = selectedOptionIds[currentIndex] ?? null;
 
     const selectOption = (optionId: number) => {
         setSelectedOptionIds((prev) => {
@@ -35,12 +54,21 @@ const useQuiz = ({ questions, onFinish }: UseQuizProps) => {
         });
     };
 
-    const goNext = () => {
-        if (currentIndex + 1 >= totalCount) {
+    const goNext = async () => {
+        const choiceId = selectedOptionIds[currentIndex];
+        if (choiceId === null || !currentQuestion) return;
+
+        const nextIndex = currentIndex + 1;
+        const isLast = nextIndex >= totalCount;
+
+        // submitAnswer + fetchNextProblem(다음 문제 getProblem → 20초 시작)을 onBeforeNext에서 처리
+        await onBeforeNext?.(currentQuestion.id, choiceId, nextIndex);
+
+        if (isLast) {
             onFinish?.(selectedOptionIds);
             return;
         }
-        setCurrentIndex((prev) => prev + 1);
+        setCurrentIndex(nextIndex);
     };
 
     return {
