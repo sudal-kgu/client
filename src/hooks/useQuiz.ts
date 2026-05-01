@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface QuizOption {
     id: number;
@@ -33,11 +33,22 @@ const useQuiz = ({
         Array(questions.length).fill(null),
     );
 
+    const initialChoicesRef = useRef(initialChoices);
+    const initialIndexRef = useRef(initialIndex);
+
     useEffect(() => {
-        setCurrentIndex(initialIndex);
+        initialChoicesRef.current = initialChoices;
+        initialIndexRef.current = initialIndex;
+    });
+
+    useEffect(() => {
+        const choices = initialChoicesRef.current;
+        const index = initialIndexRef.current;
+
+        setCurrentIndex(index);
         setSelectedOptionIds(
-            initialChoices && initialChoices.length === questions.length
-                ? [...initialChoices]
+            choices && choices.length === questions.length
+                ? [...choices]
                 : Array(questions.length).fill(null),
         );
     }, [questions]);
@@ -61,7 +72,6 @@ const useQuiz = ({
         const nextIndex = currentIndex + 1;
         const isLast = nextIndex >= totalCount;
 
-        // submitAnswer + fetchNextProblem(다음 문제 getProblem → 20초 시작)을 onBeforeNext에서 처리
         await onBeforeNext?.(currentQuestion.id, choiceId, nextIndex);
 
         if (isLast) {
