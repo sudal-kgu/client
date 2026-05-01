@@ -17,7 +17,7 @@ const ChecklistPointBanner = () => {
     );
 };
 
-const StyledContainer = styled.div`
+const StyledContainer = styled.button`
     .point-button {
         width: 100%;
         height: 48px;
