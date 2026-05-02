@@ -2,36 +2,49 @@ import { useEffect, useRef, useState } from 'react';
 
 const TIMER_SECONDS = 20;
 
-const usePerProblemTimer = (problemIndex: number, expiredAt: string | null) => {
+const usePerProblemTimer = (
+    problemIndex: number,
+    initialSeconds: number | null,
+    forceExpired: boolean = false,
+) => {
     const problemNumber = problemIndex + 1;
 
-    const alreadyExpired = expiredAt !== null && new Date(expiredAt).getTime() - Date.now() <= 0;
+    const startSecondsRef = useRef<number | null>(null);
+    if (startSecondsRef.current === null) {
+        if (forceExpired) {
+            startSecondsRef.current = 0;
+        } else if (initialSeconds !== null) {
+            startSecondsRef.current = Math.max(0, initialSeconds);
+        } else {
+            startSecondsRef.current = TIMER_SECONDS;
+        }
+    }
+    const startSeconds = startSecondsRef.current;
 
-    const [remainingSeconds, setRemainingSeconds] = useState<number>(
-        alreadyExpired ? 0 : TIMER_SECONDS,
-    );
-    const [isExpired, setIsExpired] = useState<boolean>(alreadyExpired);
+    const [remainingSeconds, setRemainingSeconds] = useState<number>(startSeconds);
+    const [isExpired, setIsExpired] = useState<boolean>(startSeconds <= 0);
 
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        console.log(`[Quiz Timer] Problem changed: ${problemNumber}`);
-
-        if (alreadyExpired) {
+        if (startSeconds <= 0) {
             console.log(`[Quiz Timer] Problem ${problemNumber} already expired — skip timer`);
             setIsExpired(true);
             setRemainingSeconds(0);
             return;
         }
 
-        setRemainingSeconds(TIMER_SECONDS);
+        setRemainingSeconds(startSeconds);
         setIsExpired(false);
 
-        console.log(`[Quiz Timer] Timer force-reset to ${TIMER_SECONDS} seconds`);
-        console.log(`[Quiz Timer] UI shows ${TIMER_SECONDS} seconds for problem ${problemNumber}`);
+        if (initialSeconds !== null) {
+            console.log(`[Quiz Resume] Countdown resumed from ${startSeconds}`);
+        } else {
+            console.log(`[Quiz Resume] Fresh problem entry detected, using normal 20s start`);
+        }
 
-        let current = TIMER_SECONDS;
+        let current = startSeconds;
         intervalRef.current = setInterval(() => {
             current -= 1;
             const safe = Math.max(0, current);
@@ -50,9 +63,7 @@ const usePerProblemTimer = (problemIndex: number, expiredAt: string | null) => {
             setIsExpired(true);
             setRemainingSeconds(0);
             console.log(`[Quiz Timer] Problem ${problemNumber} — TIME EXPIRED`);
-        }, TIMER_SECONDS * 1000);
-
-        console.log(`[Quiz Timer] Countdown started from ${TIMER_SECONDS}`);
+        }, startSeconds * 1000);
 
         return () => {
             if (intervalRef.current !== null) {
