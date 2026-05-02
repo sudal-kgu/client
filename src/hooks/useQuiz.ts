@@ -17,13 +17,20 @@ interface UseQuizProps {
     questions: QuizQuestion[];
     initialChoices?: (number | null)[];
     initialIndex?: number;
+    initialExpiredIndices?: boolean[];
     onFinish?: (
         selectedOptionIds: (number | null)[],
         expiredIndices: boolean[],
     ) => void | Promise<void>;
 }
 
-const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQuizProps) => {
+const useQuiz = ({
+    questions,
+    initialChoices,
+    initialIndex = 0,
+    initialExpiredIndices,
+    onFinish,
+}: UseQuizProps) => {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [selectedOptionIds, setSelectedOptionIds] = useState<(number | null)[]>(
         Array(questions.length).fill(null),
@@ -32,11 +39,13 @@ const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQ
 
     const initialChoicesRef = useRef(initialChoices);
     const initialIndexRef = useRef(initialIndex);
+    const initialExpiredIndicesRef = useRef(initialExpiredIndices);
     const initializedRef = useRef(false);
 
     useEffect(() => {
         initialChoicesRef.current = initialChoices;
         initialIndexRef.current = initialIndex;
+        initialExpiredIndicesRef.current = initialExpiredIndices;
     });
 
     useEffect(() => {
@@ -47,6 +56,7 @@ const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQ
 
         const choices = initialChoicesRef.current;
         const index = initialIndexRef.current;
+        const expired = initialExpiredIndicesRef.current;
 
         setCurrentIndex(index);
         setSelectedOptionIds(
@@ -54,8 +64,21 @@ const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQ
                 ? [...choices]
                 : Array(questions.length).fill(null),
         );
-        setExpiredIndices(Array(questions.length).fill(false));
+        setExpiredIndices(
+            expired && expired.length === questions.length
+                ? [...expired]
+                : Array(questions.length).fill(false),
+        );
     }, [questions]);
+
+    const selectedOptionIdsRef = useRef(selectedOptionIds);
+    const expiredIndicesRef = useRef(expiredIndices);
+    useEffect(() => {
+        selectedOptionIdsRef.current = selectedOptionIds;
+    }, [selectedOptionIds]);
+    useEffect(() => {
+        expiredIndicesRef.current = expiredIndices;
+    }, [expiredIndices]);
 
     const currentQuestion = questions[currentIndex] ?? null;
     const totalCount = questions.length;
@@ -81,7 +104,6 @@ const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQ
         if (!currentQuestion) return;
 
         const choiceId = selectedOptionIds[currentIndex];
-
         if (!isExpired && choiceId === null) return;
 
         const nextIndex = currentIndex + 1;
@@ -98,7 +120,6 @@ const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQ
         }
 
         const effectiveChoiceId = isExpired ? null : choiceId;
-
         await onBeforeAdvance?.(currentQuestion.id, effectiveChoiceId, nextIndex, isExpired);
 
         if (isLast) {
@@ -122,6 +143,8 @@ const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQ
         currentIndex,
         totalCount,
         selectedOptionId,
+        selectedOptionIds,
+        expiredIndices,
         selectOption,
         goNext,
     };
