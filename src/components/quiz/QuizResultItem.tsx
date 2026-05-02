@@ -3,28 +3,33 @@ import { useState } from 'react';
 import { FiCheck, FiChevronDown, FiChevronUp, FiX } from 'react-icons/fi';
 import styled from 'styled-components';
 
-import type { QuizQuestion } from '../../hooks/useQuiz';
-
-interface Props {
-    question: QuizQuestion;
-    index: number;
-    selectedOptionId: number | null;
+export interface ResultProblemData {
+    problemId: number;
+    description: string;
+    correctOptionId: number;
+    correctOptionText: string;
+    userChoiceId: number | null;
+    userChoiceText: string | null;
+    isCorrect: boolean;
+    isExpiredTimeout: boolean;
 }
 
-const QuizResultItem = ({ question, index, selectedOptionId }: Props) => {
+interface Props {
+    item: ResultProblemData;
+    index: number;
+}
+
+const QuizResultItem = ({ item, index }: Props) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const isCorrect = question.correctOptionId === selectedOptionId;
-
-    const correctOption = question.options.find((o) => o.id === question.correctOptionId);
-    const selectedOption = question.options.find((o) => o.id === selectedOptionId);
+    const showMyChoice = !item.isCorrect && !item.isExpiredTimeout && item.userChoiceText !== null;
 
     return (
-        <StyledContainer $isCorrect={isCorrect}>
+        <StyledResultItem $isCorrect={item.isCorrect}>
             <button className="header" onClick={() => setIsOpen((prev) => !prev)}>
                 <div className="left">
-                    <span className={`icon ${isCorrect ? 'correct' : 'wrong'}`}>
-                        {isCorrect ? <FiCheck strokeWidth={3} /> : <FiX strokeWidth={3} />}
+                    <span className={`icon ${item.isCorrect ? 'correct' : 'wrong'}`}>
+                        {item.isCorrect ? <FiCheck strokeWidth={3} /> : <FiX strokeWidth={3} />}
                     </span>
                     <span className="label">문제 {index + 1}</span>
                 </div>
@@ -33,34 +38,32 @@ const QuizResultItem = ({ question, index, selectedOptionId }: Props) => {
 
             {isOpen && (
                 <div className="body">
-                    <p className="question-text">{question.question}</p>
+                    <p className="question-text">{item.description}</p>
                     <div className="options">
-                        {correctOption && (
-                            <div className="option-item correct">
-                                <span className="option-icon">
-                                    <FiCheck strokeWidth={3} />
-                                </span>
-                                <span className="option-text">{correctOption.text}</span>
-                                <span className="option-tag">정답</span>
-                            </div>
-                        )}
-                        {!isCorrect && selectedOption && (
+                        <div className="option-item correct">
+                            <span className="option-icon">
+                                <FiCheck strokeWidth={3} />
+                            </span>
+                            <span className="option-text">{item.correctOptionText}</span>
+                            <span className="option-tag">정답</span>
+                        </div>
+                        {showMyChoice && (
                             <div className="option-item wrong">
                                 <span className="option-icon">
                                     <FiX strokeWidth={3} />
                                 </span>
-                                <span className="option-text">{selectedOption.text}</span>
+                                <span className="option-text">{item.userChoiceText}</span>
                                 <span className="option-tag">내 선택</span>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-        </StyledContainer>
+        </StyledResultItem>
     );
 };
 
-const StyledContainer = styled.div<{ $isCorrect: boolean }>`
+const StyledResultItem = styled.div<{ $isCorrect: boolean }>`
     border-radius: 12px;
     overflow: hidden;
     box-shadow: ${({ theme }) => theme.shadows.default};
@@ -95,7 +98,6 @@ const StyledContainer = styled.div<{ $isCorrect: boolean }>`
                 &.correct {
                     background-color: ${({ theme }) => theme.colors.primary500};
                 }
-
                 &.wrong {
                     background-color: ${({ theme }) => theme.colors.badge};
                 }
@@ -148,7 +150,6 @@ const StyledContainer = styled.div<{ $isCorrect: boolean }>`
                 background-color: ${({ theme }) => theme.colors.primary200};
                 border: 1.5px solid ${({ theme }) => theme.colors.primary500};
             }
-
             &.wrong {
                 background-color: ${({ theme }) => theme.colors.error_op_10};
                 border: 1.5px solid ${({ theme }) => theme.colors.badge};
@@ -165,11 +166,9 @@ const StyledContainer = styled.div<{ $isCorrect: boolean }>`
                 color: ${({ theme }) => theme.colors.white};
                 flex-shrink: 0;
             }
-
             &.correct .option-icon {
                 background-color: ${({ theme }) => theme.colors.primary500};
             }
-
             &.wrong .option-icon {
                 background-color: ${({ theme }) => theme.colors.badge};
             }
@@ -187,11 +186,9 @@ const StyledContainer = styled.div<{ $isCorrect: boolean }>`
                 font-weight: 600;
                 flex-shrink: 0;
             }
-
             &.correct .option-tag {
                 color: ${({ theme }) => theme.colors.primary500};
             }
-
             &.wrong .option-tag {
                 color: ${({ theme }) => theme.colors.badge};
             }

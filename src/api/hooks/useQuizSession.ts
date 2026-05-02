@@ -4,15 +4,22 @@ import type { QuizQuestion } from '../../hooks/useQuiz';
 import QuizAPI from '../quiz';
 import type { QuizProblem } from '../types';
 
-const toQuizQuestion = (problem: QuizProblem): QuizQuestion => ({
-    id: problem.problemId,
-    question: problem.description,
-    options: problem.choices
-        .sort((a, b) => a.order - b.order)
-        .map((c) => ({ id: c.id, text: c.description })),
-    correctOptionId: problem.answer,
-    expiredAt: problem.expiredAt,
-});
+const toQuizQuestion = (problem: QuizProblem): QuizQuestion => {
+    const sortedChoices = [...problem.choices].sort((a, b) => a.order - b.order);
+
+    const correctByIdMatch = sortedChoices.find((c) => c.id === problem.answer);
+    const correctByOrderMatch = sortedChoices.find((c) => c.order === problem.answer);
+    const correctChoice = correctByIdMatch ?? correctByOrderMatch;
+    const correctOptionId = correctChoice?.id ?? problem.answer;
+
+    return {
+        id: problem.problemId,
+        question: problem.description,
+        options: sortedChoices.map((c) => ({ id: c.id, text: c.description })),
+        correctOptionId,
+        expiredAt: problem.expiredAt ?? null,
+    };
+};
 
 const useQuizSession = (serial: string) => {
     const [sessionId, setSessionId] = useState<number | null>(null);
@@ -30,28 +37,32 @@ const useQuizSession = (serial: string) => {
                 setSessionId(session.sessionId);
                 setSessionProblemIds(session.problems);
 
-                const allProblems = await Promise.all(
-                    session.problems.map((id) => QuizAPI.getProblem(session.sessionId, id)),
-                );
+                console.log('[Quiz Session] Session created, problemIds:', session.problems);
 
-                const firstUnsolvedIndex = allProblems.findIndex((p) => p.choice === 0);
-                const currentIndex =
-                    firstUnsolvedIndex === -1 ? allProblems.length - 1 : firstUnsolvedIndex;
+                const placeholderQuestions: QuizQuestion[] = session.problems.map((id) => ({
+                    id,
+                    question: '',
+                    options: [],
+                    correctOptionId: 0,
+                    expiredAt: null,
+                }));
 
-                let currentProblem: QuizProblem;
-                if (firstUnsolvedIndex === -1) {
-                    currentProblem = allProblems[currentIndex];
-                } else {
-                    currentProblem = await QuizAPI.getProblem(
-                        session.sessionId,
-                        session.problems[firstUnsolvedIndex],
-                    );
-                    allProblems[firstUnsolvedIndex] = currentProblem;
-                }
+                const firstIndex = 0;
+                const firstProblemId = session.problems[firstIndex];
 
-                setQuestions(allProblems.map(toQuizQuestion));
-                setInitialChoices(allProblems.map((p) => (p.choice !== 0 ? p.choice : null)));
-                setInitialIndex(currentIndex);
+                console.log(`[Quiz Session] Fetching problem 1 (id: ${firstProblemId})`);
+
+                const firstProblem = await QuizAPI.getProblem(session.sessionId, firstProblemId);
+
+                console.log(`[Quiz Session] Problem 1 expiredAt: ${firstProblem.expiredAt}`);
+
+                placeholderQuestions[firstIndex] = toQuizQuestion(firstProblem);
+
+                setQuestions([...placeholderQuestions]);
+                setInitialChoices(session.problems.map(() => null));
+                setInitialIndex(firstIndex);
+
+                console.log('[Quiz Session] Ready. Problem 1 loaded.');
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('퀴즈를 불러오지 못했습니다.'));
             } finally {
@@ -65,7 +76,13 @@ const useQuizSession = (serial: string) => {
     const fetchNextProblem = async (nextIndex: number) => {
         if (sessionId === null || !sessionProblemIds[nextIndex]) return;
 
-        const problem = await QuizAPI.getProblem(sessionId, sessionProblemIds[nextIndex]);
+        const problemId = sessionProblemIds[nextIndex];
+        console.log(`[Quiz Session] Fetching problem ${nextIndex + 1} (id: ${problemId})`);
+
+        const problem = await QuizAPI.getProblem(sessionId, problemId);
+
+        console.log(`[Quiz Session] Problem ${nextIndex + 1} expiredAt: ${problem.expiredAt}`);
+
         setQuestions((prev) => {
             const next = [...prev];
             next[nextIndex] = toQuizQuestion(problem);

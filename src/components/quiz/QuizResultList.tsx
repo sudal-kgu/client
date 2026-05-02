@@ -1,31 +1,24 @@
 import styled from 'styled-components';
 
-import type { QuizQuestion } from '../../hooks/useQuiz';
-import QuizResultItem from './QuizResultItem';
+import QuizResultItem, { type ResultProblemData } from './QuizResultItem';
 
 interface Props {
-    questions: QuizQuestion[];
-    selectedOptionIds: (number | null)[];
+    resultData: ResultProblemData[];
     correctCount: number;
 }
 
-const QuizResultList = ({ questions, selectedOptionIds, correctCount }: Props) => {
+const QuizResultList = ({ resultData, correctCount }: Props) => {
     return (
         <StyledContainer>
-            <div className="header">
-                <span className="title">결과</span>
-                <span className="count">
-                    {correctCount} / {questions.length}
+            <div className="result-header">
+                <span className="result-title">결과</span>
+                <span className="result-count">
+                    {correctCount} / {resultData.length}
                 </span>
             </div>
-            <div className="list">
-                {questions.map((question, index) => (
-                    <QuizResultItem
-                        key={question.id}
-                        question={question}
-                        index={index}
-                        selectedOptionId={selectedOptionIds[index]}
-                    />
+            <div className="result-list">
+                {resultData.map((item, index) => (
+                    <QuizResultItem key={item.problemId} item={item} index={index} />
                 ))}
             </div>
         </StyledContainer>
@@ -37,18 +30,17 @@ const StyledContainer = styled.div`
     flex-direction: column;
     gap: 12px;
 
-    .header {
+    .result-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
 
-        .title {
+        .result-title {
             font-size: 16px;
             font-weight: 600;
             color: ${({ theme }) => theme.colors.black};
         }
-
-        .count {
+        .result-count {
             font-size: 13px;
             font-weight: 600;
             color: ${({ theme }) => theme.colors.primary700};
@@ -58,7 +50,7 @@ const StyledContainer = styled.div`
         }
     }
 
-    .list {
+    .result-list {
         display: flex;
         flex-direction: column;
         gap: 8px;
