@@ -9,20 +9,26 @@ interface Props {
     index: number;
     selectionState: SelectionState;
     onClick: () => void;
+    disabled?: boolean;
 }
 
-const QuizOptionItem = ({ option, index, selectionState, onClick }: Props) => {
+const QuizOptionItem = ({ option, index, selectionState, onClick, disabled = false }: Props) => {
     const label = index < 9 ? `0${index + 1}` : `${index + 1}`;
 
     return (
-        <StyledContainer $state={selectionState} onClick={onClick}>
+        <StyledContainer
+            $state={selectionState}
+            $disabled={disabled}
+            onClick={disabled ? undefined : onClick}
+            aria-disabled={disabled}
+        >
             <span className="label">{label}</span>
             <span className="text">{option.text}</span>
         </StyledContainer>
     );
 };
 
-const StyledContainer = styled.button<{ $state: SelectionState }>`
+const StyledContainer = styled.button<{ $state: SelectionState; $disabled: boolean }>`
     width: 100%;
     padding: 16px;
     display: flex;
@@ -34,10 +40,19 @@ const StyledContainer = styled.button<{ $state: SelectionState }>`
     box-shadow: ${({ theme }) => theme.shadows.default};
     transition:
         background-color 0.2s ease,
-        box-shadow 0.2s ease;
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
 
-    ${({ $state, theme }) =>
+    ${({ $disabled }) =>
+        $disabled &&
+        css`
+            cursor: not-allowed;
+            opacity: 0.6;
+        `}
+
+    ${({ $state, theme, $disabled }) =>
         $state === 'idle' &&
+        !$disabled &&
         css`
             &:active {
                 background-color: ${theme.colors.primary200};
