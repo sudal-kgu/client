@@ -6,7 +6,6 @@ import Checklist from './pages/Checklist';
 import Game from './pages/Game';
 import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
-import Main from './pages/Main';
 import PointShop from './pages/PointShop';
 import Quiz from './pages/Quiz';
 import QuizResult from './pages/QuizResult';
@@ -20,7 +19,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: '/',
-                element: <Main />,
+                element: <Game />,
             },
             {
                 path: '/login',
@@ -59,10 +58,6 @@ export const router = createBrowserRouter([
             {
                 path: '/analysis/:analysisId/trashes/:trashId/quiz/result',
                 element: <QuizResult />,
-            },
-            {
-                path: '/game',
-                element: <Game />,
             },
             {
                 path: '/point-shop',
