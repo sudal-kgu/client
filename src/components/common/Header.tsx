@@ -1,5 +1,5 @@
 import { FiArrowLeft } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface Props {
@@ -8,13 +8,18 @@ interface Props {
 
 const Header = ({ onBack }: Props) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const onClick = onBack ? onBack : () => navigate(-1);
 
     return (
         <StyledContainer>
-            <button onClick={onClick}>
-                <FiArrowLeft />
-            </button>
+            {location.pathname === '/' ? (
+                <div></div>
+            ) : (
+                <button onClick={onClick}>
+                    <FiArrowLeft />
+                </button>
+            )}
             <div>로고</div>
             <div className="invisible"></div>
         </StyledContainer>
