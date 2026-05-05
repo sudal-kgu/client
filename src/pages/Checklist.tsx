@@ -18,7 +18,7 @@ const Checklist = () => {
         if (!trashId) {
             navigate(`/analysis/${analysisId}`, { replace: true });
         }
-    }, [trashId, analysisId]);
+    }, [trashId, analysisId, navigate]);
 
     const { detail } = useTrashDetail(trashId);
     const allSteps = detail?.disposal.subcategory ?? detail?.disposal.category ?? [];
@@ -31,17 +31,13 @@ const Checklist = () => {
     };
     return (
         <PageContainer>
-            {' '}
             <StyledContainer>
-                {' '}
                 <div className="header">
-                    {' '}
-                    <h1 className="title">체크 리스트</h1>{' '}
-                    <p className="subtitle">당신의 작은 체크가 깨끗한 자원이 됩니다.</p>{' '}
-                </div>{' '}
+                    <h1 className="title">체크 리스트</h1>
+                    <p className="subtitle">당신의 작은 체크가 깨끗한 자원이 됩니다.</p>
+                </div>
                 {detail && (
                     <div className="items">
-                        {' '}
                         {allSteps.map((step, index) => (
                             <ChecklistItem
                                 key={index}
@@ -50,19 +46,17 @@ const Checklist = () => {
                                 isChecked={checked.includes(index)}
                                 onToggle={() => onToggle(index)}
                             />
-                        ))}{' '}
+                        ))}
                     </div>
-                )}{' '}
-            </StyledContainer>{' '}
+                )}
+            </StyledContainer>
             <StyledFooter>
-                {' '}
-                <ChecklistPointBanner
-                    onClick={() => navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz`)}
-                />{' '}
-            </StyledFooter>{' '}
+                <ChecklistPointBanner />
+            </StyledFooter>
         </PageContainer>
     );
 };
+
 const StyledContainer = styled.div`
     padding: 0 16px 120px 16px;
     display: flex;
@@ -90,6 +84,7 @@ const StyledContainer = styled.div`
         gap: 12px;
     }
 `;
+
 const StyledFooter = styled.div`
     padding: 16px;
     width: 100%;
@@ -100,4 +95,5 @@ const StyledFooter = styled.div`
     transform: translateX(-50%);
     background-color: ${({ theme }) => theme.colors.background};
 `;
+
 export default Checklist;
