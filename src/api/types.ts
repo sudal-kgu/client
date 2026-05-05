@@ -64,9 +64,15 @@ export const createResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     });
 
 export interface Currency {
-    shell: number;
-    gem: number;
-    fuel: number;
+    [CurrencyType.SHELL]: number;
+    [CurrencyType.GEM]: number;
+    [CurrencyType.FUEL]: number;
+}
+
+export const enum CurrencyType {
+    SHELL = 'shell',
+    GEM = 'gem',
+    FUEL = 'fuel',
 }
 
 export interface IslandInfo {

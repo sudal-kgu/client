@@ -1,13 +1,11 @@
 import styled from 'styled-components';
 
-import type { Currency, IslandInfo } from '../../api/types';
+import type { IslandInfo } from '../../api/types';
 import IslandScene from '../island/model/IslandScene';
 import CurrencyBar from './CurrencyBar';
 import LevelInfo from './LevelInfo';
 
-interface Props extends IslandInfo {
-    currency: Currency;
-}
+interface Props extends IslandInfo {}
 
 const IslandView = ({
     level,
@@ -16,11 +14,10 @@ const IslandView = ({
     recycleExpCap,
     recycleCount,
     recycleCountMax,
-    currency,
 }: Props) => {
     return (
         <StyledContainer>
-            <CurrencyBar currency={currency} />
+            <CurrencyBar />
             <IslandScene />
             <LevelInfo
                 level={level}

@@ -1,31 +1,32 @@
 import styled from 'styled-components';
 
-import type { Currency } from '../../api/types';
-
-interface Props {
-    currency: Currency;
-}
+import useCurrency from '../../api/hooks/useCurrency';
+import { CurrencyType } from '../../api/types';
+import Spinner from '../common/Spinner';
 
 const CURRENCY_ITEMS = [
-    { key: 'shell', icon: '/game/shell.png', alt: '조개' },
-    { key: 'gem', icon: '/game/gem.png', alt: '보석' },
-    { key: 'fuel', icon: '/game/fuel.png', alt: '연료' },
+    { key: CurrencyType.SHELL, icon: '/game/shell.png', alt: '조개' },
+    { key: CurrencyType.GEM, icon: '/game/gem.png', alt: '보석' },
+    { key: CurrencyType.FUEL, icon: '/game/fuel.png', alt: '연료' },
 ] as const;
 
-const CurrencyBar = ({ currency }: Props) => {
+const CurrencyBar = () => {
+    const { currency, isLoading } = useCurrency();
     return (
-        <Container>
+        <StyledContainer>
             {CURRENCY_ITEMS.map(({ key, icon, alt }) => (
                 <CurrencyItem key={key}>
                     <Icon src={icon} alt={alt} />
-                    <Amount>{currency[key].toLocaleString()}</Amount>
+                    <Amount>
+                        {isLoading ? <Spinner size={16} /> : currency[key].toLocaleString()}
+                    </Amount>
                 </CurrencyItem>
             ))}
-        </Container>
+        </StyledContainer>
     );
 };
 
-const Container = styled.div`
+const StyledContainer = styled.div`
     position: fixed;
     top: 90px;
     left: 50%;
@@ -55,6 +56,9 @@ const Icon = styled.img`
     object-fit: contain;
 `;
 
-const Amount = styled.span``;
+const Amount = styled.span`
+    min-width: 32px;
+    text-align: center;
+`;
 
 export default CurrencyBar;
