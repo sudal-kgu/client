@@ -31,7 +31,7 @@ const TrashAnalysisResult = () => {
         observer.observe(targetRef.current);
 
         return () => observer.disconnect();
-    }, [hasNextPage, isFetching]);
+    }, [hasNextPage, isFetching, fetchNextPage]);
 
     return (
         <PageContainer>

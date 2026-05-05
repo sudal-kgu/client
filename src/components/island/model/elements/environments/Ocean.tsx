@@ -17,7 +17,7 @@ export const Ocean = ({ color = 0x0077aa, speed = 1.0, height = 0.8 }: OceanProp
             uWaterColor: { value: new THREE.Color(color) },
             uSunDir: { value: new THREE.Vector3(25, 35, 20).normalize() },
         }),
-        [],
+        [speed, height, color],
     );
 
     useFrame(({ clock }) => {

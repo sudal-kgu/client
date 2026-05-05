@@ -33,7 +33,7 @@ const MeProvider = ({ children }: Props) => {
             return;
         }
         navigate(`/login?redirectUri=${location.pathname}`);
-    }, [island, isLoading, error]);
+    }, [island, isLoading, error, location, navigate]);
 
     if (WHITE_LIST.includes(location.pathname)) {
         return <>{children}</>;

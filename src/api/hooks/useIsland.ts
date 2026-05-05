@@ -26,7 +26,7 @@ const useIsland = () => {
     useEffect(() => {
         if (error?.status !== 404) return;
         setIsOpen(true);
-    }, [error]);
+    }, [error, setIsOpen]);
 
     return { island, isLoading, error, createIsland: mutate, hasIsland: !isOpen };
 };

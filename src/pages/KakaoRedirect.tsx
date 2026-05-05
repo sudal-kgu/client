@@ -18,7 +18,7 @@ const KakaoRedirect = () => {
         OAuthAPI.kakao(code)
             .then(() => navigate(state ?? '/', { replace: true }))
             .catch(() => navigate('/login', { replace: true }));
-    }, []);
+    }, [navigate, search]);
 
     return <></>;
 };

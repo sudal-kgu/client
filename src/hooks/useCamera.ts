@@ -82,7 +82,7 @@ const useCamera = (captureCallback: (blob: Blob | null) => Promise<void>) => {
             draw();
         };
 
-        const onRejected = (reason: any) => {
+        const onRejected = (reason: unknown) => {
             console.error('Camera access rejected:', reason);
             setRejected(true);
         };
