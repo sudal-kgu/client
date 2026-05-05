@@ -14,14 +14,14 @@ const Header = ({ onBack }: Props) => {
     return (
         <StyledContainer>
             {location.pathname === '/' ? (
-                <div></div>
+                <div className="invisible" />
             ) : (
                 <button onClick={onClick}>
                     <FiArrowLeft />
                 </button>
             )}
-            <div>로고</div>
-            <div className="invisible"></div>
+            <img src="/images/text-logo.png" />
+            <div className="invisible" />
         </StyledContainer>
     );
 };
@@ -39,6 +39,10 @@ const StyledContainer = styled.div`
     top: 0;
     z-index: 3;
 
+    img {
+        width: 180px;
+    }
+
     button {
         width: 24px;
         height: 24px;
@@ -48,7 +52,7 @@ const StyledContainer = styled.div`
     }
 
     .invisible {
-        width: 40px;
+        width: 24px;
         visibility: hidden;
     }
 `;
