@@ -1,6 +1,4 @@
-import type { IslandLevelConfig } from '../../../types';
-
-const ProceduralTerrain = () => (
+const Terrain = () => (
     <group>
         <mesh position={[0, -4, 0]} receiveShadow castShadow>
             <cylinderGeometry args={[11, 14, 10, 24]} />
@@ -17,6 +15,4 @@ const ProceduralTerrain = () => (
     </group>
 );
 
-export const Terrain = ({ levelConfig: _levelConfig }: { levelConfig: IslandLevelConfig }) => (
-    <ProceduralTerrain />
-);
+export default Terrain;

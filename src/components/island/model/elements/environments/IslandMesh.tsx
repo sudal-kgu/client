@@ -1,26 +1,20 @@
-import type { BuildingConfig, GarbageItemConfig, IslandLevelConfig } from '../../../types';
-import { Building } from './Building';
-import { GarbageItem } from './GarbageItem';
-import { Terrain } from './Terrain';
-import { Tree } from './Tree';
+import { BUILDING_SLOTS, GARBAGE_SPAWN_POINTS } from '../../config';
+import Garbage from './Garbage';
+import Slot from './Slot';
+import Terrain from './Terrain';
 
-interface IslandMeshProps {
-    levelConfig: IslandLevelConfig;
-    garbageItems: GarbageItemConfig[];
-    buildings: BuildingConfig[];
-}
+const IslandMesh = () => {
+    return (
+        <group>
+            <Terrain />
+            {GARBAGE_SPAWN_POINTS.map((position) => (
+                <Garbage key={position.id} postion={position} />
+            ))}
+            {BUILDING_SLOTS.map((position) => (
+                <Slot key={position.id} position={position} />
+            ))}
+        </group>
+    );
+};
 
-export const IslandMesh = ({ levelConfig, garbageItems, buildings }: IslandMeshProps) => (
-    <group>
-        <Terrain levelConfig={levelConfig} />
-        {levelConfig.treePositions.map((pos, i) => (
-            <Tree key={i} position={pos} />
-        ))}
-        {garbageItems.map((item) => (
-            <GarbageItem key={item.id} config={item} />
-        ))}
-        {buildings.map((building) => (
-            <Building key={building.slotId} config={building} />
-        ))}
-    </group>
-);
+export default IslandMesh;

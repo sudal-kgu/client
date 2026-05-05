@@ -1,20 +1,9 @@
-import { Sky } from '@react-three/drei';
+import { Clouds, Sky } from '@react-three/drei';
 
-import type { BuildingConfig, GarbageItemConfig } from '../../types';
-import { getIslandLevelConfig } from '../config/islandLevels';
-import { Clouds } from './environments/Clouds';
-import { IslandMesh } from './environments/IslandMesh';
-import { Ocean } from './environments/Ocean';
+import IslandMesh from './environments/IslandMesh';
+import Ocean from './environments/Ocean';
 
-interface SceneProps {
-    level?: number;
-    garbageItems?: GarbageItemConfig[];
-    buildings?: BuildingConfig[];
-}
-
-export const Scene = ({ level = 1, garbageItems, buildings = [] }: SceneProps) => {
-    const levelConfig = getIslandLevelConfig(level);
-    const activeGarbage = garbageItems ?? levelConfig.garbageSpawnPoints;
+export const Scene = () => {
     return (
         <>
             <color attach="background" args={['#87ceeb']} />
@@ -36,11 +25,7 @@ export const Scene = ({ level = 1, garbageItems, buildings = [] }: SceneProps) =
             <Sky sunPosition={[100, 20, 100]} turbidity={6} rayleigh={0.5} />
             <Ocean />
             <Clouds />
-            <IslandMesh
-                levelConfig={levelConfig}
-                garbageItems={activeGarbage}
-                buildings={buildings}
-            />
+            <IslandMesh />
         </>
     );
 };
