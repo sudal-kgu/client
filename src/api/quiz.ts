@@ -1,14 +1,9 @@
 import api from './axios';
-import type { QuizProblem, QuizSession } from './types';
-import type { Response } from './types';
+import type { QuizProblem, QuizSession, Response } from './types';
 
 const QuizAPI = {
     createSession: async (serial: string) => {
         const result = await api.post<Response<QuizSession>>('/v1/quizzes/sessions', { serial });
-        return result.data.data;
-    },
-    getSession: async () => {
-        const result = await api.get<Response<QuizSession>>('/v1/quizzes/sessions');
         return result.data.data;
     },
     getProblems: async (sessionId: number) => {

@@ -1,6 +1,9 @@
 import styled, { css } from 'styled-components';
 
-import type { QuizOption } from '../../hooks/useQuiz';
+export interface QuizOption {
+    id: number;
+    text: string;
+}
 
 export type SelectionState = 'idle' | 'selected';
 

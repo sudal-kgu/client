@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import useQuizSession, {
-    clearQuizPausedState,
-    saveQuizPausedState,
+    clearAdvancedIndices,
+    saveAdvancedIndex,
 } from '../api/hooks/useQuizSession';
 import QuizAPI from '../api/quiz';
 import PageContainer from '../components/common/PageContainer';
@@ -13,6 +13,11 @@ import QuizOptionItem from '../components/quiz/QuizOptionItem';
 import QuizProgress from '../components/quiz/QuizProgress';
 import usePerProblemTimer from '../hooks/usePerProblemTimer';
 import useQuiz, { type QuizOption, type QuizQuestion } from '../hooks/useQuiz';
+
+const POINTS_PER_CORRECT = 50;
+
+const getResponseStatus = (e: unknown): number | undefined =>
+    (e as { response?: { status?: number } })?.response?.status;
 
 interface QuizBodyProps {
     problemIndex: number;
@@ -22,9 +27,7 @@ interface QuizBodyProps {
     onSelectOption: (id: number) => void;
     onNext: (isExpired: boolean) => void;
     isLastQuestion: boolean;
-    initialSeconds: number | null;
-    forceExpired: boolean;
-    onRemainingSecondsChange: (seconds: number) => void;
+    isAdvancing: boolean;
 }
 
 const QuizBody = ({
@@ -35,27 +38,13 @@ const QuizBody = ({
     onSelectOption,
     onNext,
     isLastQuestion,
-    initialSeconds,
-    forceExpired,
-    onRemainingSecondsChange,
+    isAdvancing,
 }: QuizBodyProps) => {
-    const { remainingSeconds, isExpired } = usePerProblemTimer(
-        problemIndex,
-        initialSeconds,
-        forceExpired,
-    );
+    const { remainingSeconds, isExpired } = usePerProblemTimer(question.expiredAt);
 
-    const onRemainingRef = useRef(onRemainingSecondsChange);
-    onRemainingRef.current = onRemainingSecondsChange;
-    useEffect(() => {
-        onRemainingRef.current(remainingSeconds);
-    }, [remainingSeconds]);
-
-    const isNextEnabled = selectedOptionId !== null || isExpired;
+    const isNextEnabled = (selectedOptionId !== null || isExpired) && !isAdvancing;
 
     const handleClick = () => {
-        const label = isLastQuestion ? 'Result' : 'Next';
-        console.log(`[Quiz Timer] ${label} button clicked from problem ${problemIndex + 1}`);
         onNext(isExpired);
     };
 
@@ -91,7 +80,12 @@ const QuizBody = ({
                 </div>
             </div>
             <div className="footer">
-                <button className="next-btn" disabled={!isNextEnabled} onClick={handleClick}>
+                <button
+                    type="button"
+                    className="next-btn"
+                    disabled={!isNextEnabled}
+                    onClick={handleClick}
+                >
                     {isLastQuestion ? '결과 보기' : '다음'}
                 </button>
             </div>
@@ -104,97 +98,118 @@ const Quiz = () => {
     const { analysisId, trashId } = useParams();
     const serial = trashId ?? '';
 
+    const resultPath = `/analysis/${analysisId}/trashes/${trashId}/quiz/result`;
+
     const {
         sessionId,
         questions,
         initialChoices,
         initialIndex,
-        initialExpiredIndices,
-        restoredProblemInfo,
         fetchNextProblem,
         isLoading,
         error,
-    } = useQuizSession(serial);
+    } = useQuizSession(serial, (completedSessionId) => {
+        QuizAPI.getProblems(completedSessionId)
+            .then((finalProblems) => {
+                navigate(resultPath, {
+                    state: { problems: finalProblems, expiredIndices: [] },
+                });
+            })
+            .catch(() => {
+                navigate('/');
+            });
+    });
 
     const {
         currentQuestion,
         currentIndex,
         totalCount,
         selectedOptionId,
-        selectedOptionIds,
-        expiredIndices,
+        isAdvancing,
         selectOption,
         goNext,
     } = useQuiz({
         questions,
         initialChoices,
         initialIndex,
-        initialExpiredIndices: initialExpiredIndices ?? undefined,
         onFinish: async (selectedOptionIds, expiredIndices) => {
             if (sessionId === null) return;
-            isCompletedRef.current = true;
-            clearQuizPausedState(serial);
-            await QuizAPI.completeSession(sessionId);
-            console.log('[Quiz Timer] Quiz completed — fetching full results');
+
+            clearAdvancedIndices(sessionId);
+
+            try {
+                await QuizAPI.completeSession(sessionId);
+            } catch {}
 
             let finalProblems = null;
             try {
                 finalProblems = await QuizAPI.getProblems(sessionId);
-            } catch (e) {
-                console.warn('[Quiz] getProblems failed, falling back to local state', e);
-            }
+            } catch {}
 
             if (finalProblems && finalProblems.length > 0) {
-                navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz/result`, {
+                navigate(resultPath, {
                     state: { problems: finalProblems, expiredIndices },
                 });
             } else {
-                navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz/result`, {
+                navigate(resultPath, {
                     state: { questions, selectedOptionIds, expiredIndices },
                 });
             }
         },
     });
 
-    const remainingSecondsRef = useRef<number>(20);
-    const currentIndexRef = useRef<number>(currentIndex);
-    const selectedOptionIdsRef = useRef<(number | null)[]>(selectedOptionIds);
-    const expiredIndicesRef = useRef<boolean[]>(expiredIndices);
-    const sessionIdRef = useRef<number | null>(sessionId);
-    const isCompletedRef = useRef(false);
+    const visibilityHandledRef = useRef(false);
 
     useEffect(() => {
-        currentIndexRef.current = currentIndex;
-    }, [currentIndex]);
-    useEffect(() => {
-        selectedOptionIdsRef.current = selectedOptionIds;
-    }, [selectedOptionIds]);
-    useEffect(() => {
-        expiredIndicesRef.current = expiredIndices;
-    }, [expiredIndices]);
-    useEffect(() => {
-        sessionIdRef.current = sessionId;
-    }, [sessionId]);
+        if (isLoading || questions.length === 0) return;
 
-    useEffect(() => {
-        return () => {
-            if (isCompletedRef.current) return;
-            if (sessionIdRef.current === null) return;
-
-            const state = {
-                sessionId: sessionIdRef.current,
-                currentIndex: currentIndexRef.current,
-                pausedRemainingSeconds: remainingSecondsRef.current,
-                selectedChoices: selectedOptionIdsRef.current,
-                expiredIndices: expiredIndicesRef.current,
-            };
-            console.log(
-                `[Quiz Pause] Leaving quiz screen on problem ${state.currentIndex + 1} with ${state.pausedRemainingSeconds}s remaining`,
-            );
-            saveQuizPausedState(serial, state);
-            console.log(`[Quiz Pause] Timer cleaned up for problem ${state.currentIndex + 1}`);
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible' && !visibilityHandledRef.current) {
+                visibilityHandledRef.current = true;
+                setTimeout(() => {
+                    visibilityHandledRef.current = false;
+                }, 1000);
+            }
         };
-    }, [serial]);
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [isLoading, questions.length]);
+
+    const handleNext = (isExpired: boolean) => {
+        goNext(isExpired, async ({ problemId, choiceId, nextIndex, isExpired: expired }) => {
+            if (sessionId === null) return;
+
+            const advancedIndexToSave = currentIndex;
+
+            if (!expired && choiceId !== null) {
+                try {
+                    await QuizAPI.submitAnswer(sessionId, problemId, choiceId);
+                } catch (e: unknown) {
+                    const status = getResponseStatus(e);
+                    if (status === 410) {
+                    } else if (status === 400) {
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+
+            if (nextIndex < totalCount) {
+                try {
+                    await fetchNextProblem(nextIndex);
+                } catch (e: unknown) {
+                    const status = getResponseStatus(e);
+                    if (status === 410) {
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+
+            saveAdvancedIndex(sessionId, advancedIndexToSave);
+        });
+    };
 
     if (isLoading) {
         return (
@@ -232,69 +247,11 @@ const Quiz = () => {
         );
     }
 
-    const isRestoredProblem = restoredProblemInfo !== null && currentIndex === initialIndex;
-    const timerInitialSeconds = isRestoredProblem
-        ? restoredProblemInfo!.initialRemainingSeconds
-        : null;
-    const timerForceExpired = isRestoredProblem
-        ? restoredProblemInfo!.isAlreadyExpiredOnServer
-        : false;
-
-    if (isRestoredProblem) {
-        console.log(
-            `[Quiz Resume] Re-entered quiz on problem ${currentIndex + 1} with ${timerInitialSeconds}s remaining`,
-        );
-        console.log(`[Quiz Resume] Restored selected choice for problem ${currentIndex + 1}`);
-    }
-
-    const handleNext = (isExpired: boolean) => {
-        goNext(isExpired, async (problemId, choiceId, nextIndex, expired) => {
-            if (sessionId === null) return;
-
-            if (!expired && choiceId !== null) {
-                try {
-                    console.log(
-                        `[Quiz Submit] Submitting answer for session ${sessionId}, problem ${problemId}`,
-                    );
-                    await QuizAPI.submitAnswer(sessionId, problemId, choiceId);
-                } catch (e: unknown) {
-                    const status = (e as { response?: { status?: number } })?.response?.status;
-                    if (status === 410) {
-                        console.warn(
-                            `[Quiz Submit] 410 received, syncing client state with server — problem ${problemId} treated as expired`,
-                        );
-                    } else if (status === 400) {
-                        console.warn(
-                            `[Quiz Submit] 400 received for problem ${problemId} — already answered`,
-                        );
-                    } else {
-                        throw e;
-                    }
-                }
-            }
-
-            if (nextIndex < totalCount) {
-                try {
-                    await fetchNextProblem(nextIndex);
-                } catch (e: unknown) {
-                    const status = (e as { response?: { status?: number } })?.response?.status;
-                    if (status === 410) {
-                        console.warn(
-                            `[Quiz Submit] 410 on fetchNextProblem index ${nextIndex} — continuing`,
-                        );
-                    } else {
-                        throw e;
-                    }
-                }
-            }
-        });
-    };
-
     return (
         <PageContainer>
             <StyledContainer>
                 <QuizBody
-                    key={`${currentIndex}-${timerInitialSeconds ?? 'fresh'}`}
+                    key={currentIndex}
                     problemIndex={currentIndex}
                     totalCount={totalCount}
                     question={currentQuestion}
@@ -302,11 +259,7 @@ const Quiz = () => {
                     onSelectOption={selectOption}
                     onNext={handleNext}
                     isLastQuestion={currentIndex + 1 === totalCount}
-                    initialSeconds={timerInitialSeconds}
-                    forceExpired={timerForceExpired}
-                    onRemainingSecondsChange={(s) => {
-                        remainingSecondsRef.current = s;
-                    }}
+                    isAdvancing={isAdvancing}
                 />
             </StyledContainer>
         </PageContainer>
@@ -379,9 +332,11 @@ const StyledContainer = styled.div`
             transition: opacity 0.2s ease;
             &:disabled {
                 opacity: 0.35;
+                cursor: not-allowed;
             }
         }
     }
 `;
 
+export { POINTS_PER_CORRECT };
 export default Quiz;

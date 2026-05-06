@@ -1,83 +1,136 @@
 import { useEffect, useRef, useState } from 'react';
 
-const TIMER_SECONDS = 20;
+const toMs = (expiredAt: string): number => {
+    return new Date(expiredAt).getTime();
+};
 
-const usePerProblemTimer = (
-    problemIndex: number,
-    initialSeconds: number | null,
-    forceExpired: boolean = false,
-) => {
-    const problemNumber = problemIndex + 1;
+const getRemainingSeconds = (expiredAt: string | null): number => {
+    if (!expiredAt) return 20;
+    const expiredAtMs = toMs(expiredAt);
+    if (Number.isNaN(expiredAtMs)) return 20;
+    const ms = expiredAtMs - Date.now();
+    return Math.max(0, Math.ceil(ms / 1000));
+};
 
-    const startSecondsRef = useRef<number | null>(null);
-    if (startSecondsRef.current === null) {
-        if (forceExpired) {
-            startSecondsRef.current = 0;
-        } else if (initialSeconds !== null) {
-            startSecondsRef.current = Math.max(0, initialSeconds);
-        } else {
-            startSecondsRef.current = TIMER_SECONDS;
-        }
-    }
-    const startSeconds = startSecondsRef.current;
+const isAlreadyExpired = (expiredAt: string | null): boolean => {
+    if (!expiredAt) return false;
+    const expiredAtMs = toMs(expiredAt);
+    if (Number.isNaN(expiredAtMs)) return false;
+    return expiredAtMs - Date.now() <= 0;
+};
 
-    const [remainingSeconds, setRemainingSeconds] = useState<number>(startSeconds);
-    const [isExpired, setIsExpired] = useState<boolean>(startSeconds <= 0);
+const usePerProblemTimer = (expiredAt: string | null, onExpire?: () => void) => {
+    const [remainingSeconds, setRemainingSeconds] = useState<number>(() =>
+        getRemainingSeconds(expiredAt),
+    );
+    const [isExpired, setIsExpired] = useState<boolean>(() => isAlreadyExpired(expiredAt));
 
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const expiredAtRef = useRef(expiredAt);
+    const onExpireRef = useRef(onExpire);
+    const firedExpireRef = useRef(false);
+    expiredAtRef.current = expiredAt;
+    onExpireRef.current = onExpire;
 
     useEffect(() => {
-        if (startSeconds <= 0) {
-            console.log(`[Quiz Timer] Problem ${problemNumber} already expired — skip timer`);
-            setIsExpired(true);
-            setRemainingSeconds(0);
+        firedExpireRef.current = false;
+
+        const clearTimer = () => {
+            if (intervalRef.current !== null) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+
+        const sync = () => {
+            const currentExpiredAt = expiredAtRef.current;
+            if (!currentExpiredAt) return;
+
+            const expiredAtMs = toMs(currentExpiredAt);
+            if (Number.isNaN(expiredAtMs)) {
+                clearTimer();
+                return;
+            }
+
+            const remaining = Math.max(0, Math.ceil((expiredAtMs - Date.now()) / 1000));
+            setRemainingSeconds(remaining);
+
+            if (remaining <= 0) {
+                setIsExpired(true);
+                clearTimer();
+                if (!firedExpireRef.current) {
+                    firedExpireRef.current = true;
+                    onExpireRef.current?.();
+                }
+            }
+        };
+
+        if (!expiredAt) {
+            setIsExpired(false);
+            setRemainingSeconds(20);
             return;
         }
 
-        setRemainingSeconds(startSeconds);
-        setIsExpired(false);
+        const parsedMs = toMs(expiredAt);
 
-        if (initialSeconds !== null) {
-            console.log(`[Quiz Resume] Countdown resumed from ${startSeconds}`);
-        } else {
-            console.log(`[Quiz Resume] Fresh problem entry detected, using normal 20s start`);
+        if (Number.isNaN(parsedMs)) {
+            setIsExpired(false);
+            setRemainingSeconds(20);
+            return;
         }
 
-        let current = startSeconds;
-        intervalRef.current = setInterval(() => {
-            current -= 1;
-            const safe = Math.max(0, current);
-            setRemainingSeconds(safe);
-            if (current <= 0 && intervalRef.current !== null) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-            }
-        }, 1000);
+        const initial = Math.max(0, Math.ceil((parsedMs - Date.now()) / 1000));
 
-        timeoutRef.current = setTimeout(() => {
-            if (intervalRef.current !== null) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-            }
+        if (initial <= 0) {
             setIsExpired(true);
             setRemainingSeconds(0);
-            console.log(`[Quiz Timer] Problem ${problemNumber} — TIME EXPIRED`);
-        }, startSeconds * 1000);
+            if (!firedExpireRef.current) {
+                firedExpireRef.current = true;
+                onExpireRef.current?.();
+            }
+            return;
+        }
+
+        setRemainingSeconds(initial);
+        setIsExpired(false);
+
+        intervalRef.current = setInterval(sync, 500);
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                const currentExpiredAt = expiredAtRef.current;
+                if (!currentExpiredAt) return;
+
+                const expiredAtMs = toMs(currentExpiredAt);
+                if (Number.isNaN(expiredAtMs)) {
+                    clearTimer();
+                    return;
+                }
+
+                const remaining = Math.max(0, Math.ceil((expiredAtMs - Date.now()) / 1000));
+                setRemainingSeconds(remaining);
+
+                if (remaining <= 0) {
+                    setIsExpired(true);
+                    clearTimer();
+                    if (!firedExpireRef.current) {
+                        firedExpireRef.current = true;
+                        onExpireRef.current?.();
+                    }
+                } else {
+                    clearTimer();
+                    intervalRef.current = setInterval(sync, 500);
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
-            if (intervalRef.current !== null) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-            }
-            if (timeoutRef.current !== null) {
-                clearTimeout(timeoutRef.current);
-                timeoutRef.current = null;
-            }
-            console.log(`[Quiz Timer] Previous timer cleaned up (problem ${problemNumber})`);
+            clearTimer();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [expiredAt]);
 
     return { remainingSeconds, isExpired };
 };
