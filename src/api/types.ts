@@ -77,9 +77,9 @@ export interface QuizProblem {
     problemId: number;
     description: string;
     choices: QuizChoice[];
-    expiredAt: string;
+    expiredAt: string | null;
     answer: number;
-    choice: number;
+    choice?: number | null;
 }
 
 export interface QuizSession {

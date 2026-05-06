@@ -13,72 +13,49 @@ export interface QuizQuestion {
     expiredAt: string | null;
 }
 
+export interface BeforeAdvanceArgs {
+    problemId: number;
+    choiceId: number | null;
+    nextIndex: number;
+    isExpired: boolean;
+}
+
 interface UseQuizProps {
     questions: QuizQuestion[];
     initialChoices?: (number | null)[];
     initialIndex?: number;
-    initialExpiredIndices?: boolean[];
     onFinish?: (
         selectedOptionIds: (number | null)[],
         expiredIndices: boolean[],
     ) => void | Promise<void>;
 }
 
-const useQuiz = ({
-    questions,
-    initialChoices,
-    initialIndex = 0,
-    initialExpiredIndices,
-    onFinish,
-}: UseQuizProps) => {
+const useQuiz = ({ questions, initialChoices, initialIndex = 0, onFinish }: UseQuizProps) => {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [selectedOptionIds, setSelectedOptionIds] = useState<(number | null)[]>(
         Array(questions.length).fill(null),
     );
     const [expiredIndices, setExpiredIndices] = useState<boolean[]>([]);
+    const [isAdvancing, setIsAdvancing] = useState(false);
 
-    const initialChoicesRef = useRef(initialChoices);
-    const initialIndexRef = useRef(initialIndex);
-    const initialExpiredIndicesRef = useRef(initialExpiredIndices);
+    const advancingRef = useRef(false);
+
     const initializedRef = useRef(false);
 
     useEffect(() => {
-        initialChoicesRef.current = initialChoices;
-        initialIndexRef.current = initialIndex;
-        initialExpiredIndicesRef.current = initialExpiredIndices;
-    });
-
-    useEffect(() => {
         if (questions.length === 0) return;
-        if (initializedRef.current) return;
 
+        if (initializedRef.current) return;
         initializedRef.current = true;
 
-        const choices = initialChoicesRef.current;
-        const index = initialIndexRef.current;
-        const expired = initialExpiredIndicesRef.current;
-
-        setCurrentIndex(index);
+        setCurrentIndex(initialIndex);
         setSelectedOptionIds(
-            choices && choices.length === questions.length
-                ? [...choices]
+            initialChoices && initialChoices.length === questions.length
+                ? [...initialChoices]
                 : Array(questions.length).fill(null),
         );
-        setExpiredIndices(
-            expired && expired.length === questions.length
-                ? [...expired]
-                : Array(questions.length).fill(false),
-        );
-    }, [questions]);
-
-    const selectedOptionIdsRef = useRef(selectedOptionIds);
-    const expiredIndicesRef = useRef(expiredIndices);
-    useEffect(() => {
-        selectedOptionIdsRef.current = selectedOptionIds;
-    }, [selectedOptionIds]);
-    useEffect(() => {
-        expiredIndicesRef.current = expiredIndices;
-    }, [expiredIndices]);
+        setExpiredIndices(Array(questions.length).fill(false));
+    }, [questions.length, initialIndex, initialChoices]);
 
     const currentQuestion = questions[currentIndex] ?? null;
     const totalCount = questions.length;
@@ -94,48 +71,57 @@ const useQuiz = ({
 
     const goNext = async (
         isExpired: boolean,
-        onBeforeAdvance?: (
-            problemId: number,
-            choiceId: number | null,
-            nextIndex: number,
-            expired: boolean,
-        ) => void | Promise<void>,
+        onBeforeAdvance?: (args: BeforeAdvanceArgs) => void | Promise<void>,
     ) => {
         if (!currentQuestion) return;
+        if (advancingRef.current) return;
 
         const choiceId = selectedOptionIds[currentIndex];
         if (!isExpired && choiceId === null) return;
 
-        const nextIndex = currentIndex + 1;
-        const isLast = nextIndex >= totalCount;
+        advancingRef.current = true;
+        setIsAdvancing(true);
 
-        const newExpiredIndices = [...expiredIndices];
-        const newSelectedOptionIds = [...selectedOptionIds];
+        try {
+            const nextIndex = currentIndex + 1;
+            const isLast = nextIndex >= totalCount;
 
-        if (isExpired) {
-            newExpiredIndices[currentIndex] = true;
-            newSelectedOptionIds[currentIndex] = null;
-            setExpiredIndices(newExpiredIndices);
-            setSelectedOptionIds(newSelectedOptionIds);
+            const newExpiredIndices = [...expiredIndices];
+            const newSelectedOptionIds = [...selectedOptionIds];
+
+            if (isExpired) {
+                newExpiredIndices[currentIndex] = true;
+                newSelectedOptionIds[currentIndex] = null;
+                setExpiredIndices(newExpiredIndices);
+                setSelectedOptionIds(newSelectedOptionIds);
+            }
+
+            const effectiveChoiceId = isExpired ? null : choiceId;
+            await onBeforeAdvance?.({
+                problemId: currentQuestion.id,
+                choiceId: effectiveChoiceId,
+                nextIndex,
+                isExpired,
+            });
+
+            if (isLast) {
+                const safeExpiredIndices = Array.from(
+                    { length: totalCount },
+                    (_, i) => newExpiredIndices[i] ?? false,
+                );
+                const safeSelectedOptionIds = Array.from(
+                    { length: totalCount },
+                    (_, i) => newSelectedOptionIds[i] ?? null,
+                );
+                await onFinish?.(safeSelectedOptionIds, safeExpiredIndices);
+                return;
+            }
+
+            setCurrentIndex(nextIndex);
+        } finally {
+            advancingRef.current = false;
+            setIsAdvancing(false);
         }
-
-        const effectiveChoiceId = isExpired ? null : choiceId;
-        await onBeforeAdvance?.(currentQuestion.id, effectiveChoiceId, nextIndex, isExpired);
-
-        if (isLast) {
-            const safeExpiredIndices = Array.from(
-                { length: totalCount },
-                (_, i) => newExpiredIndices[i] ?? false,
-            );
-            const safeSelectedOptionIds = Array.from(
-                { length: totalCount },
-                (_, i) => newSelectedOptionIds[i] ?? null,
-            );
-            onFinish?.(safeSelectedOptionIds, safeExpiredIndices);
-            return;
-        }
-
-        setCurrentIndex(nextIndex);
     };
 
     return {
@@ -145,6 +131,7 @@ const useQuiz = ({
         selectedOptionId,
         selectedOptionIds,
         expiredIndices,
+        isAdvancing,
         selectOption,
         goNext,
     };

@@ -1,37 +1,44 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { QuizProblem } from '../api/types';
+import type { QuizChoice, QuizProblem } from '../api/types';
 import PageContainer from '../components/common/PageContainer';
 import { type ResultProblemData } from '../components/quiz/QuizResultItem';
 import QuizResultList from '../components/quiz/QuizResultList';
 import QuizScoreSection from '../components/quiz/QuizScoreSection';
-import type { QuizQuestion } from '../hooks/useQuiz';
+
+const POINTS_PER_CORRECT = 50;
 
 interface LocationState {
-    problems?: QuizProblem[];
-    questions?: QuizQuestion[];
-    selectedOptionIds?: (number | null)[];
+    problems: QuizProblem[];
     expiredIndices: boolean[];
 }
 
-const buildResultData = (
-    problems: QuizProblem[],
-    expiredIndices: boolean[],
-): ResultProblemData[] => {
-    return problems.map((problem, i) => {
-        const isExpiredTimeout = expiredIndices[i] ?? false;
-        const sortedChoices = [...problem.choices].sort((a, b) => a.order - b.order);
+const resolveCorrectOptionId = (answer: number, sortedChoices: QuizChoice[]): number => {
+    const byId = sortedChoices.find((c) => c.id === answer);
+    const byOrder = sortedChoices.find((c) => c.order === answer);
+    return (byId ?? byOrder)?.id ?? answer;
+};
 
-        const correctByIdMatch = sortedChoices.find((c) => c.id === problem.answer);
-        const correctByOrderMatch = sortedChoices.find((c) => c.order === problem.answer);
-        const correctChoice = correctByIdMatch ?? correctByOrderMatch;
-        const correctOptionId = correctChoice?.id ?? problem.answer;
+const isServerExpired = (expiredAt: string | null): boolean => {
+    if (!expiredAt) return false;
+    return new Date(expiredAt).getTime() < Date.now();
+};
+
+const buildResultData = (problems: QuizProblem[], expiredIndices: boolean[]): ResultProblemData[] =>
+    problems.map((problem, i) => {
+        const sortedChoices = [...problem.choices].sort((a, b) => a.order - b.order);
+        const correctOptionId = resolveCorrectOptionId(problem.answer, sortedChoices);
+        const correctChoice = sortedChoices.find((c) => c.id === correctOptionId);
         const correctOptionText = correctChoice?.description ?? '(정답 정보 없음)';
 
-        const rawChoice = isExpiredTimeout ? null : problem.choice || null;
-        const userChoice = rawChoice ? sortedChoices.find((c) => c.id === rawChoice) : null;
-        const userChoiceId = userChoice?.id ?? null;
+        const isExpiredTimeout =
+            (expiredIndices[i] ?? false) ||
+            (problem.choice == null && isServerExpired(problem.expiredAt));
+
+        const userChoiceId = isExpiredTimeout ? null : (problem.choice ?? null);
+        const userChoice =
+            userChoiceId != null ? sortedChoices.find((c) => c.id === userChoiceId) : undefined;
         const userChoiceText = userChoice?.description ?? null;
 
         const isCorrect =
@@ -48,85 +55,41 @@ const buildResultData = (
             isExpiredTimeout,
         };
     });
-};
 
 const QuizResult = () => {
     const navigate = useNavigate();
     const { state } = useLocation() as { state: LocationState | null };
 
-    if (!state) {
-        return (
-            <PageContainer>
-                <StyledContainer>
-                    <div className="content">
-                        <div className="status-text">결과 데이터가 없습니다.</div>
-                    </div>
-                    <div className="footer">
-                        <button className="home-btn" onClick={() => navigate('/')}>
-                            메인 화면으로 돌아가기
-                        </button>
-                    </div>
-                </StyledContainer>
-            </PageContainer>
-        );
-    }
+    const renderEmpty = () => (
+        <PageContainer>
+            <StyledContainer>
+                <div className="content">
+                    <div className="status-text">결과 데이터가 없습니다.</div>
+                </div>
+                <div className="footer">
+                    <button type="button" className="home-btn" onClick={() => navigate('/')}>
+                        메인 화면으로 돌아가기
+                    </button>
+                </div>
+            </StyledContainer>
+        </PageContainer>
+    );
 
-    const expiredIndices = state.expiredIndices ?? [];
-    let resultData: ResultProblemData[];
+    if (!state || !state.problems || state.problems.length === 0) return renderEmpty();
 
-    if (state.problems && state.problems.length > 0) {
-        resultData = buildResultData(state.problems, expiredIndices);
-    } else if (state.questions && state.selectedOptionIds) {
-        resultData = state.questions.map((q, i) => {
-            const isExpiredTimeout = expiredIndices[i] ?? false;
-            const userChoiceId = isExpiredTimeout ? null : (state.selectedOptionIds![i] ?? null);
-            const correctOption = q.options.find((o) => o.id === q.correctOptionId);
-            const userOption = userChoiceId
-                ? q.options.find((o) => o.id === userChoiceId)
-                : undefined;
-            const isCorrect =
-                !isExpiredTimeout && userChoiceId !== null && userChoiceId === q.correctOptionId;
-
-            return {
-                problemId: q.id,
-                description: q.question,
-                correctOptionId: q.correctOptionId,
-                correctOptionText: correctOption?.text ?? '(정답 정보 없음)',
-                userChoiceId,
-                userChoiceText: userOption?.text ?? null,
-                isCorrect,
-                isExpiredTimeout,
-            };
-        });
-    } else {
-        return (
-            <PageContainer>
-                <StyledContainer>
-                    <div className="content">
-                        <div className="status-text">결과 데이터가 없습니다.</div>
-                    </div>
-                    <div className="footer">
-                        <button className="home-btn" onClick={() => navigate('/')}>
-                            메인 화면으로 돌아가기
-                        </button>
-                    </div>
-                </StyledContainer>
-            </PageContainer>
-        );
-    }
-
+    const resultData = buildResultData(state.problems, state.expiredIndices ?? []);
     const correctCount = resultData.filter((r) => r.isCorrect).length;
-    const earnedPoints = correctCount * 50;
+    const earnedPoints = correctCount * POINTS_PER_CORRECT;
 
     return (
         <PageContainer>
             <StyledContainer>
                 <div className="content">
-                    <QuizScoreSection totalPoints={9999} earnedPoints={earnedPoints} />
+                    <QuizScoreSection totalPoints={earnedPoints} earnedPoints={earnedPoints} />
                     <QuizResultList resultData={resultData} correctCount={correctCount} />
                 </div>
                 <div className="footer">
-                    <button className="home-btn" onClick={() => navigate('/')}>
+                    <button type="button" className="home-btn" onClick={() => navigate('/')}>
                         메인 화면으로 돌아가기
                     </button>
                 </div>
