@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import useIsland from '../api/hooks/useIsland';
 import OAuthAPI from '../api/oauth';
 
 const KakaoRedirect = () => {
     const [search] = useSearchParams();
     const navigate = useNavigate();
+    const { clearMe } = useIsland();
 
     useEffect(() => {
         const code = search.get('code');
@@ -16,9 +18,12 @@ const KakaoRedirect = () => {
             return;
         }
         OAuthAPI.kakao(code)
-            .then(() => navigate(state ?? '/', { replace: true }))
+            .then(() => {
+                clearMe();
+                navigate(state ?? '/', { replace: true });
+            })
             .catch(() => navigate('/login', { replace: true }));
-    }, [navigate, search]);
+    }, [clearMe, navigate, search]);
 
     return <></>;
 };

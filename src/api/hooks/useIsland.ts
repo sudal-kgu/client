@@ -28,7 +28,9 @@ const useIsland = () => {
         setIsOpen(true);
     }, [error, setIsOpen]);
 
-    return { island, isLoading, error, createIsland: mutate, hasIsland: !isOpen };
+    const clearMe = () => queryClient.removeQueries({ queryKey: ['me'] });
+
+    return { island, isLoading, error, createIsland: mutate, hasIsland: !isOpen, clearMe };
 };
 
 export default useIsland;
