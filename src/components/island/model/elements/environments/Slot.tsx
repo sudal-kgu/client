@@ -3,8 +3,11 @@ import { useState } from 'react';
 import type { ThreeEvent } from '@react-three/fiber';
 
 import type { IActivatedSlot, IInactivatedSlot } from '../../../../../api/types';
+import useBuildModal from '../../../../../hooks/store/useBuildModal';
+import useBuildingManageModal from '../../../../../hooks/store/useBuildingManageModal';
 import useSlotActivateModal from '../../../../../hooks/store/useSlotActivateModal';
 import type { ISlotPosition } from '../../config/types';
+import Building from './Building';
 
 interface Props {
     position: ISlotPosition;
@@ -28,16 +31,75 @@ const COLORS = {
     },
 };
 
+const SlotPlatform = ({
+    activated,
+    hovered,
+    showIndicator,
+}: {
+    activated: boolean;
+    hovered: boolean;
+    showIndicator: boolean;
+}) => {
+    const c = activated ? COLORS.active : COLORS.inactive;
+    return (
+        <>
+            <mesh position={[0, 0.015, 0]} receiveShadow>
+                <cylinderGeometry args={[1.18, 1.28, 0.06, 10]} />
+                <meshLambertMaterial color={hovered ? c.outer.hover : c.outer.base} />
+            </mesh>
+            <mesh position={[0, 0.07, 0]} receiveShadow>
+                <cylinderGeometry args={[1.05, 1.15, 0.1, 10]} />
+                <meshLambertMaterial color={hovered ? c.inner.hover : c.inner.base} />
+            </mesh>
+            {showIndicator && (
+                <>
+                    {Array.from({ length: 8 }, (_, i) => {
+                        const angle = (i / 8) * Math.PI * 2;
+                        return (
+                            <mesh
+                                key={i}
+                                position={[Math.cos(angle) * 0.98, 0.1, Math.sin(angle) * 0.98]}
+                                castShadow
+                            >
+                                <cylinderGeometry args={[0.055, 0.07, 0.22, 6]} />
+                                <meshLambertMaterial
+                                    color={hovered ? c.stake.hover : c.stake.base}
+                                    emissive={hovered && !activated ? '#503020' : '#000000'}
+                                    emissiveIntensity={hovered && !activated ? 0.2 : 0}
+                                />
+                            </mesh>
+                        );
+                    })}
+                    <mesh position={[0, 0.09, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                        <torusGeometry args={[1.1, 0.018, 6, 32]} />
+                        <meshLambertMaterial
+                            color={hovered ? c.ring.hover : c.ring.base}
+                            emissive={hovered ? c.ringEmissive.hover : c.ringEmissive.base}
+                            emissiveIntensity={hovered ? 0.6 : 0.15}
+                        />
+                    </mesh>
+                </>
+            )}
+        </>
+    );
+};
+
 const Slot = ({ slot, position }: Props) => {
     const [hovered, setHovered] = useState(false);
-    const { open } = useSlotActivateModal();
+    const { open: openActivate } = useSlotActivateModal();
+    const { open: openBuild } = useBuildModal();
+    const { open: openManage } = useBuildingManageModal();
+
+    const hasBuilding = slot.activated && slot.building !== null;
 
     const handleClick = (e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
         if (!slot.activated) {
-            open(slot.slotNumber);
+            openActivate(slot.slotNumber);
+        } else if (slot.building === null) {
+            openBuild(slot.slotNumber);
         } else {
-            console.log('건물 생성', position.id);
+            openManage(slot.slotNumber, slot.building);
         }
     };
 
@@ -52,8 +114,6 @@ const Slot = ({ slot, position }: Props) => {
         document.body.style.cursor = 'default';
     };
 
-    const c = slot.activated ? COLORS.active : COLORS.inactive;
-
     return (
         <group
             position={position.pos}
@@ -62,39 +122,12 @@ const Slot = ({ slot, position }: Props) => {
             onPointerOver={handlePointerOver}
             onPointerOut={handlePointerOut}
         >
-            <mesh position={[0, 0.015, 0]} receiveShadow>
-                <cylinderGeometry args={[1.18, 1.28, 0.06, 10]} />
-                <meshLambertMaterial color={hovered ? c.outer.hover : c.outer.base} />
-            </mesh>
-            <mesh position={[0, 0.07, 0]} receiveShadow>
-                <cylinderGeometry args={[1.05, 1.15, 0.1, 10]} />
-                <meshLambertMaterial color={hovered ? c.inner.hover : c.inner.base} />
-            </mesh>
-            {Array.from({ length: 8 }, (_, i) => {
-                const angle = (i / 8) * Math.PI * 2;
-                return (
-                    <mesh
-                        key={i}
-                        position={[Math.cos(angle) * 0.98, 0.1, Math.sin(angle) * 0.98]}
-                        castShadow
-                    >
-                        <cylinderGeometry args={[0.055, 0.07, 0.22, 6]} />
-                        <meshLambertMaterial
-                            color={hovered ? c.stake.hover : c.stake.base}
-                            emissive={hovered && !slot.activated ? '#503020' : '#000000'}
-                            emissiveIntensity={hovered && !slot.activated ? 0.2 : 0}
-                        />
-                    </mesh>
-                );
-            })}
-            <mesh position={[0, 0.09, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                <torusGeometry args={[1.1, 0.018, 6, 32]} />
-                <meshLambertMaterial
-                    color={hovered ? c.ring.hover : c.ring.base}
-                    emissive={hovered ? c.ringEmissive.hover : c.ringEmissive.base}
-                    emissiveIntensity={hovered ? 0.6 : 0.15}
-                />
-            </mesh>
+            <SlotPlatform
+                activated={slot.activated}
+                hovered={hovered}
+                showIndicator={!hasBuilding}
+            />
+            {hasBuilding && <Building building={slot.building!} />}
         </group>
     );
 };

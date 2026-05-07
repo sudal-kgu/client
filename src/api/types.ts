@@ -88,9 +88,34 @@ export interface IInactivatedSlot extends ISlot {
     };
 }
 
+export interface IBuilding {
+    buildingId: number;
+    buildingMetadataId: number;
+    category: BuildingType;
+    name: string;
+    model: string;
+    fuelExpiredAt: string | null;
+}
+
 export interface IActivatedSlot extends ISlot {
     activated: true;
-    building: null;
+    building: IBuilding | null;
+}
+
+export const enum BuildingType {
+    PRODUCTION = 'PRODUCTION',
+    PURIFICATION = 'PURIFICATION',
+}
+
+export interface IBuildingCatalog {
+    buildingMetadataId: number;
+    category: BuildingType;
+    costGems: number;
+    costShells: number;
+    model: string;
+    name: string;
+    pph: number;
+    requiredLevel: number;
 }
 
 export interface IslandInfo {
