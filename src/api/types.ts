@@ -75,6 +75,24 @@ export const enum CurrencyType {
     FUEL = 'fuel',
 }
 
+export interface ISlot {
+    slotNumber: number;
+}
+
+export interface IInactivatedSlot extends ISlot {
+    activated: false;
+    building: null;
+    resource: {
+        resourceType: 'SHELL';
+        unlockCost: number;
+    };
+}
+
+export interface IActivatedSlot extends ISlot {
+    activated: true;
+    building: null;
+}
+
 export interface IslandInfo {
     level: number;
     islandName: string;

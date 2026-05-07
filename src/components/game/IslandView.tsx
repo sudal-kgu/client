@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import type { IslandInfo } from '../../api/types';
+import SlotActivateModal from '../island/modal/SlotActivateModal';
 import IslandScene from '../island/model/IslandScene';
 import CurrencyBar from './CurrencyBar';
 import LevelInfo from './LevelInfo';
@@ -19,6 +20,7 @@ const IslandView = ({
         <StyledContainer>
             <CurrencyBar />
             <IslandScene />
+            <SlotActivateModal />
             <LevelInfo
                 level={level}
                 islandName={islandName}
