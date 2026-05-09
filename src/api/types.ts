@@ -44,6 +44,25 @@ export interface Island {
     recyclingContributionExp: number;
 }
 
+export interface Item {
+    currentCount: number;
+    expReward: number;
+    itemId: number;
+    maxCount: number;
+    name: string;
+    price: number;
+    purchasable: boolean;
+    unlockLevel: number;
+}
+
+export interface ShopPurchaseResponse {
+    itemId: number;
+    itemName: string;
+    remainingShell: number;
+    currentCount: number;
+    expReward: number;
+}
+
 const TrashItemSchema = z.object({
     trashUuid: z.string(),
     filename: z.string(),

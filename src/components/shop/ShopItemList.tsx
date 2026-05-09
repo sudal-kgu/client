@@ -1,53 +1,23 @@
 import styled from 'styled-components';
 
+import useShop from '../../api/hooks/useShop';
 import ShopItemCard from './ShopItemCard';
-import { FACILITY_ITEMS, PURIFY_ITEMS, REWARD_ITEMS, type TabType } from './shopData';
 
-interface Props {
-    activeTab: TabType;
-    currentLevel: number;
-    shell: number;
-    gem: number;
-}
+const ShopItemList = () => {
+    const { items, isLoading, purchase, isPurchasing } = useShop();
 
-const TAB_CONFIG: Record<TabType, { costIcon: string; buttonLabel: string }> = {
-    정화: { costIcon: '⚡', buttonLabel: '정화하기' },
-    시설: { costIcon: '⚡', buttonLabel: '건설하기' },
-    상품: { costIcon: '💎', buttonLabel: '교환하기' },
-};
-
-const ITEMS_BY_TAB = {
-    정화: PURIFY_ITEMS,
-    시설: FACILITY_ITEMS,
-    상품: REWARD_ITEMS,
-};
-
-const ShopItemList = ({ activeTab, currentLevel, shell, gem }: Props) => {
-    const items = ITEMS_BY_TAB[activeTab];
-    const { costIcon, buttonLabel } = TAB_CONFIG[activeTab];
-    const currentCurrency = activeTab === '상품' ? gem : shell;
-    const handleAction = (id: number) => {
-        // 구매 API 연동
-        console.log('구매:', id);
+    const handleAction = (itemId: number) => {
+        if (isPurchasing) return;
+        purchase(itemId);
     };
 
-    // API 연동 후 서버에서 내려주는 경험치 기반 해금 조건으로 교체 필요
+    if (isLoading) return <Empty>불러오는 중...</Empty>;
+    if (items.length === 0) return <Empty>정화 아이템이 없습니다.</Empty>;
+
     return (
         <StyledContainer>
             {items.map((item) => (
-                <ShopItemCard
-                    key={item.id}
-                    item={{
-                        ...item,
-                        locked:
-                            (item.requiredLevel !== undefined &&
-                                currentLevel < item.requiredLevel) ||
-                            currentCurrency < item.cost,
-                    }}
-                    costIcon={costIcon}
-                    buttonLabel={buttonLabel}
-                    onAction={handleAction}
-                />
+                <ShopItemCard key={item.itemId} item={item} onAction={handleAction} />
             ))}
         </StyledContainer>
     );
@@ -65,6 +35,15 @@ const StyledContainer = styled.div`
     &::-webkit-scrollbar {
         display: none;
     }
+`;
+
+const Empty = styled.div`
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: ${({ theme }) => theme.colors.black_op_70};
 `;
 
 export default ShopItemList;
