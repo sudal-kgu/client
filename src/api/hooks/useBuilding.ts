@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import { toast } from 'sonner';
 
 import BuildingAPI from '../building';
-import type { Currency, IActivatedSlot, IInactivatedSlot } from '../types';
+import type { Currency, IActivatedSlot, IInactivatedSlot, Response } from '../types';
 
 type SlotCache = (IActivatedSlot | IInactivatedSlot)[];
 
@@ -38,6 +40,9 @@ const useBuilding = () => {
             updateSlotCache(slot);
             updateCurrencyCache(resource);
         },
+        onError: (error: AxiosError<Response<unknown>>) => {
+            toast.error(error.response?.data?.message ?? error.message);
+        },
     });
 
     const { mutate: operate, isPending: isOperating } = useMutation({
@@ -45,6 +50,9 @@ const useBuilding = () => {
         onSuccess: () => {
             invalidateSlots();
             invalidateCurrency();
+        },
+        onError: (error: AxiosError<Response<unknown>>) => {
+            toast.error(error.response?.data?.message ?? error.message);
         },
     });
 
@@ -54,6 +62,9 @@ const useBuilding = () => {
             invalidateSlots();
             invalidateCurrency();
         },
+        onError: (error: AxiosError<Response<unknown>>) => {
+            toast.error(error.response?.data?.message ?? error.message);
+        },
     });
 
     const { mutate: removeBuilding, isPending: isRemoving } = useMutation({
@@ -61,6 +72,9 @@ const useBuilding = () => {
         onSuccess: ({ slot, resource }) => {
             updateSlotCache(slot);
             updateCurrencyCache(resource);
+        },
+        onError: (error: AxiosError<Response<unknown>>) => {
+            toast.error(error.response?.data?.message ?? error.message);
         },
     });
 

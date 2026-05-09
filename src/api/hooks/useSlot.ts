@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import { toast } from 'sonner';
 
 import SlotAPI from '../slot';
+import type { Response } from '../types';
 
 const useSlot = () => {
     const queryClient = useQueryClient();
@@ -19,6 +22,9 @@ const useSlot = () => {
         mutationFn: SlotAPI.activateSlot,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['slots'] });
+        },
+        onError: (error: AxiosError<Response<unknown>>) => {
+            toast.error(error.response?.data?.message ?? error.message);
         },
     });
 
