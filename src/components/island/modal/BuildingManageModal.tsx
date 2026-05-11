@@ -4,8 +4,10 @@ import ReactModal from 'react-modal';
 import styled from 'styled-components';
 
 import useBuilding from '../../../api/hooks/useBuilding';
+import useSlot from '../../../api/hooks/useSlot';
 import { BuildingType } from '../../../api/types';
 import useBuildingManageModal from '../../../hooks/store/useBuildingManageModal';
+import DateUtils from '../../../utils/date-utils';
 
 const CATEGORY_META: Record<string, { icon: string; label: string }> = {
     [BuildingType.PRODUCTION]: { icon: '🏭', label: '생산 시설' },
@@ -13,27 +15,38 @@ const CATEGORY_META: Record<string, { icon: string; label: string }> = {
 };
 
 const BuildingManageModal = () => {
-    const { isOpen, slotNumber, building, close } = useBuildingManageModal();
+    const { isOpen, slotNumber, close } = useBuildingManageModal();
+    const { slots } = useSlot();
     const { operate, harvest, removeBuilding, isBusy } = useBuilding();
-    const [confirmingDelete, setConfirmingDelete] = useState(false);
 
-    useEffect(() => {
-        setConfirmingDelete(false);
-    }, [isOpen, slotNumber]);
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
+    const [remainingSeconds, setRemainingSeconds] = useState(0);
+
+    const slot = slots.find((s) => s.slotNumber === slotNumber);
+    const building = slot?.activated ? slot.building : null;
 
     const meta = building
         ? (CATEGORY_META[building.category] ?? { icon: '🏗️', label: building.category })
         : null;
     const isOperating = !!building?.fuelExpiredAt && new Date(building.fuelExpiredAt) > new Date();
 
+    useEffect(() => {
+        if (!isOperating || !building?.fuelExpiredAt) return;
+        setRemainingSeconds(DateUtils.getRemainingSeconds(building.fuelExpiredAt));
+        const timer = setInterval(() => {
+            setRemainingSeconds(DateUtils.getRemainingSeconds(building.fuelExpiredAt!));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [isOperating, building?.fuelExpiredAt]);
+
     const handleOperate = () => {
         if (slotNumber === null) return;
-        operate(slotNumber, { onSuccess: close });
+        operate(slotNumber);
     };
 
     const handleHarvest = () => {
         if (slotNumber === null) return;
-        harvest(slotNumber, { onSuccess: close });
+        harvest(slotNumber);
     };
 
     const handleDelete = () => {
@@ -73,6 +86,11 @@ const BuildingManageModal = () => {
                         <div className="info">
                             <span className="name">{building.name}</span>
                             <span className="label">{meta.label}</span>
+                            {isOperating && (
+                                <span className="countdown">
+                                    ⏱ {DateUtils.formatRemaining(remainingSeconds)} 후 소진
+                                </span>
+                            )}
                         </div>
                         <div className={`status-badge ${isOperating ? 'running' : 'idle'}`}>
                             {isOperating ? '운영 중' : '대기 중'}
@@ -153,6 +171,12 @@ const StyledContainer = styled.div`
                 font-size: 12px;
                 color: ${({ theme }) => theme.colors.black};
                 opacity: 0.5;
+            }
+
+            .countdown {
+                font-size: 11px;
+                font-weight: 600;
+                color: #1a6b2e;
             }
         }
 
