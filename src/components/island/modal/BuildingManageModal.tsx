@@ -7,6 +7,7 @@ import useBuilding from '../../../api/hooks/useBuilding';
 import useSlot from '../../../api/hooks/useSlot';
 import { BuildingType } from '../../../api/types';
 import useBuildingManageModal from '../../../hooks/store/useBuildingManageModal';
+import cn from '../../../utils/cn';
 import DateUtils from '../../../utils/date-utils';
 
 const CATEGORY_META: Record<string, { icon: string; label: string }> = {
@@ -92,7 +93,7 @@ const BuildingManageModal = () => {
                                 </span>
                             )}
                         </div>
-                        <div className={`status-badge ${isOperating ? 'running' : 'idle'}`}>
+                        <div className={cn('status-badge', isOperating ? 'running' : 'idle')}>
                             {isOperating ? '운영 중' : '대기 중'}
                         </div>
                     </div>
@@ -119,7 +120,7 @@ const BuildingManageModal = () => {
 
                     <div className="danger-zone">
                         <button
-                            className={`delete ${confirmingDelete ? 'confirming' : ''}`}
+                            className={cn('delete', { confirming: confirmingDelete })}
                             onClick={
                                 confirmingDelete ? handleDelete : () => setConfirmingDelete(true)
                             }

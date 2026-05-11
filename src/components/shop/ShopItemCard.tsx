@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import type { Item } from '../../api/types';
+import cn from '../../utils/cn';
 
 interface Props {
     item: Item;
@@ -12,7 +13,7 @@ const ShopItemCard = ({ item, onAction }: Props) => {
     const isMaxed = item.currentCount >= item.maxCount;
 
     return (
-        <StyledContainer className={isDisabled ? 'disabled' : ''}>
+        <StyledContainer className={cn({ disabled: isDisabled })}>
             <Info>
                 <div className="name">
                     {item.name}

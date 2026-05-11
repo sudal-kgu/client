@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { FiCheck, FiChevronDown, FiChevronUp, FiX } from 'react-icons/fi';
 import styled from 'styled-components';
+import cn from '../../utils/cn';
 
 export interface ResultProblemData {
     problemId: number;
@@ -28,7 +29,7 @@ const QuizResultItem = ({ item, index }: Props) => {
         <StyledResultItem $isCorrect={item.isCorrect}>
             <button className="header" onClick={() => setIsOpen((prev) => !prev)}>
                 <div className="left">
-                    <span className={`icon ${item.isCorrect ? 'correct' : 'wrong'}`}>
+                    <span className={cn('icon', item.isCorrect ? 'correct' : 'wrong')}>
                         {item.isCorrect ? <FiCheck strokeWidth={3} /> : <FiX strokeWidth={3} />}
                     </span>
                     <span className="label">문제 {index + 1}</span>
