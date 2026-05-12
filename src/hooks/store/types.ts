@@ -1,4 +1,4 @@
-import type { IBuilding } from '../../api/types';
+import type { IBuilding, IInactivatedSlot } from '../../api/types';
 
 export interface IslandCreateModal {
     isOpen: boolean;
@@ -7,8 +7,8 @@ export interface IslandCreateModal {
 
 export interface SlotActivateModal {
     isOpen: boolean;
-    slotNumber: number | null;
-    open: (slotNumber: number) => void;
+    slot: IInactivatedSlot | null;
+    open: (slot: IInactivatedSlot) => void;
     close: () => void;
 }
 

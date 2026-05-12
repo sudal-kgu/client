@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import type { ThreeEvent } from '@react-three/fiber';
+import { toast } from 'sonner';
 
 import type { IActivatedSlot, IInactivatedSlot } from '../../../../../api/types';
 import useBuildModal from '../../../../../hooks/store/useBuildModal';
@@ -12,9 +13,17 @@ import Building from './Building';
 interface Props {
     position: ISlotPosition;
     slot: IInactivatedSlot | IActivatedSlot;
+    canActivate: boolean;
 }
 
 const COLORS = {
+    locked: {
+        outer: { base: '#555560', hover: '#666672' },
+        inner: { base: '#484854', hover: '#585868' },
+        stake: { base: '#505060', hover: '#606074' },
+        ring: { base: '#484858', hover: '#584830' },
+        ringEmissive: { base: '#101020', hover: '#301808' },
+    },
     active: {
         outer: { base: '#8a7060', hover: '#b8a090' },
         inner: { base: '#a09080', hover: '#d4c4b0' },
@@ -35,12 +44,14 @@ const SlotPlatform = ({
     activated,
     hovered,
     showIndicator,
+    locked,
 }: {
     activated: boolean;
     hovered: boolean;
     showIndicator: boolean;
+    locked: boolean;
 }) => {
-    const c = activated ? COLORS.active : COLORS.inactive;
+    const c = activated ? COLORS.active : locked ? COLORS.locked : COLORS.inactive;
     return (
         <>
             <mesh position={[0, 0.015, 0]} receiveShadow>
@@ -84,18 +95,23 @@ const SlotPlatform = ({
     );
 };
 
-const Slot = ({ slot, position }: Props) => {
+const Slot = ({ slot, position, canActivate }: Props) => {
     const [hovered, setHovered] = useState(false);
     const { open: openActivate } = useSlotActivateModal();
     const { open: openBuild } = useBuildModal();
     const { open: openManage } = useBuildingManageModal();
 
     const hasBuilding = slot.activated && slot.building !== null;
+    const isLocked = !slot.activated && !canActivate;
 
     const handleClick = (e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
         if (!slot.activated) {
-            openActivate(slot.slotNumber);
+            if (!canActivate) {
+                toast.warning('슬롯을 더 이상 활성화할 수 없어요.');
+                return;
+            }
+            openActivate(slot);
         } else if (slot.building === null) {
             openBuild(slot.slotNumber);
         } else {
@@ -126,6 +142,7 @@ const Slot = ({ slot, position }: Props) => {
                 activated={slot.activated}
                 hovered={hovered}
                 showIndicator={!hasBuilding}
+                locked={isLocked}
             />
             {hasBuilding && <Building building={slot.building!} />}
         </group>

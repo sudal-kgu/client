@@ -5,12 +5,12 @@ import useSlot from '../../../api/hooks/useSlot';
 import useSlotActivateModal from '../../../hooks/store/useSlotActivateModal';
 
 const SlotActivateModal = () => {
-    const { isOpen, slotNumber, close } = useSlotActivateModal();
-    const { activateSlot, isActivating } = useSlot();
+    const { isOpen, slot, close } = useSlotActivateModal();
+    const { activateCost, activateSlot, isActivating } = useSlot();
 
     const handleConfirm = () => {
-        if (slotNumber === null) return;
-        activateSlot(slotNumber, { onSuccess: close });
+        if (!slot) return;
+        activateSlot(slot.slotNumber, { onSuccess: close });
     };
 
     return (
@@ -37,6 +37,12 @@ const SlotActivateModal = () => {
                 <div className="icon">🏗️</div>
                 <p className="title">슬롯 활성화</p>
                 <p className="description">이 슬롯을 활성화하면{'\n'}건물을 지을 수 있어요.</p>
+                {activateCost && (
+                    <div className="cost">
+                        <span className="cost-label">활성화 비용</span>
+                        <span className="cost-value">🐚 {activateCost.shell.toLocaleString()}</span>
+                    </div>
+                )}
                 <div className="actions">
                     <button className="cancel" onClick={close} disabled={isActivating}>
                         취소
@@ -75,6 +81,28 @@ const StyledContainer = styled.div`
         color: ${({ theme }) => theme.colors.black};
         opacity: 0.6;
         line-height: 1.5;
+    }
+
+    .cost {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px 16px;
+        background-color: ${({ theme }) => theme.colors.primary100};
+        border-radius: 10px;
+
+        .cost-label {
+            font-size: 13px;
+            color: ${({ theme }) => theme.colors.black};
+            opacity: 0.6;
+        }
+
+        .cost-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: ${({ theme }) => theme.colors.primary800};
+        }
     }
 
     .actions {

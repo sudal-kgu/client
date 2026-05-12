@@ -6,7 +6,10 @@ import Slot from './Slot';
 import Terrain from './Terrain';
 
 const IslandMesh = () => {
-    const { slots } = useSlot();
+    const { slots, maxActivatableSlots } = useSlot();
+    const activatedCount = slots.filter((s) => s.activated).length;
+    const canActivate = activatedCount < maxActivatableSlots;
+
     return (
         <group>
             <Terrain />
@@ -15,7 +18,12 @@ const IslandMesh = () => {
                 <Garbage key={position.id} postion={position} />
             ))}
             {slots.map((slot, index) => (
-                <Slot key={index} position={BUILDING_SLOTS[index]} slot={slot} />
+                <Slot
+                    key={index}
+                    position={BUILDING_SLOTS[index]}
+                    slot={slot}
+                    canActivate={canActivate}
+                />
             ))}
         </group>
     );

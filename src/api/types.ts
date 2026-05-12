@@ -101,10 +101,6 @@ export interface ISlot {
 export interface IInactivatedSlot extends ISlot {
     activated: false;
     building: null;
-    resource: {
-        resourceType: 'SHELL';
-        unlockCost: number;
-    };
 }
 
 export interface IBuilding {
@@ -119,6 +115,17 @@ export interface IBuilding {
 export interface IActivatedSlot extends ISlot {
     activated: true;
     building: IBuilding | null;
+}
+
+export interface ISlotsResponse {
+    slots: (IActivatedSlot | IInactivatedSlot)[];
+    maxActivatableSlots: number;
+}
+
+export interface IActivateSlotResponse {
+    resource: Currency;
+    slot: IActivatedSlot;
+    nextCost: Pick<Currency, CurrencyType.SHELL>;
 }
 
 export const enum BuildingType {

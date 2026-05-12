@@ -3,16 +3,25 @@ import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
 
 import BuildingAPI from '../building';
-import type { Currency, IActivatedSlot, IInactivatedSlot, Response } from '../types';
-
-type SlotCache = (IActivatedSlot | IInactivatedSlot)[];
+import type {
+    Currency,
+    IActivatedSlot,
+    IInactivatedSlot,
+    ISlotsResponse,
+    Response,
+} from '../types';
 
 const useBuilding = () => {
     const queryClient = useQueryClient();
 
     const updateSlotCache = (slot: IActivatedSlot | IInactivatedSlot) => {
-        queryClient.setQueryData<SlotCache>(['slots'], (prev) =>
-            prev?.map((s) => (s.slotNumber === slot.slotNumber ? slot : s)),
+        queryClient.setQueryData<ISlotsResponse>(['slots'], (prev) =>
+            prev
+                ? {
+                      ...prev,
+                      slots: prev.slots.map((s) => (s.slotNumber === slot.slotNumber ? slot : s)),
+                  }
+                : prev,
         );
     };
 
