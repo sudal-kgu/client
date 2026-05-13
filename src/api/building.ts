@@ -28,7 +28,7 @@ const BuildingAPI = {
         return result.data.data;
     },
     operate: async (slotNumber: number) => {
-        const result = await api.post<Response<void>>(`/v1/buildings/${slotNumber}/operate`);
+        await api.post<Response<void>>(`/v1/buildings/${slotNumber}/operate`);
     },
     harvest: async (slotNumber: number) => {
         const result = await api.post<Response<Number>>(`/v1/buildings/${slotNumber}/harvest`);
