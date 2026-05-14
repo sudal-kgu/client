@@ -1,80 +1,88 @@
 import styled from 'styled-components';
 
 interface Props {
-    totalPoints: number;
-    earnedPoints: number;
+    earnedShell: number;
+    earnedFuel: number;
+    earnedExp: number;
 }
 
-const QuizScoreSection = ({ totalPoints, earnedPoints }: Props) => {
+const QuizScoreSection = ({ earnedShell, earnedFuel, earnedExp }: Props) => {
     return (
         <StyledContainer>
-            <div className="score-wrapper">
-                <div className="points-badge">+{earnedPoints}</div>
-                <div className="score-circle">
-                    <div className="score-content">
-                        <span className="score-number">{totalPoints}</span>
-                        <span className="score-unit">pt</span>
-                    </div>
+            <div className="reward-cards">
+                <div className="reward-card">
+                    <div className="icon-circle">🐚</div>
+                    <div className="reward-label">조개</div>
+                    <div className="reward-value">+{earnedShell}</div>
+                </div>
+                <div className="reward-card">
+                    <div className="icon-circle">⛽</div>
+                    <div className="reward-label">연료</div>
+                    <div className="reward-value">+{earnedFuel}</div>
                 </div>
             </div>
+            <div className="exp-bar">+{earnedExp} EXP</div>
         </StyledContainer>
     );
 };
 
 const StyledContainer = styled.div`
     display: flex;
-    justify-content: center;
-    padding-top: 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
 
-    .score-wrapper {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+    .reward-cards {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+
+        .reward-card {
+            flex: 1;
+            background-color: ${({ theme }) => theme.colors.white};
+            border-radius: 16px;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: ${({ theme }) => theme.shadows.default};
+
+            .icon-circle {
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                background-color: ${({ theme }) => theme.colors.primary200};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 32px;
+                line-height: 1;
+            }
+
+            .reward-label {
+                font-size: 14px;
+                font-weight: 500;
+                color: ${({ theme }) => theme.colors.black_op_70};
+            }
+
+            .reward-value {
+                font-size: 28px;
+                font-weight: 700;
+                color: ${({ theme }) => theme.colors.black};
+                line-height: 1;
+            }
+        }
     }
 
-    .points-badge {
-        position: absolute;
-        top: -20px;
-        right: -36px;
-        background-color: ${({ theme }) => theme.colors.primary200};
+    .exp-bar {
+        background-color: ${({ theme }) => theme.colors.primary400};
         color: ${({ theme }) => theme.colors.primary700};
         font-size: 16px;
         font-weight: 700;
-        padding: 6px 16px;
-        border-radius: 12px;
+        padding: 10px 32px;
+        border-radius: 999px;
         white-space: nowrap;
-        z-index: 1;
-    }
-
-    .score-circle {
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        background-color: ${({ theme }) => theme.colors.white};
-        border: 10px solid ${({ theme }) => theme.colors.primary200};
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .score-content {
-        display: flex;
-        align-items: baseline;
-
-        .score-number {
-            font-size: 48px;
-            font-weight: 700;
-            color: ${({ theme }) => theme.colors.primary700};
-            line-height: 1;
-        }
-
-        .score-unit {
-            font-size: 16px;
-            font-weight: 500;
-            color: ${({ theme }) => theme.colors.primary700};
-            margin-left: 2px;
-        }
     }
 `;
 

@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
+
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { QuizChoice, QuizProblem } from '../api/types';
+import type { QuizChoice, QuizCompleteResult, QuizProblem } from '../api/types';
 import PageContainer from '../components/common/PageContainer';
 import { type ResultProblemData } from '../components/quiz/QuizResultItem';
 import QuizResultList from '../components/quiz/QuizResultList';
@@ -12,6 +15,7 @@ const POINTS_PER_CORRECT = 50;
 interface LocationState {
     problems: QuizProblem[];
     expiredIndices: boolean[];
+    reward?: QuizCompleteResult | null;
 }
 
 const resolveCorrectOptionId = (answer: number, sortedChoices: QuizChoice[]): number => {
@@ -58,7 +62,17 @@ const buildResultData = (problems: QuizProblem[], expiredIndices: boolean[]): Re
 
 const QuizResult = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const { state } = useLocation() as { state: LocationState | null };
+
+    // reward/island 데이터 수신 및 island 캐시 갱신
+    console.log('QuizResult reward/island 데이터:', state?.reward);
+
+    useEffect(() => {
+        if (state?.reward?.island) {
+            queryClient.setQueryData(['me'], state.reward.island);
+        }
+    }, [state?.reward?.island, queryClient]);
 
     const renderEmpty = () => (
         <PageContainer>
@@ -79,13 +93,20 @@ const QuizResult = () => {
 
     const resultData = buildResultData(state.problems, state.expiredIndices ?? []);
     const correctCount = resultData.filter((r) => r.isCorrect).length;
-    const earnedPoints = correctCount * POINTS_PER_CORRECT;
+
+    const earnedShell = state.reward?.earnedShell ?? correctCount * POINTS_PER_CORRECT;
+    const earnedFuel = state.reward?.earnedFuel ?? correctCount * POINTS_PER_CORRECT;
+    const earnedExp = state.reward?.earnedExp ?? 0;
 
     return (
         <PageContainer>
             <StyledContainer>
                 <div className="content">
-                    <QuizScoreSection totalPoints={earnedPoints} earnedPoints={earnedPoints} />
+                    <QuizScoreSection
+                        earnedShell={earnedShell}
+                        earnedFuel={earnedFuel}
+                        earnedExp={earnedExp}
+                    />
                     <QuizResultList resultData={resultData} correctCount={correctCount} />
                 </div>
                 <div className="footer">

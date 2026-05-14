@@ -137,8 +137,13 @@ const Quiz = () => {
 
             clearAdvancedIndices(sessionId);
 
+            // complete API 호출 및 보상 응답 수신
+            console.log('completeSession 요청 sessionId:', sessionId);
+            let completeResult = null;
             try {
-                await QuizAPI.completeSession(sessionId);
+                completeResult = await QuizAPI.completeSession(sessionId);
+                // complete API 응답 수신
+                console.log('completeSession 응답:', completeResult);
             } catch {}
 
             let finalProblems = null;
@@ -148,11 +153,11 @@ const Quiz = () => {
 
             if (finalProblems && finalProblems.length > 0) {
                 navigate(resultPath, {
-                    state: { problems: finalProblems, expiredIndices },
+                    state: { problems: finalProblems, expiredIndices, reward: completeResult },
                 });
             } else {
                 navigate(resultPath, {
-                    state: { questions, selectedOptionIds, expiredIndices },
+                    state: { questions, selectedOptionIds, expiredIndices, reward: completeResult },
                 });
             }
         },

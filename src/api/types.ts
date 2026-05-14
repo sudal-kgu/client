@@ -51,33 +51,6 @@ export interface Island {
     };
 }
 
-export interface Item {
-    currentCount: number;
-    expReward: number;
-    itemId: number;
-    maxCount: number;
-    name: string;
-    price: number;
-    purchasable: boolean;
-    unlockLevel: number;
-}
-
-export interface ShopPurchaseResponse {
-    island: Island;
-    notice: {
-        reachedMaxLevel: boolean;
-        maxSlotCount: number;
-        unlockedItems: Item[];
-        unlockedBuildings: IBuildingCatalog[];
-    } | null;
-    purchased: {
-        itemId: number;
-        currentCount: number;
-        itemName: string;
-        remainingShell: number;
-    };
-}
-
 const TrashItemSchema = z.object({
     trashUuid: z.string(),
     filename: z.string(),
@@ -215,6 +188,7 @@ export interface QuizSession {
     problems: number[];
 }
 
+<<<<<<< HEAD
 export interface IRanking {
     cumulativeExp: number;
     level: number;
@@ -260,3 +234,38 @@ export const REGION_LABELS: Record<Region, string> = {
     [Region.JEONNAM]: '전남',
     [Region.JEJU]: '제주',
 };
+=======
+export interface QuizCompleteUnlockedItem {
+    itemId: number;
+    name: string;
+    price: number;
+    maxCount: number;
+    currentCount: number;
+    unlockLevel: number;
+    expReward: number;
+    purchasable: boolean;
+}
+
+export interface QuizCompleteUnlockedBuilding {
+    buildingMetadataId: number;
+    name: string;
+    category: string;
+    model: string;
+    requiredLevel: number;
+    costShells: number;
+    costGems: number;
+    pph: number;
+}
+
+export interface QuizCompleteResult {
+    earnedShell: number;
+    earnedFuel: number;
+    earnedExp: number;
+    island: Island;
+    notice: {
+        reachedMaxLevel: boolean;
+        unlockedItems: QuizCompleteUnlockedItem[];
+        unlockedBuildings: QuizCompleteUnlockedBuilding[];
+    } | null;
+}
+>>>>>>> df62668 (feat: 분리배출 인증 완료 보상 지급 API 연동 초기)
