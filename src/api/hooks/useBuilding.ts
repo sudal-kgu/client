@@ -6,6 +6,7 @@ import BuildingAPI from '../building';
 import type {
     Currency,
     IActivatedSlot,
+    IBuildingMoveRequest,
     IInactivatedSlot,
     ISlotsResponse,
     Response,
@@ -87,7 +88,18 @@ const useBuilding = () => {
         },
     });
 
-    const isBusy = isOperating || isHarvesting || isRemoving;
+    const { mutate: moveBuilding, isPending: isMoving } = useMutation({
+        mutationFn: (move: IBuildingMoveRequest) => BuildingAPI.move(move),
+        onSuccess: ({ fromSlot, toSlot }) => {
+            updateSlotCache(fromSlot);
+            updateSlotCache(toSlot);
+        },
+        onError: (error: AxiosError<Response<unknown>>) => {
+            toast.error(error.response?.data?.message ?? error.message);
+        },
+    });
+
+    const isBusy = isOperating || isHarvesting || isRemoving || isMoving;
 
     return {
         catalogs,
@@ -97,6 +109,8 @@ const useBuilding = () => {
         operate,
         harvest,
         removeBuilding,
+        moveBuilding,
+        isMoving,
         isBusy,
     };
 };

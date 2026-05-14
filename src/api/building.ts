@@ -3,6 +3,8 @@ import type {
     Currency,
     IActivatedSlot,
     IBuildingCatalog,
+    IBuildingMoveRequest,
+    IBuildingMoveResponse,
     IInactivatedSlot,
     Response,
 } from './types';
@@ -25,6 +27,10 @@ const BuildingAPI = {
         const result = await api.delete<Response<{ slot: IInactivatedSlot; resource: Currency }>>(
             `/v1/slots/${slotNumber}/buildings`,
         );
+        return result.data.data;
+    },
+    move: async (move: IBuildingMoveRequest) => {
+        const result = await api.post<Response<IBuildingMoveResponse>>('/v1/buildings/move', move);
         return result.data.data;
     },
     operate: async (slotNumber: number) => {

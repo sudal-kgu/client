@@ -3,9 +3,11 @@ import { useState } from 'react';
 import type { ThreeEvent } from '@react-three/fiber';
 import { toast } from 'sonner';
 
+import useBuilding from '../../../../../api/hooks/useBuilding';
 import type { IActivatedSlot, IInactivatedSlot } from '../../../../../api/types';
 import useBuildModal from '../../../../../hooks/store/useBuildModal';
 import useBuildingManageModal from '../../../../../hooks/store/useBuildingManageModal';
+import useEditMode from '../../../../../hooks/store/useEditMode';
 import useSlotActivateModal from '../../../../../hooks/store/useSlotActivateModal';
 import type { ISlotPosition } from '../../config/types';
 import Building from './Building';
@@ -40,16 +42,27 @@ const COLORS = {
     },
 };
 
+const EDIT_RING: Record<
+    'source' | 'target' | 'disabled',
+    { color: string; emissive: string; intensity: number }
+> = {
+    source: { color: '#d47820', emissive: '#b05010', intensity: 1.2 },
+    target: { color: '#40b860', emissive: '#207040', intensity: 1.2 },
+    disabled: { color: '#303030', emissive: '#000000', intensity: 0 },
+};
+
 const SlotPlatform = ({
     activated,
     hovered,
     showIndicator,
     locked,
+    editState,
 }: {
     activated: boolean;
     hovered: boolean;
     showIndicator: boolean;
     locked: boolean;
+    editState?: 'source' | 'target' | 'disabled';
 }) => {
     const c = activated ? COLORS.active : locked ? COLORS.locked : COLORS.inactive;
     return (
@@ -83,11 +96,19 @@ const SlotPlatform = ({
                     })}
                     <mesh position={[0, 0.09, 0]} rotation={[Math.PI / 2, 0, 0]}>
                         <torusGeometry args={[1.1, 0.018, 6, 32]} />
-                        <meshLambertMaterial
-                            color={hovered ? c.ring.hover : c.ring.base}
-                            emissive={hovered ? c.ringEmissive.hover : c.ringEmissive.base}
-                            emissiveIntensity={hovered ? 0.6 : 0.15}
-                        />
+                        {editState ? (
+                            <meshLambertMaterial
+                                color={EDIT_RING[editState].color}
+                                emissive={EDIT_RING[editState].emissive}
+                                emissiveIntensity={EDIT_RING[editState].intensity}
+                            />
+                        ) : (
+                            <meshLambertMaterial
+                                color={hovered ? c.ring.hover : c.ring.base}
+                                emissive={hovered ? c.ringEmissive.hover : c.ringEmissive.base}
+                                emissiveIntensity={hovered ? 0.6 : 0.15}
+                            />
+                        )}
                     </mesh>
                 </>
             )}
@@ -100,12 +121,34 @@ const Slot = ({ slot, position, canActivate }: Props) => {
     const { open: openActivate } = useSlotActivateModal();
     const { open: openBuild } = useBuildModal();
     const { open: openManage } = useBuildingManageModal();
+    const { isActive: isEditMode, fromSlotNumber, deactivate } = useEditMode();
+    const { moveBuilding } = useBuilding();
 
     const hasBuilding = slot.activated && slot.building !== null;
     const isLocked = !slot.activated && !canActivate;
 
+    const editState = (() => {
+        if (!isEditMode) return undefined;
+        if (slot.slotNumber === fromSlotNumber) return 'source' as const;
+        if (slot.activated) return 'target' as const;
+        return 'disabled' as const;
+    })();
+
     const handleClick = (e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
+
+        if (isEditMode) {
+            if (editState === 'source') {
+                deactivate();
+            } else if (editState === 'target') {
+                moveBuilding(
+                    { fromSlotNumber: fromSlotNumber!, toSlotNumber: slot.slotNumber },
+                    { onSuccess: deactivate },
+                );
+            }
+            return;
+        }
+
         if (!slot.activated) {
             if (!canActivate) {
                 toast.warning('슬롯을 더 이상 활성화할 수 없어요.');
@@ -121,6 +164,7 @@ const Slot = ({ slot, position, canActivate }: Props) => {
 
     const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
+        if (isEditMode && editState === 'disabled') return;
         setHovered(true);
         document.body.style.cursor = 'pointer';
     };
@@ -143,6 +187,7 @@ const Slot = ({ slot, position, canActivate }: Props) => {
                 hovered={hovered}
                 showIndicator={!hasBuilding}
                 locked={isLocked}
+                editState={editState}
             />
             {hasBuilding && <Building building={slot.building!} />}
         </group>

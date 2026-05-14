@@ -112,6 +112,16 @@ export interface IBuilding {
     fuelExpiredAt: string | null;
 }
 
+export interface IBuildingMoveRequest {
+    fromSlotNumber: number;
+    toSlotNumber: number;
+}
+
+export interface IBuildingMoveResponse {
+    fromSlot: IActivatedSlot | IInactivatedSlot;
+    toSlot: IActivatedSlot | IInactivatedSlot;
+}
+
 export interface IActivatedSlot extends ISlot {
     activated: true;
     building: IBuilding | null;

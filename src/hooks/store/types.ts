@@ -26,3 +26,10 @@ export interface BuildingManageModal {
     open: (slotNumber: number, building: IBuilding) => void;
     close: () => void;
 }
+
+export interface EditMode {
+    isActive: boolean;
+    fromSlotNumber: number | null;
+    activate: (fromSlotNumber: number) => void;
+    deactivate: () => void;
+}

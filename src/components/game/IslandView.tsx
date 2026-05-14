@@ -6,6 +6,7 @@ import BuildingManageModal from '../island/modal/BuildingManageModal';
 import SlotActivateModal from '../island/modal/SlotActivateModal';
 import IslandScene from '../island/model/IslandScene';
 import CurrencyBar from './CurrencyBar';
+import EditModeOverlay from './EditModeOverlay';
 import LevelInfo from './LevelInfo';
 
 interface Props extends IslandInfo {}
@@ -22,6 +23,7 @@ const IslandView = ({
         <StyledContainer>
             <CurrencyBar />
             <IslandScene />
+            <EditModeOverlay />
             <SlotActivateModal />
             <BuildModal />
             <BuildingManageModal />

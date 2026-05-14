@@ -7,6 +7,7 @@ import useBuilding from '../../../api/hooks/useBuilding';
 import useSlot from '../../../api/hooks/useSlot';
 import { BuildingType } from '../../../api/types';
 import useBuildingManageModal from '../../../hooks/store/useBuildingManageModal';
+import useEditMode from '../../../hooks/store/useEditMode';
 import cn from '../../../utils/cn';
 import DateUtils from '../../../utils/date-utils';
 
@@ -19,6 +20,7 @@ const BuildingManageModal = () => {
     const { isOpen, slotNumber, close } = useBuildingManageModal();
     const { slots } = useSlot();
     const { operate, harvest, removeBuilding, isBusy } = useBuilding();
+    const { activate: activateEditMode } = useEditMode();
 
     const [confirmingDelete, setConfirmingDelete] = useState(false);
     const [remainingSeconds, setRemainingSeconds] = useState(0);
@@ -53,6 +55,12 @@ const BuildingManageModal = () => {
     const handleDelete = () => {
         if (slotNumber === null) return;
         removeBuilding(slotNumber, { onSuccess: close });
+    };
+
+    const handleMove = () => {
+        if (slotNumber === null) return;
+        activateEditMode(slotNumber);
+        close();
     };
 
     const handleClose = () => {
@@ -101,7 +109,7 @@ const BuildingManageModal = () => {
                     <div className="actions">
                         {isOperating ? (
                             <button
-                                className="action harvest"
+                                className="action primary harvest"
                                 onClick={handleHarvest}
                                 disabled={isBusy}
                             >
@@ -109,29 +117,39 @@ const BuildingManageModal = () => {
                             </button>
                         ) : (
                             <button
-                                className="action operate"
+                                className="action primary operate"
                                 onClick={handleOperate}
                                 disabled={isBusy}
                             >
                                 {isBusy ? '처리 중...' : '⛽ 연료 주입'}
                             </button>
                         )}
-                    </div>
-
-                    <div className="danger-zone">
-                        <button
-                            className={cn('delete', { confirming: confirmingDelete })}
-                            onClick={
-                                confirmingDelete ? handleDelete : () => setConfirmingDelete(true)
-                            }
-                            disabled={isBusy}
-                        >
-                            {isBusy
-                                ? '철거 중...'
-                                : confirmingDelete
-                                  ? '🗑️ 한 번 더 누르면 철거돼요'
-                                  : '🗑️ 철거하기'}
-                        </button>
+                        <div className="secondary-row">
+                            <button
+                                className="action secondary move"
+                                onClick={handleMove}
+                                disabled={isBusy}
+                            >
+                                📦 이동
+                            </button>
+                            <button
+                                className={cn('action secondary delete', {
+                                    confirming: confirmingDelete,
+                                })}
+                                onClick={
+                                    confirmingDelete
+                                        ? handleDelete
+                                        : () => setConfirmingDelete(true)
+                                }
+                                disabled={isBusy}
+                            >
+                                {isBusy
+                                    ? '철거 중...'
+                                    : confirmingDelete
+                                      ? '한 번 더 누르면 철거'
+                                      : '🗑️ 철거'}
+                            </button>
+                        </div>
                     </div>
                 </StyledContainer>
             )}
@@ -202,15 +220,21 @@ const StyledContainer = styled.div`
     }
 
     .actions {
-        padding: 16px 20px;
+        padding: 16px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .secondary-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
 
         .action {
-            width: 100%;
-            padding: 14px 0;
             border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
             cursor: pointer;
+            font-weight: 700;
             transition: opacity 0.15s;
 
             &:disabled {
@@ -218,43 +242,44 @@ const StyledContainer = styled.div`
                 cursor: not-allowed;
             }
 
-            &.operate {
-                background-color: ${({ theme }) => theme.colors.primary400};
-                color: ${({ theme }) => theme.colors.black};
+            &.primary {
+                width: 100%;
+                padding: 14px 0;
+                font-size: 15px;
+
+                &.operate {
+                    background-color: ${({ theme }) => theme.colors.primary400};
+                    color: ${({ theme }) => theme.colors.black};
+                }
+
+                &.harvest {
+                    background-color: #a8d8a8;
+                    color: #1a4a1a;
+                }
             }
 
-            &.harvest {
-                background-color: #a8d8a8;
-                color: #1a4a1a;
-            }
-        }
-    }
+            &.secondary {
+                padding: 12px 0;
+                font-size: 14px;
 
-    .danger-zone {
-        padding: 0 20px 20px;
+                &.move {
+                    background-color: ${({ theme }) => theme.colors.primary100};
+                    color: ${({ theme }) => theme.colors.black};
+                }
 
-        .delete {
-            width: 100%;
-            padding: 12px 0;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            background-color: #f8e8e8;
-            color: #c0392b;
-            transition:
-                background-color 0.15s,
-                color 0.15s,
-                opacity 0.15s;
+                &.delete {
+                    background-color: #f8e8e8;
+                    color: #c0392b;
+                    transition:
+                        background-color 0.15s,
+                        color 0.15s,
+                        opacity 0.15s;
 
-            &.confirming {
-                background-color: #c0392b;
-                color: #ffffff;
-            }
-
-            &:disabled {
-                opacity: 0.35;
-                cursor: not-allowed;
+                    &.confirming {
+                        background-color: #c0392b;
+                        color: #ffffff;
+                    }
+                }
             }
         }
     }
