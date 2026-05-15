@@ -8,6 +8,7 @@ const Clouds = () => (
         {DEFAULT_CLOUDS.map((c, i) => (
             <Cloud
                 key={i}
+                seed={i}
                 position={c.position}
                 segments={c.segments}
                 bounds={c.bounds}
