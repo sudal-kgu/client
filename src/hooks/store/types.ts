@@ -1,4 +1,4 @@
-import type { IBuilding, IInactivatedSlot } from '../../api/types';
+import type { IBuilding, IBuildingCatalog, IInactivatedSlot, Item } from '../../api/types';
 
 export interface IslandCreateModal {
     isOpen: boolean;
@@ -24,6 +24,14 @@ export interface BuildingManageModal {
     slotNumber: number | null;
     building: IBuilding | null;
     open: (slotNumber: number, building: IBuilding) => void;
+    close: () => void;
+}
+
+export interface LevelUpNoticeModal {
+    isOpen: boolean;
+    unlockedItems: Item[];
+    unlockedBuildings: IBuildingCatalog[];
+    open: (notice: { unlockedItems: Item[]; unlockedBuildings: IBuildingCatalog[] }) => void;
     close: () => void;
 }
 

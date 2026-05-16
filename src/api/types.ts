@@ -56,11 +56,18 @@ export interface Item {
 }
 
 export interface ShopPurchaseResponse {
-    itemId: number;
-    itemName: string;
-    remainingShell: number;
-    currentCount: number;
-    expReward: number;
+    island: Island;
+    notice: {
+        reachedMaxLevel: boolean;
+        unlockedItems: Item[];
+        unlockedBuildings: IBuildingCatalog[];
+    } | null;
+    purchased: {
+        itemId: number;
+        currentCount: number;
+        itemName: string;
+        remainingShell: number;
+    };
 }
 
 const TrashItemSchema = z.object({
