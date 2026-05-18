@@ -193,3 +193,43 @@ export interface QuizSession {
     sessionId: number;
     problems: number[];
 }
+
+export const enum Region {
+    SEOUL = 'SEOUL',
+    INCHEON = 'INCHEON',
+    GYEONGGI = 'GYEONGGI',
+    GANGWON = 'GANGWON',
+    DAEJEON = 'DAEJEON',
+    SEJONG = 'SEJONG',
+    CHUNGBUK = 'CHUNGBUK',
+    CHUNGNAM = 'CHUNGNAM',
+    BUSAN = 'BUSAN',
+    DAEGU = 'DAEGU',
+    ULSAN = 'ULSAN',
+    GWANGJU = 'GWANGJU',
+    GYEONGBUK = 'GYEONGBUK',
+    GYEONGNAM = 'GYEONGNAM',
+    JEONBUK = 'JEONBUK',
+    JEONNAM = 'JEONNAM',
+    JEJU = 'JEJU',
+}
+
+export const REGION_LABELS: Record<Region, string> = {
+    [Region.SEOUL]: '서울',
+    [Region.INCHEON]: '인천',
+    [Region.GYEONGGI]: '경기',
+    [Region.GANGWON]: '강원',
+    [Region.DAEJEON]: '대전',
+    [Region.SEJONG]: '세종',
+    [Region.CHUNGBUK]: '충북',
+    [Region.CHUNGNAM]: '충남',
+    [Region.BUSAN]: '부산',
+    [Region.DAEGU]: '대구',
+    [Region.ULSAN]: '울산',
+    [Region.GWANGJU]: '광주',
+    [Region.GYEONGBUK]: '경북',
+    [Region.GYEONGNAM]: '경남',
+    [Region.JEONBUK]: '전북',
+    [Region.JEONNAM]: '전남',
+    [Region.JEJU]: '제주',
+};

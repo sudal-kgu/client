@@ -4,10 +4,14 @@ import ReactModal from 'react-modal';
 import styled from 'styled-components';
 
 import useIsland from '../../../api/hooks/useIsland';
+import { REGION_LABELS, Region } from '../../../api/types';
 
 const IslandCreateModal = () => {
     const { createIsland, hasIsland } = useIsland();
     const [nickname, setNickname] = useState('');
+    const [region, setRegion] = useState<Region | ''>('');
+
+    const isValid = nickname.length >= 3 && nickname.length <= 20 && region !== '';
 
     return (
         <ReactModal
@@ -19,7 +23,7 @@ const IslandCreateModal = () => {
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     maxWidth: 380,
-                    height: 400,
+                    height: 'fit-content',
                     width: '90%',
                     borderRadius: 24,
                     overflow: 'hidden',
@@ -35,6 +39,16 @@ const IslandCreateModal = () => {
                 <div className="bottom">
                     <p className="title">우리 섬 이름을 지어줘!</p>
                     <p className="subtitle">함께 깨끗한 섬을 만들어봐요.</p>
+                    <select value={region} onChange={(e) => setRegion(e.target.value as Region)}>
+                        <option value="" disabled>
+                            지역 선택
+                        </option>
+                        {(Object.keys(REGION_LABELS) as Region[]).map((key) => (
+                            <option key={key} value={key}>
+                                {REGION_LABELS[key]}
+                            </option>
+                        ))}
+                    </select>
                     <input
                         name="nickname"
                         value={nickname}
@@ -44,8 +58,8 @@ const IslandCreateModal = () => {
                         onChange={(e) => setNickname(e.target.value)}
                     />
                     <button
-                        onClick={() => createIsland({ nickname })}
-                        disabled={nickname.length < 3 || nickname.length > 20}
+                        onClick={() => createIsland({ nickname, region: region as Region })}
+                        disabled={!isValid}
                     >
                         섬 만들기 🏝️
                     </button>
@@ -94,19 +108,30 @@ const StyledContainer = styled.div`
         margin-bottom: 4px;
     }
 
-    input {
+    input,
+    select {
         padding: 13px 16px;
         border: 1.5px solid ${({ theme }) => theme.colors.primary300};
         border-radius: 12px;
         outline: none;
         font-size: 14px;
         transition: border-color 0.2s;
+        background-color: ${({ theme }) => theme.colors.white};
+        color: ${({ theme }) => theme.colors.primary800};
 
         &:focus {
             border-color: ${({ theme }) => theme.colors.primary500};
         }
 
         &::placeholder {
+            color: ${({ theme }) => theme.colors.primary300};
+        }
+    }
+
+    select {
+        cursor: pointer;
+
+        option[value=''] {
             color: ${({ theme }) => theme.colors.primary300};
         }
     }

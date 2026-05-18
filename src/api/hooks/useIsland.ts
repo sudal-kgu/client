@@ -5,7 +5,7 @@ import type { AxiosError } from 'axios';
 
 import useIslandCraeteModal from '../../hooks/store/useIslandCreateModal';
 import MemberAPI from '../member';
-import type { Island } from '../types';
+import type { Island, Region } from '../types';
 
 const useIsland = () => {
     const { isOpen, setIsOpen } = useIslandCraeteModal();
@@ -15,8 +15,8 @@ const useIsland = () => {
         isLoading,
         error,
     } = useQuery<Island, AxiosError>({ queryFn: MemberAPI.me, queryKey: ['me'] });
-    const { mutate } = useMutation<Island, AxiosError, { nickname: string }>({
-        mutationFn: ({ nickname }) => MemberAPI.createMe(nickname),
+    const { mutate } = useMutation<Island, AxiosError, { nickname: string; region: Region }>({
+        mutationFn: ({ nickname, region }) => MemberAPI.createMe(nickname, region),
         onSuccess: (newIslandData) => {
             queryClient.setQueryData(['me'], newIslandData);
             setIsOpen(false);
