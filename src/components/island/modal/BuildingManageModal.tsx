@@ -4,6 +4,7 @@ import ReactModal from 'react-modal';
 import styled from 'styled-components';
 
 import useBuilding from '../../../api/hooks/useBuilding';
+import useBuildingStats from '../../../api/hooks/useBuildingStats';
 import useSlot from '../../../api/hooks/useSlot';
 import { BuildingType } from '../../../api/types';
 import useBuildingManageModal from '../../../hooks/store/useBuildingManageModal';
@@ -31,7 +32,12 @@ const BuildingManageModal = () => {
     const meta = building
         ? (CATEGORY_META[building.category] ?? { icon: '🏗️', label: building.category })
         : null;
-    const isOperating = !!building?.fuelExpiredAt && new Date(building.fuelExpiredAt) > new Date();
+
+    const { isOperating, showHarvestUI, harvestGems, fuelCost, fuelBalance } = useBuildingStats(
+        slotNumber,
+        building,
+        isOpen,
+    );
 
     useEffect(() => {
         if (!isOperating || !building?.fuelExpiredAt) return;
@@ -106,8 +112,27 @@ const BuildingManageModal = () => {
                         </div>
                     </div>
 
+                    {showHarvestUI ? (
+                        <div className="stats harvest-stats">
+                            <span className="stats-label">수확 대기</span>
+                            <span className="stats-value">
+                                💎 {harvestGems?.toLocaleString() ?? '-'} 젬
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="stats fuel-stats">
+                            <span className="stats-label">연료 필요량</span>
+                            <span className="stats-value">
+                                ⛽ {fuelCost?.toLocaleString() ?? '—'}
+                                <span className="stats-balance">
+                                    &nbsp;/ 보유 {fuelBalance.toLocaleString()}
+                                </span>
+                            </span>
+                        </div>
+                    )}
+
                     <div className="actions">
-                        {isOperating ? (
+                        {showHarvestUI ? (
                             <button
                                 className="action primary harvest"
                                 onClick={handleHarvest}
@@ -216,6 +241,39 @@ const StyledContainer = styled.div`
                 color: ${({ theme }) => theme.colors.black};
                 opacity: 0.6;
             }
+        }
+    }
+
+    .stats {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        border-bottom: 1px solid ${({ theme }) => theme.colors.primary100};
+
+        .stats-label {
+            font-size: 12px;
+            color: ${({ theme }) => theme.colors.black};
+            opacity: 0.45;
+        }
+
+        .stats-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .stats-balance {
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.5;
+        }
+
+        &.harvest-stats .stats-value {
+            color: #1a6b2e;
+        }
+
+        &.fuel-stats .stats-value {
+            color: ${({ theme }) => theme.colors.primary700};
         }
     }
 

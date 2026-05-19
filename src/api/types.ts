@@ -120,6 +120,7 @@ export interface IBuilding {
     name: string;
     model: string;
     fuelExpiredAt: string | null;
+    lastCollectedAt: string | null;
 }
 
 export interface IBuildingMoveRequest {
@@ -130,6 +131,27 @@ export interface IBuildingMoveRequest {
 export interface IBuildingMoveResponse {
     fromSlot: IActivatedSlot | IInactivatedSlot;
     toSlot: IActivatedSlot | IInactivatedSlot;
+}
+
+export interface ICreateBuildingResponse {
+    slot: IActivatedSlot;
+    resource: Currency;
+}
+
+export interface IDeleteBuildingResponse {
+    slot: IInactivatedSlot;
+    resource: Currency;
+}
+
+export interface IOperateResponse {
+    slot: IActivatedSlot;
+    resources: Currency;
+}
+
+export interface IHarvestResponse {
+    building: Pick<Currency, CurrencyType.GEM>;
+    resource: Pick<Currency, CurrencyType.GEM>;
+    slots: (IActivatedSlot | IInactivatedSlot)[];
 }
 
 export interface IActivatedSlot extends ISlot {

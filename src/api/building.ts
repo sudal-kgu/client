@@ -1,11 +1,12 @@
 import api from './axios';
 import type {
-    Currency,
-    IActivatedSlot,
     IBuildingCatalog,
     IBuildingMoveRequest,
     IBuildingMoveResponse,
-    IInactivatedSlot,
+    ICreateBuildingResponse,
+    IDeleteBuildingResponse,
+    IHarvestResponse,
+    IOperateResponse,
     Response,
 } from './types';
 
@@ -15,16 +16,14 @@ const BuildingAPI = {
         return result.data.data;
     },
     createBuilding: async (slotNumber: number, buildingMetadataId: number) => {
-        const result = await api.post<Response<{ slot: IActivatedSlot; resource: Currency }>>(
+        const result = await api.post<Response<ICreateBuildingResponse>>(
             `/v1/slots/${slotNumber}/buildings`,
-            {
-                buildingMetadataId,
-            },
+            { buildingMetadataId },
         );
         return result.data.data;
     },
     deleteBuilding: async (slotNumber: number) => {
-        const result = await api.delete<Response<{ slot: IInactivatedSlot; resource: Currency }>>(
+        const result = await api.delete<Response<IDeleteBuildingResponse>>(
             `/v1/slots/${slotNumber}/buildings`,
         );
         return result.data.data;
@@ -33,12 +32,27 @@ const BuildingAPI = {
         const result = await api.post<Response<IBuildingMoveResponse>>('/v1/buildings/move', move);
         return result.data.data;
     },
+    costOfOperate: async (slotNumber: number) => {
+        const result = await api.get<Response<{ fuels: number }>>(
+            `/v1/slots/${slotNumber}/buildings/operations`,
+        );
+        return result.data.data;
+    },
     operate: async (slotNumber: number) => {
-        await api.post<Response<void>>(`/v1/buildings/operations/${slotNumber}`);
+        const result = await api.post<Response<IOperateResponse>>(
+            `/v1/slots/${slotNumber}/buildings/operations`,
+        );
+        return result.data.data;
     },
     harvest: async (slotNumber: number) => {
-        const result = await api.post<Response<Number>>(
-            `/v1/buildings/operations/${slotNumber}/harvest`,
+        const result = await api.post<Response<IHarvestResponse>>(
+            `/v1/slots/${slotNumber}/buildings/operations/harvest`,
+        );
+        return result.data.data;
+    },
+    getAmountOfHarvest: async (slotNumber: number) => {
+        const result = await api.get<Response<{ gem: number }>>(
+            `/v1/slots/${slotNumber}/buildings/operations/harvest`,
         );
         return result.data.data;
     },

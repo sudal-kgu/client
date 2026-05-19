@@ -30,9 +30,6 @@ const useBuilding = () => {
         queryClient.setQueryData(['currency'], resource);
     };
 
-    const invalidateSlots = () => queryClient.invalidateQueries({ queryKey: ['slots'] });
-    const invalidateCurrency = () => queryClient.invalidateQueries({ queryKey: ['currency'] });
-
     const { data: catalogs = [], isLoading } = useQuery({
         queryKey: ['building-catalogs'],
         queryFn: BuildingAPI.getCatalogs,
@@ -57,9 +54,9 @@ const useBuilding = () => {
 
     const { mutate: operate, isPending: isOperating } = useMutation({
         mutationFn: BuildingAPI.operate,
-        onSuccess: () => {
-            invalidateSlots();
-            invalidateCurrency();
+        onSuccess: ({ slot, resources }) => {
+            updateSlotCache(slot);
+            updateCurrencyCache(resources);
         },
         onError: (error: AxiosError<Response<unknown>>) => {
             toast.error(error.response?.data?.message ?? error.message);
@@ -68,9 +65,12 @@ const useBuilding = () => {
 
     const { mutate: harvest, isPending: isHarvesting } = useMutation({
         mutationFn: BuildingAPI.harvest,
-        onSuccess: () => {
-            invalidateSlots();
-            invalidateCurrency();
+        onSuccess: ({ building, resource, slots }, slotNumber) => {
+            slots.forEach(updateSlotCache);
+            queryClient.setQueryData<Currency>(['currency'], (prev) =>
+                prev ? { ...prev, gem: resource.gem } : prev,
+            );
+            queryClient.setQueryData(['harvest-amount', slotNumber], { gem: building.gem });
         },
         onError: (error: AxiosError<Response<unknown>>) => {
             toast.error(error.response?.data?.message ?? error.message);
