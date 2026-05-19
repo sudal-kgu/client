@@ -10,12 +10,15 @@ export interface AnalaysisRequest {
     request_id: string;
 }
 
-export interface AnalaysisResultPage {
+export interface PageResponse<T> {
     totalPage: number;
     currentPage: number;
-    content: AnalaysisResultItem[];
+    content: T[];
     totalItems: number;
 }
+
+export type AnalaysisResultPage = PageResponse<AnalaysisResultItem>;
+
 export interface AnalaysisResultItem {
     uuid: string;
     image: string;
@@ -194,19 +197,20 @@ export interface QuizSession {
     problems: number[];
 }
 
+export interface IRanking {
+    cumulativeExp: number;
+    level: number;
+    nickname: string;
+    rank: number;
+    region: Region;
+}
+
 export const enum Region {
     SEOUL = 'SEOUL',
-    INCHEON = 'INCHEON',
     GYEONGGI = 'GYEONGGI',
     GANGWON = 'GANGWON',
-    DAEJEON = 'DAEJEON',
-    SEJONG = 'SEJONG',
     CHUNGBUK = 'CHUNGBUK',
     CHUNGNAM = 'CHUNGNAM',
-    BUSAN = 'BUSAN',
-    DAEGU = 'DAEGU',
-    ULSAN = 'ULSAN',
-    GWANGJU = 'GWANGJU',
     GYEONGBUK = 'GYEONGBUK',
     GYEONGNAM = 'GYEONGNAM',
     JEONBUK = 'JEONBUK',
@@ -214,19 +218,24 @@ export const enum Region {
     JEJU = 'JEJU',
 }
 
+export interface RegionPath {
+    d: string;
+    cx: number;
+    cy: number;
+}
+
+export interface KoreaMapData {
+    width: number;
+    height: number;
+    regions: Partial<Record<Region, RegionPath>>;
+}
+
 export const REGION_LABELS: Record<Region, string> = {
     [Region.SEOUL]: '서울',
-    [Region.INCHEON]: '인천',
     [Region.GYEONGGI]: '경기',
     [Region.GANGWON]: '강원',
-    [Region.DAEJEON]: '대전',
-    [Region.SEJONG]: '세종',
     [Region.CHUNGBUK]: '충북',
     [Region.CHUNGNAM]: '충남',
-    [Region.BUSAN]: '부산',
-    [Region.DAEGU]: '대구',
-    [Region.ULSAN]: '울산',
-    [Region.GWANGJU]: '광주',
     [Region.GYEONGBUK]: '경북',
     [Region.GYEONGNAM]: '경남',
     [Region.JEONBUK]: '전북',

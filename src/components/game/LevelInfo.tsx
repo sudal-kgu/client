@@ -45,6 +45,7 @@ const LevelInfo = ({
             <ActionRow>
                 <PrimaryButton onClick={() => navigate('/camera')}>쓰레기 줍기</PrimaryButton>
                 <SecondaryButton onClick={() => navigate('/point-shop')}>상점</SecondaryButton>
+                <SecondaryButton onClick={() => navigate('/ranking')}>랭킹</SecondaryButton>
             </ActionRow>
         </Panel>
     );

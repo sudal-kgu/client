@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import PointShop from './pages/PointShop';
 import Quiz from './pages/Quiz';
 import QuizResult from './pages/QuizResult';
+import Ranking from './pages/Ranking';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
 import TrashCamera from './pages/TrashCamera';
 import TrashDetail from './pages/TrashDetail';
@@ -62,6 +63,10 @@ export const router = createBrowserRouter([
             {
                 path: '/point-shop',
                 element: <PointShop />,
+            },
+            {
+                path: '/ranking',
+                element: <Ranking />,
             },
         ],
     },
