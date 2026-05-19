@@ -45,6 +45,10 @@ export interface Island {
     level: number;
     nickname: string;
     recyclingContributionExp: number;
+    nextLevel: {
+        totalRequiredExp: number;
+        recyclingExpLimit: number;
+    };
 }
 
 export interface Item {
@@ -184,15 +188,6 @@ export interface IBuildingCatalog {
     name: string;
     pph: number;
     requiredLevel: number;
-}
-
-export interface IslandInfo {
-    level: number;
-    islandName: string;
-    recycleExp: number;
-    recycleExpCap: number;
-    recycleCount: number;
-    recycleCountMax: number;
 }
 
 export type AnalysisResult = z.infer<typeof ResultSchema>;

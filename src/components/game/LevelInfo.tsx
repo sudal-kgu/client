@@ -1,44 +1,59 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import type { IslandInfo } from '../../api/types';
+import useIsland from '../../api/hooks/useIsland';
 
-type Props = IslandInfo;
-
-const LevelInfo = ({
-    level,
-    islandName,
-    recycleExp,
-    recycleExpCap,
-    recycleCount,
-    recycleCountMax,
-}: Props) => {
+const LevelInfo = () => {
     const navigate = useNavigate();
-    const expPercent = Math.min((recycleExp / recycleExpCap) * 100, 100);
+    const { island } = useIsland();
+
+    if (!island) return null;
+
+    const totalPercent = Math.min(
+        (island.cumulativeExp / island.nextLevel.totalRequiredExp) * 100,
+        100,
+    );
 
     return (
         <Panel>
             <LevelRow>
                 <LevelLeft>
-                    <LevelValue>Lv.{level}</LevelValue>
-                    <IslandName>{islandName}</IslandName>
+                    <LevelValue>Lv.{island.level}</LevelValue>
+                    <IslandName>{island.nickname}</IslandName>
                 </LevelLeft>
-                <RecycleCount>
-                    분리배출 {recycleCount} / {recycleCountMax}회
-                </RecycleCount>
             </LevelRow>
 
             <ExpBar>
-                <ExpFill style={{ width: `${expPercent}%` }} />
+                <ExpFill style={{ width: `${totalPercent}%` }} />
             </ExpBar>
 
-            <ExpLabels>
-                <ExpText>
-                    분리배출 기여 {recycleExp.toLocaleString()} / {recycleExpCap.toLocaleString()}{' '}
-                    exp
-                </ExpText>
-                {level < 3 && <ExpHint>Lv.2까지 아이템 불필요</ExpHint>}
-            </ExpLabels>
+            <ExpFraction>
+                {island.cumulativeExp.toLocaleString()}
+                <ExpCap> / {island.nextLevel.totalRequiredExp.toLocaleString()} exp</ExpCap>
+            </ExpFraction>
+
+            <Divider />
+
+            <ExpBreakdown>
+                <ExpRow>
+                    <ExpLabel>♻️ 분리배출</ExpLabel>
+                    <ExpValue>
+                        {island.recyclingContributionExp.toLocaleString()}
+                        <ExpCap>
+                            {' '}
+                            / {island.nextLevel.recyclingExpLimit.toLocaleString()} exp
+                        </ExpCap>
+                    </ExpValue>
+                </ExpRow>
+                <ExpRow>
+                    <ExpLabel>🧪 아이템</ExpLabel>
+                    {island.nextLevel.recyclingExpLimit >= island.nextLevel.totalRequiredExp ? (
+                        <ExpUnavailable>현재 레벨 불필요</ExpUnavailable>
+                    ) : (
+                        <ExpValue>{island.itemContributionExp.toLocaleString()} exp</ExpValue>
+                    )}
+                </ExpRow>
+            </ExpBreakdown>
 
             <Divider />
 
@@ -90,12 +105,6 @@ const IslandName = styled.span`
     opacity: 0.5;
 `;
 
-const RecycleCount = styled.span`
-    font-size: 11px;
-    color: ${({ theme }) => theme.colors.primary800};
-    opacity: 0.5;
-`;
-
 const ExpBar = styled.div`
     width: 100%;
     height: 6px;
@@ -116,22 +125,50 @@ const ExpFill = styled.div`
     transition: width 0.4s ease;
 `;
 
-const ExpLabels = styled.div`
+const ExpBreakdown = styled.div`
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 3px;
     margin-bottom: 10px;
 `;
 
-const ExpText = styled.span`
+const ExpRow = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const ExpLabel = styled.span`
     font-size: 10px;
-    font-weight: 500;
+    color: ${({ theme }) => theme.colors.primary800};
+    opacity: 0.5;
+`;
+
+const ExpValue = styled.span`
+    font-size: 10px;
+    font-weight: 600;
     color: ${({ theme }) => theme.colors.primary700};
 `;
 
-const ExpHint = styled.span`
+const ExpCap = styled.span`
+    font-weight: 400;
+    opacity: 0.6;
+`;
+
+const ExpFraction = styled.span`
+    display: block;
     font-size: 10px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.colors.primary700};
+    text-align: right;
+    margin-bottom: 8px;
+`;
+
+const ExpUnavailable = styled.span`
+    font-size: 10px;
+    font-weight: 400;
     color: ${({ theme }) => theme.colors.primary800};
-    opacity: 0.4;
+    opacity: 0.35;
 `;
 
 const Divider = styled.div`

@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-import type { IslandInfo } from '../../api/types';
 import BuildModal from '../island/modal/BuildModal';
 import BuildingManageModal from '../island/modal/BuildingManageModal';
 import SlotActivateModal from '../island/modal/SlotActivateModal';
@@ -9,16 +8,7 @@ import CurrencyBar from './CurrencyBar';
 import EditModeOverlay from './EditModeOverlay';
 import LevelInfo from './LevelInfo';
 
-interface Props extends IslandInfo {}
-
-const IslandView = ({
-    level,
-    islandName,
-    recycleExp,
-    recycleExpCap,
-    recycleCount,
-    recycleCountMax,
-}: Props) => {
+const IslandView = () => {
     return (
         <StyledContainer>
             <CurrencyBar />
@@ -27,14 +17,7 @@ const IslandView = ({
             <SlotActivateModal />
             <BuildModal />
             <BuildingManageModal />
-            <LevelInfo
-                level={level}
-                islandName={islandName}
-                recycleExp={recycleExp}
-                recycleExpCap={recycleExpCap}
-                recycleCount={recycleCount}
-                recycleCountMax={recycleCountMax}
-            />
+            <LevelInfo />
         </StyledContainer>
     );
 };
