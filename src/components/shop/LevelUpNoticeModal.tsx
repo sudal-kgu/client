@@ -17,6 +17,7 @@ const LevelUpNoticeModal = () => {
         <ReactModal
             isOpen={isOpen}
             onRequestClose={close}
+            shouldCloseOnOverlayClick={false}
             style={{
                 content: {
                     padding: 0,

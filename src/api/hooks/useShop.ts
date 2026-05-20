@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import useLevelUpNoticeModal from '../../hooks/store/useLevelUpNoticeModal';
 import ShopAPI from '../shop';
 import { CurrencyType } from '../types';
-import type { Currency, Island, Item, Response } from '../types';
+import type { Currency, ISlotsResponse, Island, Item, Response } from '../types';
 
 const useShop = () => {
     const queryClient = useQueryClient();
@@ -35,11 +35,16 @@ const useShop = () => {
 
             queryClient.setQueryData<Island>(['me'], island);
 
-            if (
-                notice &&
-                (notice.unlockedItems.length > 0 || notice.unlockedBuildings.length > 0)
-            ) {
-                openNotice(notice);
+            if (notice) {
+                if (notice.maxSlotCount != null) {
+                    queryClient.setQueryData<ISlotsResponse>(['slots'], (prev) =>
+                        prev ? { ...prev, maxActivatableSlots: notice.maxSlotCount } : prev,
+                    );
+                }
+
+                if (notice.unlockedItems.length > 0 || notice.unlockedBuildings.length > 0) {
+                    openNotice(notice);
+                }
             }
         },
         onError: (error: AxiosError<Response<unknown>>) => {

@@ -66,6 +66,7 @@ export interface ShopPurchaseResponse {
     island: Island;
     notice: {
         reachedMaxLevel: boolean;
+        maxSlotCount: number;
         unlockedItems: Item[];
         unlockedBuildings: IBuildingCatalog[];
     } | null;
