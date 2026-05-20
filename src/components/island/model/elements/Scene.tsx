@@ -1,9 +1,10 @@
 import { Clouds, Sky } from '@react-three/drei';
 
+import useOcean from '../../../../hooks/useOcean';
 import IslandMesh from './environments/IslandMesh';
-import Ocean from './environments/Ocean';
 
 export const Scene = () => {
+    useOcean();
     return (
         <>
             <color attach="background" args={['#87ceeb']} />
@@ -23,7 +24,6 @@ export const Scene = () => {
             />
             <hemisphereLight args={[0x87ceeb, 0x556b2f, 0.35]} />
             <Sky sunPosition={[100, 20, 100]} turbidity={6} rayleigh={0.5} />
-            <Ocean />
             <Clouds />
             <IslandMesh />
         </>
