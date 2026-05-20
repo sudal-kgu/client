@@ -34,6 +34,7 @@ const useOcean = () => {
 
     useEffect(() => {
         normalMap.wrapS = normalMap.wrapT = THREE.RepeatWrapping;
+        normalMap.needsUpdate = true;
 
         const geometry = new THREE.PlaneGeometry(300, 300, 80, 80);
         const water = new Water(geometry, {
