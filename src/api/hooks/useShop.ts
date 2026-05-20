@@ -29,6 +29,14 @@ const useShop = () => {
                 ),
             );
 
+            queryClient.setQueryData<Item[]>(['purchased-items'], (prev) =>
+                prev?.map((item) =>
+                    item.itemId === purchased.itemId
+                        ? { ...item, currentCount: purchased.currentCount }
+                        : item,
+                ),
+            );
+
             queryClient.setQueryData<Currency>(['currency'], (prev) =>
                 prev ? { ...prev, [CurrencyType.SHELL]: purchased.remainingShell } : prev,
             );
