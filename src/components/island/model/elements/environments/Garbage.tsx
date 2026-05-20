@@ -1,26 +1,35 @@
+import { useMemo } from 'react';
+
+import { useGLTF } from '@react-three/drei';
+
 import type { IGarbagePosition } from '../../config/types';
 
-const RADIUS: Record<string, number> = {
-    small: 0.3,
-    medium: 0.4,
-    large: 0.6,
-};
+const SMALL_MODELS = Array.from(
+    { length: 10 },
+    (_, i) => `/game/model/trash/trash_small_${i + 1}.glb`,
+);
 
-const COLOR: Record<string, string> = {
-    small: '#959595',
-    medium: '#a0a0a0',
-    large: '#888888',
+SMALL_MODELS.forEach((p) => useGLTF.preload(p));
+
+const hashId = (id: string): number => {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (((h << 5) - h + id.charCodeAt(i)) >>> 0) & 0x7fffffff;
+    return h;
 };
 
 interface Props {
     postion: IGarbagePosition;
 }
 
-const Garbage = ({ postion }: Props) => (
-    <mesh position={postion.pos} castShadow>
-        <sphereGeometry args={[RADIUS[postion.type], 7, 7]} />
-        <meshLambertMaterial color={COLOR[postion.type]} />
-    </mesh>
-);
+const Garbage = ({ postion }: Props) => {
+    const modelPath = SMALL_MODELS[hashId(postion.id) % SMALL_MODELS.length];
+    const { scene } = useGLTF(modelPath);
+    const cloned = useMemo(() => scene.clone(true), [scene]);
+    const rotY = (hashId(postion.id + 'r') % 628) / 100;
+
+    return (
+        <primitive object={cloned} position={postion.pos} rotation={[0, rotY, 0]} scale={5 / 12} />
+    );
+};
 
 export default Garbage;
