@@ -15,8 +15,8 @@ const IslandScene = () => (
             enablePan={false}
             minPolarAngle={0.25}
             maxPolarAngle={1.35}
-            minDistance={16}
-            maxDistance={90}
+            minDistance={25}
+            maxDistance={60}
             target={[0, 1, 0]}
             autoRotate
             autoRotateSpeed={0.25}
