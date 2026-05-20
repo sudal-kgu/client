@@ -18,6 +18,8 @@ const IslandScene = () => (
             minDistance={16}
             maxDistance={90}
             target={[0, 1, 0]}
+            autoRotate
+            autoRotateSpeed={0.25}
         />
     </Canvas>
 );
