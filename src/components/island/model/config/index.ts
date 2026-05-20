@@ -61,6 +61,21 @@ export const GARBAGE_SPAWN_POINTS: IGarbagePosition[] = [
     { id: 'g48', pos: [-6.0, 1.7, -1.5], type: GarbageType.SMALL },
 ];
 
+export const GARBAGE_LARGE_SPAWN_POINTS: IGarbagePosition[] = [
+    { id: 'gl1', pos: [2.0, 1.7, -1.0], type: GarbageType.LARGE },
+    { id: 'gl2', pos: [-2.0, 1.7, -1.0], type: GarbageType.LARGE },
+    { id: 'gl3', pos: [0.0, 1.7, 2.5], type: GarbageType.LARGE },
+    { id: 'gl4', pos: [1.5, 1.7, -3.0], type: GarbageType.LARGE },
+    { id: 'gl5', pos: [-1.5, 1.7, -3.0], type: GarbageType.LARGE },
+    { id: 'gl6', pos: [7.0, 1.7, -5.0], type: GarbageType.LARGE },
+    { id: 'gl7', pos: [-7.0, 1.7, -5.0], type: GarbageType.LARGE },
+    { id: 'gl8', pos: [6.5, 1.7, 5.5], type: GarbageType.LARGE },
+    { id: 'gl9', pos: [-6.5, 1.7, 5.5], type: GarbageType.LARGE },
+    { id: 'gl10', pos: [0.0, 1.7, 7.5], type: GarbageType.LARGE },
+    { id: 'gl11', pos: [4.5, 1.7, -6.5], type: GarbageType.LARGE },
+    { id: 'gl12', pos: [-4.5, 1.7, -6.5], type: GarbageType.LARGE },
+];
+
 export const DEFAULT_CLOUDS: ICloudConfig[] = [
     {
         color: 'white',
