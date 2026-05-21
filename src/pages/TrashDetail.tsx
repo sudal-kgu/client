@@ -37,7 +37,7 @@ const TrashDetail = () => {
                                 navigate(`/analysis/${analysisId}/trashes/${trashId}/checklist`)
                             }
                         >
-                            체크리스트
+                            배출 전 체크리스트 확인하기
                         </StyledButton>
                     </>
                 )}
