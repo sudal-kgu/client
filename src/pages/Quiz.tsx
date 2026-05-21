@@ -16,6 +16,9 @@ import useQuiz, { type QuizOption, type QuizQuestion } from '../hooks/useQuiz';
 
 const POINTS_PER_CORRECT = 50;
 
+const CIRCLE_RADIUS = 20;
+const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
+
 const getResponseStatus = (e: unknown): number | undefined =>
     (e as { response?: { status?: number } })?.response?.status;
 
@@ -40,7 +43,7 @@ const QuizBody = ({
     isLastQuestion,
     isAdvancing,
 }: QuizBodyProps) => {
-    const { remainingSeconds, isExpired } = usePerProblemTimer(question.expiredAt);
+    const { remainingSeconds, totalSeconds, isExpired } = usePerProblemTimer(question.expiredAt);
 
     const isNextEnabled = (selectedOptionId !== null || isExpired) && !isAdvancing;
 
@@ -48,21 +51,50 @@ const QuizBody = ({
         onNext(isExpired);
     };
 
+    const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
+    const strokeDashoffset = CIRCLE_CIRCUMFERENCE * (1 - progress);
+
+    const timerState = isExpired ? 'expired' : remainingSeconds <= 5 ? 'warning' : 'normal';
+    const strokeColor =
+        timerState === 'expired' ? '#A73B21' : timerState === 'warning' ? '#d97706' : '#185E27';
+
     return (
         <>
             <div className="content">
                 <QuizProgress current={problemIndex + 1} total={totalCount} />
-                <div
-                    className={[
-                        'timer',
-                        isExpired ? 'expired' : '',
-                        !isExpired && remainingSeconds <= 5 ? 'warning' : '',
-                    ]
-                        .filter(Boolean)
-                        .join(' ')}
-                >
-                    {isExpired ? '시간 초과' : `${remainingSeconds}초`}
-                </div>
+                <CircleTimer state={timerState}>
+                    <svg
+                        width="52"
+                        height="52"
+                        viewBox="0 0 52 52"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="26"
+                            cy="26"
+                            r={CIRCLE_RADIUS}
+                            strokeWidth="4"
+                            className="track"
+                        />
+                        <circle
+                            cx="26"
+                            cy="26"
+                            r={CIRCLE_RADIUS}
+                            strokeWidth="4"
+                            stroke={strokeColor}
+                            strokeDasharray={CIRCLE_CIRCUMFERENCE}
+                            strokeDashoffset={strokeDashoffset}
+                            strokeLinecap="round"
+                            transform="rotate(-90 26 26)"
+                            style={{ transition: 'stroke-dashoffset 1s linear, stroke 0.3s ease' }}
+                            className="progress"
+                        />
+                    </svg>
+                    <span className="label">
+                        {isExpired ? '시간\n초과' : `${remainingSeconds}초`}
+                    </span>
+                </CircleTimer>
                 <div className="question">{question.question}</div>
                 <div className="options">
                     {question.options.map((option: QuizOption, index: number) => (
@@ -266,6 +298,46 @@ const Quiz = () => {
     );
 };
 
+const CircleTimer = styled.div<{ state: 'normal' | 'warning' | 'expired' }>`
+    position: relative;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+
+    svg {
+        display: block;
+
+        .track {
+            fill: none;
+            stroke: ${({ theme }) => theme.colors.primary300};
+        }
+
+        .progress {
+            fill: none;
+        }
+    }
+
+    .label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        white-space: pre-line;
+        line-height: 1.2;
+        color: ${({ state, theme }) =>
+            state === 'expired'
+                ? theme.colors.badge
+                : state === 'warning'
+                  ? '#d97706'
+                  : theme.colors.primary700};
+        transition: color 0.3s ease;
+    }
+`;
+
 const StyledContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -279,26 +351,6 @@ const StyledContainer = styled.div`
         gap: 24px;
         overflow-y: auto;
 
-        .timer {
-            align-self: flex-start;
-            font-size: 14px;
-            font-weight: 700;
-            color: ${({ theme }) => theme.colors.primary700};
-            background-color: ${({ theme }) => theme.colors.primary100};
-            padding: 6px 14px;
-            border-radius: 999px;
-            transition:
-                color 0.2s ease,
-                background-color 0.2s ease;
-            &.warning {
-                color: #d97706;
-                background-color: #fef3c7;
-            }
-            &.expired {
-                color: ${({ theme }) => theme.colors.badge};
-                background-color: ${({ theme }) => theme.colors.error_op_10};
-            }
-        }
         .question {
             font-size: 17px;
             font-weight: 600;

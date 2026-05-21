@@ -12,6 +12,16 @@ const getRemainingSeconds = (expiredAt: string | null): number => {
     return Math.max(0, Math.ceil(ms / 1000));
 };
 
+const getTotalSeconds = (expiredAt: string | null): number => {
+    if (!expiredAt) return 20;
+    const expiredAtMs = toMs(expiredAt);
+    if (Number.isNaN(expiredAtMs)) return 20;
+    return Math.max(
+        1,
+        Math.round((expiredAtMs - Date.now()) / 1000) + getRemainingSeconds(expiredAt),
+    );
+};
+
 const isAlreadyExpired = (expiredAt: string | null): boolean => {
     if (!expiredAt) return false;
     const expiredAtMs = toMs(expiredAt);
@@ -23,6 +33,7 @@ const usePerProblemTimer = (expiredAt: string | null, onExpire?: () => void) => 
     const [remainingSeconds, setRemainingSeconds] = useState<number>(() =>
         getRemainingSeconds(expiredAt),
     );
+    const [totalSeconds] = useState<number>(() => getTotalSeconds(expiredAt));
     const [isExpired, setIsExpired] = useState<boolean>(() => isAlreadyExpired(expiredAt));
 
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -119,7 +130,7 @@ const usePerProblemTimer = (expiredAt: string | null, onExpire?: () => void) => 
                     }
                 } else {
                     clearTimer();
-                    intervalRef.current = setInterval(sync, 500);
+                    intervalRef.current = setInterval(sync, 1000);
                 }
             }
         };
@@ -132,7 +143,7 @@ const usePerProblemTimer = (expiredAt: string | null, onExpire?: () => void) => 
         };
     }, [expiredAt]);
 
-    return { remainingSeconds, isExpired };
+    return { remainingSeconds, totalSeconds, isExpired };
 };
 
 export default usePerProblemTimer;
