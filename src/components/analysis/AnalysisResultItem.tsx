@@ -1,3 +1,4 @@
+import { IoChevronForward } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -11,7 +12,12 @@ interface Props {
 const AnalysisResultItem = ({ analysisId, result }: Props) => {
     return (
         <StyledContainer to={`/analysis/${analysisId}/trashes/${result.uuid}`}>
-            <img src={result.image} />
+            <div className="img-wrapper">
+                <img src={result.image} />
+                <div className="chevron-badge">
+                    <IoChevronForward />
+                </div>
+            </div>
             <div className="label">
                 <div className="category">{result.category}</div>
                 <div className="subcategory">{result.subcategory}</div>
@@ -46,10 +52,32 @@ const StyledContainer = styled(Link)`
         animation: bounce 0.5s ease-in-out infinite;
     }
 
-    img {
+    .img-wrapper {
+        position: relative;
         aspect-ratio: 1;
-        object-fit: cover;
         border-radius: 12px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chevron-badge {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            background-color: ${({ theme }) => theme.colors.white};
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: ${({ theme }) => theme.colors.primary700};
+        }
     }
 
     .label {
