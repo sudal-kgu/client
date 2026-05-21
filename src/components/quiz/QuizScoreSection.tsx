@@ -4,11 +4,13 @@ interface Props {
     earnedShell: number;
     earnedFuel: number;
     earnedExp: number;
+    rewardFailed?: boolean;
 }
 
-const QuizScoreSection = ({ earnedShell, earnedFuel, earnedExp }: Props) => {
+const QuizScoreSection = ({ earnedShell, earnedFuel, earnedExp, rewardFailed = false }: Props) => {
     return (
         <StyledContainer>
+            {rewardFailed && <div className="reward-error">보상 정보를 불러오지 못했습니다.</div>}
             <div className="reward-cards">
                 <div className="reward-card">
                     <div className="icon-circle">🐚</div>
@@ -32,9 +34,15 @@ const StyledContainer = styled.div`
     align-items: center;
     gap: 16px;
 
+    .reward-error {
+        font-size: 13px;
+        color: ${({ theme }) => theme.colors.badge};
+        text-align: center;
+    }
+
     .reward-cards {
         display: flex;
-        gap: 12px;
+        gap: 24px;
         width: 100%;
 
         .reward-card {

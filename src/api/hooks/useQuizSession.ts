@@ -48,15 +48,14 @@ export const clearAdvancedIndices = (sessionId: number) => {
     } catch {}
 };
 
-export interface QuizSessionInitResult {
+export interface QuizSessionAllCompletedArgs {
     sessionId: number;
-    questions: QuizQuestion[];
-    initialChoices: (number | null)[];
-    initialIndex: number;
-    allCompleted: boolean;
 }
 
-const useQuizSession = (serial: string, onAllCompleted?: (sessionId: number) => void) => {
+const useQuizSession = (
+    serial: string,
+    onAllCompleted?: (args: QuizSessionAllCompletedArgs) => void,
+) => {
     const [sessionId, setSessionId] = useState<number | null>(null);
     const [sessionProblemIds, setSessionProblemIds] = useState<number[]>([]);
     const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -119,11 +118,8 @@ const useQuizSession = (serial: string, onAllCompleted?: (sessionId: number) => 
                 }
 
                 if (!foundActive && activeIndex >= session.problems.length) {
-                    try {
-                        await QuizAPI.completeSession(session.sessionId);
-                    } catch {}
                     clearAdvancedIndices(session.sessionId);
-                    onAllCompletedRef.current?.(session.sessionId);
+                    onAllCompletedRef.current?.({ sessionId: session.sessionId });
                     return;
                 }
 
@@ -159,7 +155,6 @@ const useQuizSession = (serial: string, onAllCompleted?: (sessionId: number) => 
         if (currentSessionId === null || !currentProblemIds[nextIndex]) return;
 
         const problemId = currentProblemIds[nextIndex];
-
         const problem = await QuizAPI.getProblem(currentSessionId, problemId);
 
         setQuestions((prev) => {

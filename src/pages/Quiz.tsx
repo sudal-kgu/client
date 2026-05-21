@@ -1,20 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import useQuizSession, {
+    type QuizSessionAllCompletedArgs,
     clearAdvancedIndices,
     saveAdvancedIndex,
 } from '../api/hooks/useQuizSession';
 import QuizAPI from '../api/quiz';
+import type { QuizCompleteResult } from '../api/types';
 import PageContainer from '../components/common/PageContainer';
 import QuizOptionItem from '../components/quiz/QuizOptionItem';
 import QuizProgress from '../components/quiz/QuizProgress';
 import usePerProblemTimer from '../hooks/usePerProblemTimer';
 import useQuiz, { type QuizOption, type QuizQuestion } from '../hooks/useQuiz';
-
-const POINTS_PER_CORRECT = 50;
 
 const getResponseStatus = (e: unknown): number | undefined =>
     (e as { response?: { status?: number } })?.response?.status;
@@ -43,10 +43,6 @@ const QuizBody = ({
     const { remainingSeconds, isExpired } = usePerProblemTimer(question.expiredAt);
 
     const isNextEnabled = (selectedOptionId !== null || isExpired) && !isAdvancing;
-
-    const handleClick = () => {
-        onNext(isExpired);
-    };
 
     return (
         <>
@@ -84,7 +80,7 @@ const QuizBody = ({
                     type="button"
                     className="next-btn"
                     disabled={!isNextEnabled}
-                    onClick={handleClick}
+                    onClick={() => onNext(isExpired)}
                 >
                     {isLastQuestion ? '결과 보기' : '다음'}
                 </button>
@@ -99,6 +95,36 @@ const Quiz = () => {
     const serial = trashId ?? '';
 
     const resultPath = `/analysis/${analysisId}/trashes/${trashId}/quiz/result`;
+    const isSubmittingRef = useRef(false);
+
+    const completeAndNavigate = async (sessionId: number, expiredIndices: boolean[]) => {
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
+
+        let completeResult: QuizCompleteResult | null = null;
+        let completeError = false;
+        try {
+            completeResult = await QuizAPI.completeSession(sessionId);
+        } catch {
+            completeError = true;
+        }
+
+        try {
+            const finalProblems = await QuizAPI.getProblems(sessionId);
+            navigate(resultPath, {
+                state: {
+                    problems: finalProblems,
+                    expiredIndices,
+                    reward: completeResult,
+                    rewardFailed: completeError,
+                },
+            });
+        } catch {
+            navigate('/');
+        } finally {
+            isSubmittingRef.current = false;
+        }
+    };
 
     const {
         sessionId,
@@ -108,16 +134,8 @@ const Quiz = () => {
         fetchNextProblem,
         isLoading,
         error,
-    } = useQuizSession(serial, (completedSessionId) => {
-        QuizAPI.getProblems(completedSessionId)
-            .then((finalProblems) => {
-                navigate(resultPath, {
-                    state: { problems: finalProblems, expiredIndices: [] },
-                });
-            })
-            .catch(() => {
-                navigate('/');
-            });
+    } = useQuizSession(serial, ({ sessionId: completedSessionId }: QuizSessionAllCompletedArgs) => {
+        completeAndNavigate(completedSessionId, []);
     });
 
     const {
@@ -132,54 +150,12 @@ const Quiz = () => {
         questions,
         initialChoices,
         initialIndex,
-        onFinish: async (selectedOptionIds, expiredIndices) => {
+        onFinish: async (_, expiredIndices) => {
             if (sessionId === null) return;
-
             clearAdvancedIndices(sessionId);
-
-            // complete API 호출 및 보상 응답 수신
-            console.log('completeSession 요청 sessionId:', sessionId);
-            let completeResult = null;
-            try {
-                completeResult = await QuizAPI.completeSession(sessionId);
-                // complete API 응답 수신
-                console.log('completeSession 응답:', completeResult);
-            } catch {}
-
-            let finalProblems = null;
-            try {
-                finalProblems = await QuizAPI.getProblems(sessionId);
-            } catch {}
-
-            if (finalProblems && finalProblems.length > 0) {
-                navigate(resultPath, {
-                    state: { problems: finalProblems, expiredIndices, reward: completeResult },
-                });
-            } else {
-                navigate(resultPath, {
-                    state: { questions, selectedOptionIds, expiredIndices, reward: completeResult },
-                });
-            }
+            await completeAndNavigate(sessionId, expiredIndices);
         },
     });
-
-    const visibilityHandledRef = useRef(false);
-
-    useEffect(() => {
-        if (isLoading || questions.length === 0) return;
-
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible' && !visibilityHandledRef.current) {
-                visibilityHandledRef.current = true;
-                setTimeout(() => {
-                    visibilityHandledRef.current = false;
-                }, 1000);
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [isLoading, questions.length]);
 
     const handleNext = (isExpired: boolean) => {
         goNext(isExpired, async ({ problemId, choiceId, nextIndex, isExpired: expired }) => {
@@ -343,5 +319,4 @@ const StyledContainer = styled.div`
     }
 `;
 
-export { POINTS_PER_CORRECT };
 export default Quiz;
