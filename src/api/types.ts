@@ -25,6 +25,7 @@ export interface AnalaysisResultItem {
     category: string;
     subcategory: string;
 }
+
 export interface TrashDetail {
     category: string;
     subcategory: string;
@@ -48,6 +49,33 @@ export interface Island {
     nextLevel: {
         totalRequiredExp: number;
         recyclingExpLimit: number;
+    };
+}
+
+export interface Item {
+    currentCount: number;
+    expReward: number;
+    itemId: number;
+    maxCount: number;
+    name: string;
+    price: number;
+    purchasable: boolean;
+    unlockLevel: number;
+}
+
+export interface ShopPurchaseResponse {
+    island: Island;
+    notice: {
+        reachedMaxLevel: boolean;
+        maxSlotCount: number;
+        unlockedItems: Item[];
+        unlockedBuildings: IBuildingCatalog[];
+    } | null;
+    purchased: {
+        itemId: number;
+        currentCount: number;
+        itemName: string;
+        remainingShell: number;
     };
 }
 
@@ -188,7 +216,6 @@ export interface QuizSession {
     problems: number[];
 }
 
-<<<<<<< HEAD
 export interface IRanking {
     cumulativeExp: number;
     level: number;
@@ -234,7 +261,7 @@ export const REGION_LABELS: Record<Region, string> = {
     [Region.JEONNAM]: '전남',
     [Region.JEJU]: '제주',
 };
-=======
+
 export interface QuizCompleteUnlockedItem {
     itemId: number;
     name: string;
@@ -268,4 +295,3 @@ export interface QuizCompleteResult {
         unlockedBuildings: QuizCompleteUnlockedBuilding[];
     } | null;
 }
->>>>>>> df62668 (feat: 분리배출 인증 완료 보상 지급 API 연동 초기)
