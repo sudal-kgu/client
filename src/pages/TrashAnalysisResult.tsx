@@ -49,7 +49,7 @@ const TrashAnalysisResult = () => {
                     </div>
                 )}
                 {hasNextPage && <div ref={targetRef} />}
-                {!hasNextPage && <div className="eoc">모든 콘텐츠를 확인했습니다!</div>}
+                {!hasNextPage && <div className="eoc">항목을 눌러 처리 방법을 확인하세요!</div>}
             </StyledContainer>
         </PageContainer>
     );
