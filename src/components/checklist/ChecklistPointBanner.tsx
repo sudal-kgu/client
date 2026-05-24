@@ -21,7 +21,7 @@ const ChecklistPointBanner = ({ allChecked }: Props) => {
 
 const StyledButton = styled.button`
     width: 100%;
-    height: 48px;
+    height: 56px;
     border-radius: 64px;
     font-size: 16px;
     font-weight: 700;

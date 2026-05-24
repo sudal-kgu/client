@@ -87,7 +87,7 @@ const StyledContainer = styled.div`
 `;
 
 const StyledFooter = styled.div`
-    padding: 16px;
+    padding: 16px 16px 32px 16px;
     width: 100%;
     max-width: 530px;
     position: fixed;

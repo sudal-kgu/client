@@ -55,7 +55,7 @@ const StyledButton = styled.button`
     margin: 16px 16px 32px 16px;
     height: 56px;
     border-radius: 64px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: ${({ theme }) => theme.colors.white};
     background-color: ${({ theme }) => theme.colors.primary700};

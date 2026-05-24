@@ -118,15 +118,15 @@ const StyledContainer = styled.div`
     }
 
     .footer {
-        padding: 12px 24px 24px;
+        padding: 16px 16px 32px 16px;
         background-color: ${({ theme }) => theme.colors.background};
 
         .home-btn {
             width: 100%;
-            padding: 16px;
+            height: 56px;
             border-radius: 64px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             color: ${({ theme }) => theme.colors.white};
             background-color: ${({ theme }) => theme.colors.primary700};
         }
