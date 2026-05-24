@@ -23,6 +23,7 @@ const Checklist = () => {
     const { detail } = useTrashDetail(trashId);
     const allSteps = detail?.disposal.subcategory ?? detail?.disposal.category ?? [];
     const [checked, setChecked] = useState<number[]>([]);
+    const allChecked = allSteps.length > 0 && checked.length === allSteps.length;
 
     const onToggle = (index: number) => {
         setChecked((prev) =>
@@ -51,7 +52,7 @@ const Checklist = () => {
                 )}
             </StyledContainer>
             <StyledFooter>
-                <ChecklistPointBanner />
+                <ChecklistPointBanner allChecked={allChecked} />
             </StyledFooter>
         </PageContainer>
     );
