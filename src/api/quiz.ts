@@ -6,6 +6,10 @@ const QuizAPI = {
         const result = await api.post<Response<QuizSession>>('/v1/quizzes/sessions', { serial });
         return result.data.data;
     },
+    getActivateSession: async () => {
+        const result = await api.get<Response<QuizSession>>('/v1/quizzes/sessions');
+        return result.data.data;
+    },
     getProblems: async (sessionId: number) => {
         const result = await api.get<Response<QuizProblem[]>>(
             `/v1/quizzes/sessions/${sessionId}/problems`,

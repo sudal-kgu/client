@@ -205,14 +205,16 @@ export interface QuizProblem {
     problemId: number;
     description: string;
     choices: QuizChoice[];
-    expiredAt: string | null;
+    expiredAt: string;
     answer: number;
-    choice?: number | null;
+    choice: number | null;
 }
 
 export interface QuizSession {
     sessionId: number;
     problems: number[];
+    unsolved: number[];
+    isNew: boolean;
 }
 
 export interface IRanking {
