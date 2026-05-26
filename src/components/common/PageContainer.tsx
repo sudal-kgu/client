@@ -1,6 +1,5 @@
 import type React from 'react';
 
-import { Toaster } from 'sonner';
 import styled from 'styled-components';
 
 import Header from './Header';
@@ -17,7 +16,6 @@ const PageContainer = ({ children, showHeader = true, backTo }: Props) => {
             <div id="page">
                 {showHeader && <Header backTo={backTo} />}
                 <div id="page-container">{children}</div>
-                <Toaster position="bottom-right" offset={16} />
             </div>
         </StyledContainer>
     );
