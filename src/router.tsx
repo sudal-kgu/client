@@ -8,6 +8,7 @@ import KakaoRedirect from './pages/KakaoRedirect';
 import Login from './pages/Login';
 import PointShop from './pages/PointShop';
 import Quiz from './pages/Quiz';
+import QuizComplete from './pages/QuizComplete';
 import QuizProblem from './pages/QuizProblem';
 import Ranking from './pages/Ranking';
 import TrashAnalysisResult from './pages/TrashAnalysisResult';
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
             {
                 path: '/analysis/:analysisId/trashes/:trashId/quiz/:sessionId/problems/:problemId',
                 element: <QuizProblem />,
+            },
+            {
+                path: '/analysis/:analysisId/trashes/:trashId/quiz/:sessionId/complete',
+                element: <QuizComplete />,
             },
             {
                 path: '/point-shop',

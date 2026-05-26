@@ -1,5 +1,5 @@
 import api from './axios';
-import type { QuizProblem, QuizSession, Response } from './types';
+import type { QuizProblem, QuizSession, QuizSessionComplete, Response } from './types';
 
 const QuizAPI = {
     createSession: async (serial: string) => {
@@ -30,7 +30,10 @@ const QuizAPI = {
         return result.data.data;
     },
     completeSession: async (sessionId: number) => {
-        await api.post(`/v1/quizzes/sessions/${sessionId}/complete`);
+        const result = await api.post<Response<QuizSessionComplete>>(
+            `/v1/quizzes/sessions/${sessionId}/complete`,
+        );
+        return result.data.data;
     },
 };
 

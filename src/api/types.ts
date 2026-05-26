@@ -62,14 +62,16 @@ export interface Item {
     unlockLevel: number;
 }
 
+export interface Notice {
+    reachedMaxLevel: boolean;
+    maxSlotCount: number;
+    unlockedItems: Item[];
+    unlockedBuildings: IBuildingCatalog[];
+}
+
 export interface ShopPurchaseResponse {
     island: Island;
-    notice: {
-        reachedMaxLevel: boolean;
-        maxSlotCount: number;
-        unlockedItems: Item[];
-        unlockedBuildings: IBuildingCatalog[];
-    } | null;
+    notice: Notice | null;
     purchased: {
         itemId: number;
         currentCount: number;
@@ -215,6 +217,17 @@ export interface QuizSession {
     problems: number[];
     unsolved: number[];
     isNew: boolean;
+}
+
+export interface QuizSessionComplete {
+    earned: {
+        shell: number;
+        fuel: number;
+        exp: number;
+    };
+    resource: Currency;
+    island: Island;
+    notice: Notice | null;
 }
 
 export interface IRanking {

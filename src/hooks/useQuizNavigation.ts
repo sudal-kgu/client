@@ -41,8 +41,11 @@ const useQuizNavigation = ({ isExpired, selectedChoiceId, isAlreadyAnswered }: O
         }
 
         if (isLast) {
-            await completeSession();
-            navigate(`/analysis/${analysisId}/trashes/${trashId}/checklist`, { replace: true });
+            const result = await completeSession();
+            navigate(`/analysis/${analysisId}/trashes/${trashId}/quiz/${sessionId}/complete`, {
+                replace: true,
+                state: { result },
+            });
             return;
         }
 

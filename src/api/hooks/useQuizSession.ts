@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -15,11 +18,26 @@ const useQuizSession = ({ enabled = true }: Options = {}) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const { data: session, isLoading } = useQuery({
+    const {
+        data: session,
+        isLoading,
+        error,
+    } = useQuery({
         queryFn: () => QuizAPI.getActivateSession(),
         queryKey: QUIZ_SESSION_KEY,
         enabled,
+        retry: false,
     });
+
+    useEffect(() => {
+        if (!enabled || !error || !analysisId) return;
+        if (
+            isAxiosError(error) &&
+            (error.response?.status === 404 || error.response?.status === 410)
+        ) {
+            navigate(`/analysis/${analysisId}`, { replace: true });
+        }
+    }, [enabled, error, navigate, analysisId]);
 
     const { mutate: createSession, isPending: isCreating } = useMutation({
         mutationFn: (serial: string) => QuizAPI.createSession(serial),
