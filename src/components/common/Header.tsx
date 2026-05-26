@@ -3,13 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface Props {
-    onBack?: () => void;
+    backTo?: string;
 }
 
-const Header = ({ onBack }: Props) => {
+const Header = ({ backTo }: Props) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const onClick = onBack ? onBack : () => navigate(-1);
+    const onClick = backTo ? () => navigate(backTo, { replace: true }) : () => navigate(-1);
 
     return (
         <StyledContainer>

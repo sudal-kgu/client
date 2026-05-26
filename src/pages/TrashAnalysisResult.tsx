@@ -34,7 +34,7 @@ const TrashAnalysisResult = () => {
     }, [hasNextPage, isFetching, fetchNextPage]);
 
     return (
-        <PageContainer>
+        <PageContainer backTo="/camera">
             <StyledContainer>
                 <div className="total">{`총 ${totalItems}개`}</div>
                 <div className="grid">

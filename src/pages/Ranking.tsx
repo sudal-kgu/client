@@ -41,7 +41,7 @@ const Ranking = () => {
     const showRegionMismatch = selectedRegion && !me && !isLoading;
 
     return (
-        <PageContainer>
+        <PageContainer backTo="/">
             <StyledContainer>
                 <h1 className="page-title">
                     랭킹

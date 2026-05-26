@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import PageContainer from '../components/common/PageContainer';
@@ -21,8 +22,10 @@ const QuizProblem = () => {
     const { currentIndex, totalCount, progress, isLast, canGoNext, isProcessing, handleNext } =
         useQuizNavigation({ isExpired, isAlreadyAnswered, selectedChoiceId });
 
+    const { analysisId } = useParams();
+
     return (
-        <PageContainer>
+        <PageContainer backTo={`/analysis/${analysisId}`}>
             <StyledContainer>
                 <div className="progress-header">
                     <span className="count">

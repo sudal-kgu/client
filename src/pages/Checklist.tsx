@@ -30,7 +30,7 @@ const Checklist = () => {
         );
     };
     return (
-        <PageContainer>
+        <PageContainer backTo={`/analysis/${analysisId}/trashes/${trashId}`}>
             <StyledContainer>
                 <div className="header">
                     <h1 className="title">체크 리스트</h1>

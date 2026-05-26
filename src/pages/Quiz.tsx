@@ -25,7 +25,9 @@ const Quiz = () => {
         }
     }, [session, sessionId, analysisId, trashId, navigate]);
 
-    return <PageContainer>{isLoading && <Spinner />}</PageContainer>;
+    return (
+        <PageContainer backTo={`/analysis/${analysisId}`}>{isLoading && <Spinner />}</PageContainer>
+    );
 };
 
 export default Quiz;

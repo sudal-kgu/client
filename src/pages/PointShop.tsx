@@ -4,7 +4,7 @@ import ShopItemList from '../components/shop/ShopItemList';
 
 const PointShop = () => {
     return (
-        <PageContainer>
+        <PageContainer backTo="/">
             <ShopItemList />
             <LevelUpNoticeModal />
         </PageContainer>

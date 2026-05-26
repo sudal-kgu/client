@@ -21,7 +21,7 @@ const QuizComplete = () => {
     const earnedCurrencies = CURRENCY_META.filter((c) => (result?.earned[c.key] ?? 0) > 0);
 
     return (
-        <PageContainer>
+        <PageContainer backTo={`/analysis/${analysisId}`}>
             <CommonModal
                 isOpen={!result}
                 icon="⏰"

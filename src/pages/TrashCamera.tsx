@@ -9,7 +9,7 @@ const TrashCamera = () => {
     const { analysis, items, subscribe } = useAnalysis();
 
     return (
-        <PageContainer>
+        <PageContainer backTo="/">
             <Camera captureCallback={subscribe} />
             <CameraControls analysis={analysis} items={items} />
             <Outlet context={{ items }} />

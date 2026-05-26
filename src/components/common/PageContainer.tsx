@@ -8,13 +8,14 @@ import Header from './Header';
 interface Props {
     children?: React.ReactNode;
     showHeader?: boolean;
+    backTo?: string;
 }
 
-const PageContainer = ({ children, showHeader = true }: Props) => {
+const PageContainer = ({ children, showHeader = true, backTo }: Props) => {
     return (
         <StyledContainer>
             <div id="page">
-                {showHeader && <Header />}
+                {showHeader && <Header backTo={backTo} />}
                 <div id="page-container">{children}</div>
                 <Toaster position="bottom-right" offset={16} />
             </div>

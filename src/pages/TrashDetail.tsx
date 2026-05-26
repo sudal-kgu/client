@@ -22,7 +22,7 @@ const TrashDetail = () => {
     const { detail } = useTrashDetail(trashId);
 
     return (
-        <PageContainer>
+        <PageContainer backTo={`/analysis/${analysisId}`}>
             <StyledContainer>
                 {detail && (
                     <>
