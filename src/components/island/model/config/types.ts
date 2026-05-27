@@ -26,3 +26,8 @@ export interface ISlotPosition {
     pos: Position3D;
     rotationY?: number;
 }
+
+export interface ITreePosition {
+    id: string;
+    pos: Position3D;
+}

@@ -1,4 +1,10 @@
-import { GarbageType, type ICloudConfig, type IGarbagePosition, type ISlotPosition } from './types';
+import {
+    GarbageType,
+    type ICloudConfig,
+    type IGarbagePosition,
+    type ISlotPosition,
+    type ITreePosition,
+} from './types';
 
 export const BUILDING_SLOTS: ISlotPosition[] = [
     { id: 'slot-1', pos: [0, 1.5, -5.5], rotationY: 0 },
@@ -74,6 +80,29 @@ export const GARBAGE_LARGE_SPAWN_POINTS: IGarbagePosition[] = [
     { id: 'gl10', pos: [0.0, 1.7, 7.5], type: GarbageType.LARGE },
     { id: 'gl11', pos: [4.5, 1.7, -6.5], type: GarbageType.LARGE },
     { id: 'gl12', pos: [-4.5, 1.7, -6.5], type: GarbageType.LARGE },
+];
+
+export const TREE_SPAWN_POINTS: ITreePosition[] = [
+    { id: 'tr1', pos: [0.0, 1.7, 5.5] },
+    { id: 'tr2', pos: [0.0, 1.7, -4.0] },
+    { id: 'tr3', pos: [5.0, 1.7, -1.5] },
+    { id: 'tr4', pos: [-5.0, 1.7, -1.5] },
+    { id: 'tr5', pos: [7.5, 1.7, -1.5] },
+    { id: 'tr6', pos: [-7.5, 1.7, -1.5] },
+    { id: 'tr7', pos: [4.0, 1.7, 3.0] },
+    { id: 'tr8', pos: [-4.0, 1.7, 3.0] },
+    { id: 'tr9', pos: [5.5, 1.7, 5.0] },
+    { id: 'tr10', pos: [-5.5, 1.7, 5.0] },
+    { id: 'tr11', pos: [2.5, 1.7, -4.5] },
+    { id: 'tr12', pos: [-2.5, 1.7, -4.5] },
+    { id: 'tr13', pos: [6.0, 1.7, -4.5] },
+    { id: 'tr14', pos: [-6.0, 1.7, -4.5] },
+    { id: 'tr15', pos: [1.0, 1.7, 7.5] },
+    { id: 'tr16', pos: [-1.0, 1.7, 7.5] },
+    { id: 'tr17', pos: [2.0, 1.7, -7.5] },
+    { id: 'tr18', pos: [-2.0, 1.7, -7.5] },
+    { id: 'tr19', pos: [3.5, 1.7, 1.5] },
+    { id: 'tr20', pos: [-3.5, 1.7, 1.5] },
 ];
 
 export const DEFAULT_CLOUDS: ICloudConfig[] = [
