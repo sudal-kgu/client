@@ -5,11 +5,15 @@ export class GarbageUtils {
         { length: 10 },
         (_, i) => `/game/model/trash/trash_small_${i + 1}.glb`,
     );
-    static readonly LARGE_MODEL = '/game/model/trash/trash_large_1.glb';
+
+    static readonly LARGE_MODEL = Array.from(
+        { length: 3 },
+        (_, i) => `/game/model/trash/trash_large_${i + 1}.glb`,
+    );
 
     static preload() {
-        GarbageUtils.SMALL_MODELS.forEach((p) => useGLTF.preload(p));
-        useGLTF.preload(GarbageUtils.LARGE_MODEL);
+        this.SMALL_MODELS.forEach((p) => useGLTF.preload(p));
+        this.LARGE_MODEL.forEach((p) => useGLTF.preload(p));
     }
 
     static hashId(id: string): number {

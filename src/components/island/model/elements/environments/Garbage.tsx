@@ -14,7 +14,9 @@ GarbageUtils.preload();
 const Garbage = ({ postion }: Props) => {
     const modelPath =
         postion.type === GarbageType.LARGE
-            ? GarbageUtils.LARGE_MODEL
+            ? GarbageUtils.LARGE_MODEL[
+                  GarbageUtils.hashId(postion.id) % GarbageUtils.LARGE_MODEL.length
+              ]
             : GarbageUtils.SMALL_MODELS[
                   GarbageUtils.hashId(postion.id) % GarbageUtils.SMALL_MODELS.length
               ];
