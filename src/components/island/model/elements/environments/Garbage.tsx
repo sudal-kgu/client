@@ -9,6 +9,8 @@ interface Props {
     postion: IGarbagePosition;
 }
 
+GarbageUtils.preload();
+
 const Garbage = ({ postion }: Props) => {
     const modelPath =
         postion.type === GarbageType.LARGE

@@ -31,7 +31,14 @@ const usePurchasedItems = () => {
         ),
     ];
 
-    return { items, isLoading, visibleGarbage };
+    const soilItem = items.find((item) => item.name === '토양 정화');
+    const soilPurificationLevel = soilItem?.currentCount ?? 0;
+
+    const waterItem = items.find((item) => item.name === '수질 개선');
+    const waterQualityRatio =
+        waterItem && waterItem.maxCount > 0 ? waterItem.currentCount / waterItem.maxCount : 0;
+
+    return { items, isLoading, visibleGarbage, soilPurificationLevel, waterQualityRatio };
 };
 
 export default usePurchasedItems;

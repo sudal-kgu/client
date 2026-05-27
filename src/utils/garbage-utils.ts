@@ -19,5 +19,3 @@ export class GarbageUtils {
         return h;
     }
 }
-
-GarbageUtils.preload();
