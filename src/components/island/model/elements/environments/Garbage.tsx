@@ -29,7 +29,7 @@ const Garbage = ({ postion }: Props) => {
             object={cloned}
             position={postion.pos}
             rotation={[0, rotY, 0]}
-            scale={postion.type === GarbageType.LARGE ? 3 / 4 : 5 / 12}
+            scale={postion.type === GarbageType.LARGE ? 1 / 2 : 1 / 3}
         />
     );
 };

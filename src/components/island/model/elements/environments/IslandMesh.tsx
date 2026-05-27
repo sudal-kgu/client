@@ -14,7 +14,7 @@ const IslandMesh = () => {
     const canActivate = activatedCount < maxActivatableSlots;
 
     return (
-        <group>
+        <group scale={1.5}>
             <Terrain />
             <Clouds />
             {visibleGarbage.map((position) => (

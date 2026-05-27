@@ -1,4 +1,4 @@
-import { Clouds, Sky } from '@react-three/drei';
+import { Sky } from '@react-three/drei';
 
 import useOcean from '../../../../hooks/useOcean';
 import IslandMesh from './environments/IslandMesh';
@@ -24,7 +24,6 @@ export const Scene = () => {
             />
             <hemisphereLight args={[0x87ceeb, 0x556b2f, 0.35]} />
             <Sky sunPosition={[100, 20, 100]} turbidity={6} rayleigh={0.5} />
-            <Clouds />
             <IslandMesh />
         </>
     );
