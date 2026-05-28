@@ -1,5 +1,9 @@
+import { useEffect } from 'react';
+
+import useIsland from '../../../../../api/hooks/useIsland';
 import usePurchasedItems from '../../../../../api/hooks/usePurchasedItems';
 import useSlot from '../../../../../api/hooks/useSlot';
+import useSceneReady from '../../../../../hooks/store/useSceneReady';
 import { BUILDING_SLOTS } from '../../config';
 import Clouds from './Clouds';
 import Garbage from './Garbage';
@@ -8,8 +12,25 @@ import Terrain from './Terrain';
 import Tree from './Tree';
 
 const IslandMesh = () => {
-    const { slots, maxActivatableSlots } = useSlot();
-    const { visibleGarbage, visibleSeaGarbage, visibleTrees } = usePurchasedItems();
+    const { island, isLoading: islandLoading } = useIsland();
+    const { slots, maxActivatableSlots, isLoading: slotsLoading } = useSlot();
+    const {
+        visibleGarbage,
+        visibleSeaGarbage,
+        visibleTrees,
+        isLoading: itemsLoading,
+    } = usePurchasedItems();
+    const { setReady, reset } = useSceneReady();
+
+    const allReady = !islandLoading && !slotsLoading && !itemsLoading && island != null;
+
+    useEffect(() => {
+        if (!allReady) return;
+        setReady();
+        return reset;
+    }, [allReady, setReady, reset]);
+
+    if (!allReady) return null;
 
     const activatedCount = slots.filter((s) => s.activated).length;
     const canActivate = activatedCount < maxActivatableSlots;
