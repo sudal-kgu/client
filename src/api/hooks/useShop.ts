@@ -44,15 +44,11 @@ const useShop = () => {
             queryClient.setQueryData<Island>(['me'], island);
 
             if (notice) {
-                if (notice.maxSlotCount != null) {
-                    queryClient.setQueryData<ISlotsResponse>(['slots'], (prev) =>
-                        prev ? { ...prev, maxActivatableSlots: notice.maxSlotCount } : prev,
-                    );
-                }
+                queryClient.setQueryData<ISlotsResponse>(['slots'], (prev) =>
+                    prev ? { ...prev, maxActivatableSlots: notice.maxSlotCount } : prev,
+                );
 
-                if (notice.unlockedItems.length > 0 || notice.unlockedBuildings.length > 0) {
-                    openNotice(notice);
-                }
+                openNotice(notice);
             }
         },
         onError: (error: AxiosError<Response<unknown>>) => {

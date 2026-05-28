@@ -11,7 +11,8 @@ const BUILDING_META: Record<string, { icon: string; label: string }> = {
 };
 
 const LevelUpNoticeModal = () => {
-    const { isOpen, unlockedItems, unlockedBuildings, close } = useLevelUpNoticeModal();
+    const { isOpen, unlockedItems, unlockedBuildings, maxSlotCount, close } =
+        useLevelUpNoticeModal();
 
     return (
         <ReactModal
@@ -37,6 +38,23 @@ const LevelUpNoticeModal = () => {
         >
             <StyledContainer>
                 <div className="title">🎉 새로운 컨텐츠 해금!</div>
+
+                {maxSlotCount != null && (
+                    <section>
+                        <div className="section-label">슬롯</div>
+                        <ul className="list">
+                            <StyledRow>
+                                <span className="icon">🏝️</span>
+                                <div className="info">
+                                    <span className="name">활성화 가능 슬롯 증가</span>
+                                    <span className="sub">
+                                        최대 {maxSlotCount}개 슬롯 활성화 가능
+                                    </span>
+                                </div>
+                            </StyledRow>
+                        </ul>
+                    </section>
+                )}
 
                 {unlockedBuildings.length > 0 && (
                     <section>

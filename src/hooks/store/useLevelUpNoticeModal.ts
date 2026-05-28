@@ -6,9 +6,11 @@ const useLevelUpNoticeModal = create<LevelUpNoticeModal>((set) => ({
     isOpen: false,
     unlockedItems: [],
     unlockedBuildings: [],
-    open: ({ unlockedItems, unlockedBuildings }) =>
-        set({ isOpen: true, unlockedItems, unlockedBuildings }),
-    close: () => set({ isOpen: false, unlockedItems: [], unlockedBuildings: [] }),
+    maxSlotCount: null,
+    open: ({ unlockedItems, unlockedBuildings, maxSlotCount }) =>
+        set({ isOpen: true, unlockedItems, unlockedBuildings, maxSlotCount }),
+    close: () =>
+        set({ isOpen: false, unlockedItems: [], unlockedBuildings: [], maxSlotCount: null }),
 }));
 
 export default useLevelUpNoticeModal;

@@ -31,7 +31,12 @@ export interface LevelUpNoticeModal {
     isOpen: boolean;
     unlockedItems: Item[];
     unlockedBuildings: IBuildingCatalog[];
-    open: (notice: { unlockedItems: Item[]; unlockedBuildings: IBuildingCatalog[] }) => void;
+    maxSlotCount: number | null;
+    open: (notice: {
+        unlockedItems: Item[];
+        unlockedBuildings: IBuildingCatalog[];
+        maxSlotCount: number;
+    }) => void;
     close: () => void;
 }
 
