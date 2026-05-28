@@ -37,9 +37,9 @@ const useQuizComplete = () => {
 
     useEffect(() => {
         if (!result?.notice) return;
-        const { unlockedItems, unlockedBuildings } = result.notice;
+        const { unlockedItems, unlockedBuildings, maxSlotCount } = result.notice;
         if (unlockedItems.length > 0 || unlockedBuildings.length > 0) {
-            openLevelUpModal({ unlockedItems, unlockedBuildings });
+            openLevelUpModal({ unlockedItems, unlockedBuildings, maxSlotCount });
         }
     }, [result, openLevelUpModal]);
 
