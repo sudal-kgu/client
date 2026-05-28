@@ -10,7 +10,7 @@ const IslandScene = () => (
         <Canvas
             camera={{ position: [42, 32, 42], fov: 70 }}
             shadows
-            gl={{ antialias: true }}
+            gl={{ antialias: true, toneMappingExposure: 2.8 }}
             style={{ width: '100%', height: '100%' }}
         >
             <Scene />
