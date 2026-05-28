@@ -9,7 +9,7 @@ import Tree from './Tree';
 
 const IslandMesh = () => {
     const { slots, maxActivatableSlots } = useSlot();
-    const { visibleGarbage, visibleTrees } = usePurchasedItems();
+    const { visibleGarbage, visibleSeaGarbage, visibleTrees } = usePurchasedItems();
 
     const activatedCount = slots.filter((s) => s.activated).length;
     const canActivate = activatedCount < maxActivatableSlots;
@@ -20,6 +20,9 @@ const IslandMesh = () => {
             <Clouds />
             {visibleGarbage.map((position) => (
                 <Garbage key={position.id} postion={position} />
+            ))}
+            {visibleSeaGarbage.map((position) => (
+                <Garbage key={position.id} postion={position} animated />
             ))}
             {visibleTrees.map((position) => (
                 <Tree key={position.id} position={position} />

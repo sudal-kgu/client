@@ -67,6 +67,27 @@ export const GARBAGE_SPAWN_POINTS: IGarbagePosition[] = [
     { id: 'g48', pos: [-6.0, 1.7, -1.5], type: GarbageType.SMALL },
 ];
 
+export const SEA_GARBAGE_SPAWN_POINTS: IGarbagePosition[] = [
+    { id: 'sg1', pos: [0.0, 0.3, -16.0], type: GarbageType.SMALL },
+    { id: 'sg2', pos: [11.3, 0.3, -11.3], type: GarbageType.SMALL },
+    { id: 'sg3', pos: [16.0, 0.3, 0.0], type: GarbageType.LARGE },
+    { id: 'sg4', pos: [11.3, 0.3, 11.3], type: GarbageType.SMALL },
+    { id: 'sg5', pos: [0.0, 0.3, 16.0], type: GarbageType.SMALL },
+    { id: 'sg6', pos: [-11.3, 0.3, 11.3], type: GarbageType.LARGE },
+    { id: 'sg7', pos: [-16.0, 0.3, 0.0], type: GarbageType.SMALL },
+    { id: 'sg8', pos: [-11.3, 0.3, -11.3], type: GarbageType.LARGE },
+    { id: 'sg9', pos: [0.0, 0.3, -19.0], type: GarbageType.SMALL },
+    { id: 'sg10', pos: [19.0, 0.3, 0.0], type: GarbageType.SMALL },
+    { id: 'sg11', pos: [0.0, 0.3, 19.0], type: GarbageType.SMALL },
+    { id: 'sg12', pos: [-19.0, 0.3, 0.0], type: GarbageType.SMALL },
+    { id: 'sg13', pos: [11.0, 0.3, -19.0], type: GarbageType.LARGE },
+    { id: 'sg14', pos: [22.0, 0.3, 0.0], type: GarbageType.SMALL },
+    { id: 'sg15', pos: [11.0, 0.3, 19.0], type: GarbageType.SMALL },
+    { id: 'sg16', pos: [-11.0, 0.3, 19.0], type: GarbageType.LARGE },
+    { id: 'sg17', pos: [-22.0, 0.3, 0.0], type: GarbageType.SMALL },
+    { id: 'sg18', pos: [-11.0, 0.3, -19.0], type: GarbageType.LARGE },
+];
+
 export const GARBAGE_LARGE_SPAWN_POINTS: IGarbagePosition[] = [
     { id: 'gl1', pos: [2.0, 1.7, -1.0], type: GarbageType.LARGE },
     { id: 'gl2', pos: [-2.0, 1.7, -1.0], type: GarbageType.LARGE },

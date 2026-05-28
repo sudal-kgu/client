@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
     GARBAGE_LARGE_SPAWN_POINTS,
     GARBAGE_SPAWN_POINTS,
+    SEA_GARBAGE_SPAWN_POINTS,
     TREE_SPAWN_POINTS,
 } from '../../components/island/model/config';
 import MemberAPI from '../member';
@@ -39,6 +40,11 @@ const usePurchasedItems = () => {
     const waterQualityRatio =
         waterItem && waterItem.maxCount > 0 ? waterItem.currentCount / waterItem.maxCount : 0;
 
+    const visibleSeaGarbage = SEA_GARBAGE_SPAWN_POINTS.slice(
+        0,
+        Math.round(SEA_GARBAGE_SPAWN_POINTS.length * (1 - waterQualityRatio)),
+    );
+
     const treeItem = items.find((item) => item.name === '나무 심기');
     const treeRatio =
         treeItem && treeItem.maxCount > 0 ? treeItem.currentCount / treeItem.maxCount : 0;
@@ -51,6 +57,7 @@ const usePurchasedItems = () => {
         items,
         isLoading,
         visibleGarbage,
+        visibleSeaGarbage,
         soilPurificationLevel,
         waterQualityRatio,
         visibleTrees,
