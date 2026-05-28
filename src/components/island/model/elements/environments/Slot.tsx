@@ -20,25 +20,25 @@ interface Props {
 
 const COLORS = {
     locked: {
-        outer: { base: '#555560', hover: '#666672' },
-        inner: { base: '#484854', hover: '#585868' },
-        stake: { base: '#505060', hover: '#606074' },
-        ring: { base: '#484858', hover: '#584830' },
-        ringEmissive: { base: '#101020', hover: '#301808' },
+        outer: { base: '#5e5e58', hover: '#6e6e68' },
+        inner: { base: '#505048', hover: '#606058' },
+        stake: { base: '#4a4a44', hover: '#5a5a54' },
+        ring: { base: '#464a40', hover: '#585c52' },
+        ringEmissive: { base: '#06080a', hover: '#10140e' },
     },
     active: {
-        outer: { base: '#8a7060', hover: '#b8a090' },
-        inner: { base: '#a09080', hover: '#d4c4b0' },
-        stake: { base: '#907060', hover: '#c8b8a0' },
-        ring: { base: '#7a5828', hover: '#d4a040' },
-        ringEmissive: { base: '#331a00', hover: '#aa6600' },
+        outer: { base: '#b0aa9e', hover: '#cac4b6' },
+        inner: { base: '#c0bab0', hover: '#d8d2c8' },
+        stake: { base: '#80786c', hover: '#9c9286' },
+        ring: { base: '#8c6020', hover: '#c89030' },
+        ringEmissive: { base: '#2c1800', hover: '#804800' },
     },
     inactive: {
-        outer: { base: '#7a7a86', hover: '#9a9aaa' },
-        inner: { base: '#6a6a78', hover: '#8a8a9a' },
-        stake: { base: '#707080', hover: '#9090a4' },
-        ring: { base: '#636370', hover: '#9a6840' },
-        ringEmissive: { base: '#1a1a28', hover: '#603018' },
+        outer: { base: '#585450', hover: '#6e6a64' },
+        inner: { base: '#626058', hover: '#78746c' },
+        stake: { base: '#4a4844', hover: '#5e5c56' },
+        ring: { base: '#484440', hover: '#625e58' },
+        ringEmissive: { base: '#080806', hover: '#141210' },
     },
 };
 
@@ -68,45 +68,59 @@ const SlotPlatform = ({
     return (
         <>
             <mesh position={[0, 0.015, 0]} receiveShadow>
-                <cylinderGeometry args={[1.18, 1.28, 0.06, 10]} />
-                <meshLambertMaterial color={hovered ? c.outer.hover : c.outer.base} />
+                <cylinderGeometry args={[1.18, 1.3, 0.08, 12]} />
+                <meshStandardMaterial
+                    color={hovered ? c.outer.hover : c.outer.base}
+                    roughness={0.95}
+                    metalness={0}
+                />
             </mesh>
-            <mesh position={[0, 0.07, 0]} receiveShadow>
-                <cylinderGeometry args={[1.05, 1.15, 0.1, 10]} />
-                <meshLambertMaterial color={hovered ? c.inner.hover : c.inner.base} />
+            <mesh position={[0, 0.08, 0]} receiveShadow>
+                <cylinderGeometry args={[1.02, 1.14, 0.1, 12]} />
+                <meshStandardMaterial
+                    color={hovered ? c.inner.hover : c.inner.base}
+                    roughness={0.9}
+                    metalness={0}
+                />
             </mesh>
             {showIndicator && (
                 <>
-                    {Array.from({ length: 8 }, (_, i) => {
-                        const angle = (i / 8) * Math.PI * 2;
+                    {Array.from({ length: 6 }, (_, i) => {
+                        const angle = (i / 6) * Math.PI * 2;
                         return (
                             <mesh
                                 key={i}
-                                position={[Math.cos(angle) * 0.98, 0.1, Math.sin(angle) * 0.98]}
+                                position={[Math.cos(angle) * 0.95, 0.16, Math.sin(angle) * 0.95]}
                                 castShadow
                             >
-                                <cylinderGeometry args={[0.055, 0.07, 0.22, 6]} />
-                                <meshLambertMaterial
+                                <cylinderGeometry args={[0.04, 0.08, 0.3, 6]} />
+                                <meshStandardMaterial
                                     color={hovered ? c.stake.hover : c.stake.base}
-                                    emissive={hovered && !activated ? '#503020' : '#000000'}
-                                    emissiveIntensity={hovered && !activated ? 0.2 : 0}
+                                    roughness={0.85}
+                                    metalness={0}
+                                    emissive={hovered && !activated ? '#402010' : '#000000'}
+                                    emissiveIntensity={hovered && !activated ? 0.15 : 0}
                                 />
                             </mesh>
                         );
                     })}
-                    <mesh position={[0, 0.09, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                        <torusGeometry args={[1.1, 0.018, 6, 32]} />
+                    <mesh position={[0, 0.1, 0]} rotation={[Math.PI / 2, 0, 0]}>
+                        <torusGeometry args={[1.08, 0.028, 8, 36]} />
                         {editState ? (
-                            <meshLambertMaterial
+                            <meshStandardMaterial
                                 color={EDIT_RING[editState].color}
                                 emissive={EDIT_RING[editState].emissive}
                                 emissiveIntensity={EDIT_RING[editState].intensity}
+                                roughness={0.6}
+                                metalness={0}
                             />
                         ) : (
-                            <meshLambertMaterial
+                            <meshStandardMaterial
                                 color={hovered ? c.ring.hover : c.ring.base}
                                 emissive={hovered ? c.ringEmissive.hover : c.ringEmissive.base}
-                                emissiveIntensity={hovered ? 0.6 : 0.15}
+                                emissiveIntensity={hovered ? 0.5 : 0.1}
+                                roughness={0.8}
+                                metalness={0}
                             />
                         )}
                     </mesh>
