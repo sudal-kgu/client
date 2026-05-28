@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import BuildingAPI from '../building';
 import type { IBuilding } from '../types';
-import { CurrencyType } from '../types';
+import { BuildingType, CurrencyType } from '../types';
 import useCurrency from './useCurrency';
 
 const useBuildingStats = (
@@ -25,10 +25,12 @@ const useBuildingStats = (
         enabled: isOpen && slotNumber !== null && showHarvestUI,
     });
 
+    const isPurification = building?.category === BuildingType.PURIFICATION;
+
     const { data: fuelCostData } = useQuery({
         queryKey: ['fuel-cost', slotNumber],
         queryFn: () => BuildingAPI.costOfOperate(slotNumber!),
-        enabled: isOpen && slotNumber !== null && !showHarvestUI,
+        enabled: isOpen && slotNumber !== null && !showHarvestUI && !isPurification,
     });
 
     return {

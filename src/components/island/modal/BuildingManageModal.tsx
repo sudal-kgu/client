@@ -33,6 +33,8 @@ const BuildingManageModal = () => {
         ? (CATEGORY_META[building.category] ?? { icon: '🏗️', label: building.category })
         : null;
 
+    const isPurification = building?.category === BuildingType.PURIFICATION;
+
     const { isOperating, showHarvestUI, harvestGems, fuelCost, fuelBalance } = useBuildingStats(
         slotNumber,
         building,
@@ -112,43 +114,45 @@ const BuildingManageModal = () => {
                         </div>
                     </div>
 
-                    {showHarvestUI ? (
-                        <div className="stats harvest-stats">
-                            <span className="stats-label">수확 대기</span>
-                            <span className="stats-value">
-                                💎 {harvestGems?.toLocaleString() ?? '-'} 젬
-                            </span>
-                        </div>
-                    ) : (
-                        <div className="stats fuel-stats">
-                            <span className="stats-label">연료 필요량</span>
-                            <span className="stats-value">
-                                ⛽ {fuelCost?.toLocaleString() ?? '—'}
-                                <span className="stats-balance">
-                                    &nbsp;/ 보유 {fuelBalance.toLocaleString()}
+                    {!isPurification &&
+                        (showHarvestUI ? (
+                            <div className="stats harvest-stats">
+                                <span className="stats-label">수확 대기</span>
+                                <span className="stats-value">
+                                    💎 {harvestGems?.toLocaleString() ?? '-'} 젬
                                 </span>
-                            </span>
-                        </div>
-                    )}
+                            </div>
+                        ) : (
+                            <div className="stats fuel-stats">
+                                <span className="stats-label">연료 필요량</span>
+                                <span className="stats-value">
+                                    ⛽ {fuelCost?.toLocaleString() ?? '—'}
+                                    <span className="stats-balance">
+                                        &nbsp;/ 보유 {fuelBalance.toLocaleString()}
+                                    </span>
+                                </span>
+                            </div>
+                        ))}
 
                     <div className="actions">
-                        {showHarvestUI ? (
-                            <button
-                                className="action primary harvest"
-                                onClick={handleHarvest}
-                                disabled={isBusy}
-                            >
-                                {isBusy ? '처리 중...' : '🌾 수확하기'}
-                            </button>
-                        ) : (
-                            <button
-                                className="action primary operate"
-                                onClick={handleOperate}
-                                disabled={isBusy}
-                            >
-                                {isBusy ? '처리 중...' : '⛽ 연료 주입'}
-                            </button>
-                        )}
+                        {!isPurification &&
+                            (showHarvestUI ? (
+                                <button
+                                    className="action primary harvest"
+                                    onClick={handleHarvest}
+                                    disabled={isBusy}
+                                >
+                                    {isBusy ? '처리 중...' : '🌾 수확하기'}
+                                </button>
+                            ) : (
+                                <button
+                                    className="action primary operate"
+                                    onClick={handleOperate}
+                                    disabled={isBusy}
+                                >
+                                    {isBusy ? '처리 중...' : '⛽ 연료 주입'}
+                                </button>
+                            ))}
                         <div className="secondary-row">
                             <button
                                 className="action secondary move"
