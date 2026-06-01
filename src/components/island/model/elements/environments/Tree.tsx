@@ -3,23 +3,29 @@ import { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
+import { KTX2Utils } from '../../../../../utils/ktx2-utils';
 import { TreeUtils } from '../../../../../utils/tree-utils';
 import type { ITreePosition } from '../../config/types';
+
+TreeUtils.preload();
 
 interface Props {
     position: ITreePosition;
 }
 
-TreeUtils.preload();
-
 const Tree = ({ position }: Props) => {
-    const { scene } = useGLTF(TreeUtils.getModelPath(position.id));
+    const { scene } = useGLTF(
+        TreeUtils.getModelPath(position.id),
+        undefined,
+        undefined,
+        KTX2Utils.extendLoader,
+    );
     const [cloned, yOffset] = useMemo(() => {
         const clonedScene = scene.clone(true);
         const box = new THREE.Box3().setFromObject(clonedScene);
         return [clonedScene, -box.min.y];
     }, [scene]);
-    const rotY = (TreeUtils.hashId(position.id + 'r') % 628) / 100;
+    const rotY = TreeUtils.getRotationY(position.id);
 
     return (
         <primitive

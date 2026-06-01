@@ -5,6 +5,7 @@ import * as THREE from 'three';
 
 import type { IBuilding } from '../../../../../api/types';
 import { BuildingUtils } from '../../../../../utils/building-utils';
+import { KTX2Utils } from '../../../../../utils/ktx2-utils';
 
 BuildingUtils.preload();
 
@@ -13,7 +14,12 @@ interface Props {
 }
 
 const Building = ({ building }: Props) => {
-    const { scene } = useGLTF(BuildingUtils.getModelPath(building.model));
+    const { scene } = useGLTF(
+        BuildingUtils.getModelPath(building.model),
+        undefined,
+        undefined,
+        KTX2Utils.extendLoader,
+    );
     const [cloned, yOffset] = useMemo(() => {
         const clonedScene = scene.clone(true);
         const box = new THREE.Box3().setFromObject(clonedScene);

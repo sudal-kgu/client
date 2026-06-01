@@ -2,6 +2,7 @@ import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import styled from 'styled-components';
 
+import { KTX2Utils } from '../../../utils/ktx2-utils';
 import LoadingScreen from '../LoadingScreen';
 import { Scene } from './elements/Scene';
 
@@ -12,6 +13,7 @@ const IslandScene = () => (
             shadows
             gl={{ antialias: true, toneMappingExposure: 2.8 }}
             style={{ width: '100%', height: '100%' }}
+            onCreated={({ gl }) => KTX2Utils.init(gl)}
         >
             <Scene />
             <OrbitControls

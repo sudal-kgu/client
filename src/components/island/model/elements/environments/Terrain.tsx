@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import useIsland from '../../../../../api/hooks/useIsland';
 import usePurchasedItems from '../../../../../api/hooks/usePurchasedItems';
 import { IslandUtils } from '../../../../../utils/island-utils';
+import { KTX2Utils } from '../../../../../utils/ktx2-utils';
 
 IslandUtils.preload();
 
@@ -14,7 +15,7 @@ const Terrain = forwardRef<THREE.Object3D>((_, ref) => {
     const { soilPurificationLevel } = usePurchasedItems();
 
     const modelPath = IslandUtils.getModelPath(island?.level ?? 1, soilPurificationLevel);
-    const { scene } = useGLTF(modelPath);
+    const { scene } = useGLTF(modelPath, undefined, undefined, KTX2Utils.extendLoader);
 
     const { cloned, scale } = useMemo(() => {
         const clonedScene = scene.clone(true);
