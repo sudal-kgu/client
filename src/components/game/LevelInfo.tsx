@@ -9,10 +9,10 @@ const LevelInfo = () => {
 
     if (!island) return null;
 
-    const totalPercent = Math.min(
-        (island.cumulativeExp / island.nextLevel.totalRequiredExp) * 100,
-        100,
-    );
+    const { nextLevel } = island;
+    const totalPercent = nextLevel
+        ? Math.min((island.cumulativeExp / nextLevel.totalRequiredExp) * 100, 100)
+        : 100;
 
     return (
         <Panel>
@@ -27,33 +27,41 @@ const LevelInfo = () => {
                 <ExpFill style={{ width: `${totalPercent}%` }} />
             </ExpBar>
 
-            <ExpFraction>
-                {island.cumulativeExp.toLocaleString()}
-                <ExpCap> / {island.nextLevel.totalRequiredExp.toLocaleString()} exp</ExpCap>
-            </ExpFraction>
+            {nextLevel ? (
+                <>
+                    <ExpFraction>
+                        {island.cumulativeExp.toLocaleString()}
+                        <ExpCap> / {nextLevel.totalRequiredExp.toLocaleString()} exp</ExpCap>
+                    </ExpFraction>
 
-            <Divider />
+                    <Divider />
 
-            <ExpBreakdown>
-                <ExpRow>
-                    <ExpLabel>♻️ 분리배출</ExpLabel>
-                    <ExpValue>
-                        {island.recyclingContributionExp.toLocaleString()}
-                        <ExpCap>
-                            {' '}
-                            / {island.nextLevel.recyclingExpLimit.toLocaleString()} exp
-                        </ExpCap>
-                    </ExpValue>
-                </ExpRow>
-                <ExpRow>
-                    <ExpLabel>🧪 아이템</ExpLabel>
-                    {island.nextLevel.recyclingExpLimit >= island.nextLevel.totalRequiredExp ? (
-                        <ExpUnavailable>현재 레벨 불필요</ExpUnavailable>
-                    ) : (
-                        <ExpValue>{island.itemContributionExp.toLocaleString()} exp</ExpValue>
-                    )}
-                </ExpRow>
-            </ExpBreakdown>
+                    <ExpBreakdown>
+                        <ExpRow>
+                            <ExpLabel>♻️ 분리배출</ExpLabel>
+                            <ExpValue>
+                                {island.recyclingContributionExp.toLocaleString()}
+                                <ExpCap>
+                                    {' '}
+                                    / {nextLevel.recyclingExpLimit.toLocaleString()} exp
+                                </ExpCap>
+                            </ExpValue>
+                        </ExpRow>
+                        <ExpRow>
+                            <ExpLabel>🧪 아이템</ExpLabel>
+                            {nextLevel.recyclingExpLimit >= nextLevel.totalRequiredExp ? (
+                                <ExpUnavailable>현재 레벨 불필요</ExpUnavailable>
+                            ) : (
+                                <ExpValue>
+                                    {island.itemContributionExp.toLocaleString()} exp
+                                </ExpValue>
+                            )}
+                        </ExpRow>
+                    </ExpBreakdown>
+                </>
+            ) : (
+                <ExpFraction>최대 레벨</ExpFraction>
+            )}
 
             <Divider />
 

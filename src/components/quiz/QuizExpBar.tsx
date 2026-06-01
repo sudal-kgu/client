@@ -10,7 +10,7 @@ interface Props {
 }
 
 const QuizExpBar = ({ island, earnedExp }: Props) => {
-    const maxExp = island.nextLevel.totalRequiredExp;
+    const maxExp = island.nextLevel?.totalRequiredExp ?? island.cumulativeExp;
     const prevPercent = Math.min(
         100,
         Math.max(0, ((island.cumulativeExp - earnedExp) / maxExp) * 100),

@@ -49,7 +49,7 @@ export interface Island {
     nextLevel: {
         totalRequiredExp: number;
         recyclingExpLimit: number;
-    };
+    } | null;
 }
 
 export interface Item {
