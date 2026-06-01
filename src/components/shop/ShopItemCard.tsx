@@ -14,6 +14,7 @@ const ShopItemCard = ({ item, onAction }: Props) => {
 
     return (
         <StyledContainer className={cn({ disabled: isDisabled })}>
+            <Icon src={item.iconUri} alt={item.name} />
             <Info>
                 <div className="name">
                     {item.name}
@@ -39,6 +40,13 @@ const ShopItemCard = ({ item, onAction }: Props) => {
         </StyledContainer>
     );
 };
+
+const Icon = styled.img`
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+`;
 
 const StyledContainer = styled.div`
     display: flex;

@@ -56,6 +56,7 @@ export interface Item {
     expReward: number;
     itemId: number;
     maxCount: number;
+    iconUri: string;
     name: string;
     price: number;
     purchasable: boolean;
