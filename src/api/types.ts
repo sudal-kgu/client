@@ -275,3 +275,20 @@ export const REGION_LABELS: Record<Region, string> = {
     [Region.JEONNAM]: '전남',
     [Region.JEJU]: '제주',
 };
+
+export interface IGemItem {
+    gemItemId: number;
+    code: string;
+    name: string;
+    description: string;
+    gemCost: number;
+    monthlyLimit: number;
+    iconUri: string;
+}
+
+export interface IExchangeGemResponse {
+    gemItemId: number;
+    gemItemName: string;
+    exchangedAt: string;
+    remainingGem: number;
+}
