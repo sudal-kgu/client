@@ -44,6 +44,7 @@ export interface Island {
     itemContributionExp: number;
     level: number;
     nickname: string;
+    modelUri: string;
     recyclingContributionExp: number;
     nextLevel: {
         totalRequiredExp: number;
