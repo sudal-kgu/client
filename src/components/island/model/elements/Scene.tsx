@@ -7,23 +7,30 @@ export const Scene = () => {
     useOcean();
     return (
         <>
-            <color attach="background" args={['#87ceeb']} />
-            <fog attach="fog" args={['#87ceeb', 1, 350]} />
+            <color attach="background" args={['#b8dff7']} />
+            <fog attach="fog" args={['#c9e8f8', 1, 350]} />
             <directionalLight
-                position={[25, 35, 20]}
-                intensity={1.1}
+                position={[30, 40, 20]}
+                intensity={1.4}
                 castShadow
                 shadow-mapSize-width={2048}
                 shadow-mapSize-height={2048}
-                shadow-camera-left={-22}
-                shadow-camera-right={22}
-                shadow-camera-top={22}
-                shadow-camera-bottom={-22}
+                shadow-camera-left={-30}
+                shadow-camera-right={30}
+                shadow-camera-top={30}
+                shadow-camera-bottom={-30}
                 shadow-camera-near={0.5}
                 shadow-camera-far={120}
+                shadow-bias={-0.0005}
             />
-            <hemisphereLight args={[0x87ceeb, 0x556b2f, 0.35]} />
-            <Sky sunPosition={[100, 20, 100]} turbidity={6} rayleigh={0.5} />
+            <hemisphereLight args={[0xb8dff7, 0x4a7c3f, 0.5]} />
+            <Sky
+                sunPosition={[80, 25, 60]}
+                turbidity={3}
+                rayleigh={0.3}
+                mieCoefficient={0.003}
+                mieDirectionalG={0.9}
+            />
             <IslandMesh />
         </>
     );

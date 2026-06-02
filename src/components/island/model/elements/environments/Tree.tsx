@@ -21,6 +21,12 @@ const Tree = ({ position, models }: Props) => {
     );
     const [cloned, yOffset] = useMemo(() => {
         const clonedScene = scene.clone(true);
+        clonedScene.traverse((obj) => {
+            if (obj instanceof THREE.Mesh) {
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+            }
+        });
         const box = new THREE.Box3().setFromObject(clonedScene);
         return [clonedScene, -box.min.y];
     }, [scene]);

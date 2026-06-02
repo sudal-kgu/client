@@ -9,9 +9,9 @@ import { Scene } from './elements/Scene';
 const IslandScene = () => (
     <Wrapper>
         <Canvas
-            camera={{ position: [42, 32, 42], fov: 70 }}
+            camera={{ position: [38, 28, 38], fov: 60 }}
             shadows
-            gl={{ antialias: true, toneMappingExposure: 2.8 }}
+            gl={{ antialias: true, toneMappingExposure: 2.2 }}
             style={{ width: '100%', height: '100%' }}
             onCreated={({ gl }) => KTX2Utils.init(gl)}
         >

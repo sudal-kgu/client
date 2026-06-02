@@ -14,6 +14,12 @@ const Terrain = forwardRef<THREE.Object3D>((_, ref) => {
 
     const { cloned, scale } = useMemo(() => {
         const clonedScene = scene.clone(true);
+        clonedScene.traverse((obj) => {
+            if (obj instanceof THREE.Mesh) {
+                obj.castShadow = true;
+                obj.receiveShadow = true;
+            }
+        });
         const box = new THREE.Box3().setFromObject(clonedScene);
         const size = box.getSize(new THREE.Vector3());
         const maxHorizontal = Math.max(size.x, size.z);
@@ -23,7 +29,7 @@ const Terrain = forwardRef<THREE.Object3D>((_, ref) => {
         };
     }, [scene]);
 
-    return <primitive ref={ref} object={cloned} scale={scale} castShadow receiveShadow />;
+    return <primitive ref={ref} object={cloned} scale={scale} />;
 });
 
 Terrain.displayName = 'Terrain';
