@@ -4,33 +4,24 @@ import { GarbageType, type IGarbagePosition } from '../components/island/model/c
 import { KTX2Utils } from './ktx2-utils';
 
 export class GarbageUtils {
-    private static readonly SMALL_MODELS = Array.from(
-        { length: 10 },
-        (_, i) => `/game/model/trash/trash_small_${i + 1}.glb`,
-    );
+    private static readonly preloaded = new Set<string>();
 
-    private static readonly LARGE_MODELS = Array.from(
-        { length: 3 },
-        (_, i) => `/game/model/trash/trash_large_${i + 1}.glb`,
-    );
-
-    private static preloaded = false;
-
-    static preload() {
-        if (this.preloaded) return;
-        this.preloaded = true;
-        KTX2Utils.registerPreload(() => {
-            this.SMALL_MODELS.forEach((p) =>
-                useGLTF.preload(p, undefined, undefined, KTX2Utils.extendLoader),
-            );
-            this.LARGE_MODELS.forEach((p) =>
-                useGLTF.preload(p, undefined, undefined, KTX2Utils.extendLoader),
-            );
-        });
+    static preload(smallModels: string[], largeModels: string[]) {
+        const fresh = [...smallModels, ...largeModels].filter((m) => !this.preloaded.has(m));
+        if (fresh.length === 0) return;
+        fresh.forEach((m) => this.preloaded.add(m));
+        KTX2Utils.registerPreload(() =>
+            fresh.forEach((p) => useGLTF.preload(p, undefined, undefined, KTX2Utils.extendLoader)),
+        );
     }
 
-    static getModelPath(position: IGarbagePosition): string {
-        const models = position.type === GarbageType.LARGE ? this.LARGE_MODELS : this.SMALL_MODELS;
+    static getModelPath(
+        position: IGarbagePosition,
+        smallModels: string[],
+        largeModels: string[],
+    ): string {
+        const models = position.type === GarbageType.LARGE ? largeModels : smallModels;
+        if (models.length === 0) return '';
         return models[this.hashId(position.id) % models.length];
     }
 

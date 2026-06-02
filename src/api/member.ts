@@ -1,5 +1,5 @@
 import api from './axios';
-import type { IRanking, Island, Item, PageResponse, Region, Response } from './types';
+import type { IRanking, Island, ItemUsage, PageResponse, Region, Response } from './types';
 
 const MemberAPI = {
     me: async () => {
@@ -22,7 +22,7 @@ const MemberAPI = {
         return result.data.data;
     },
     itemUsages: async () => {
-        const result = await api.get<Response<Item[]>>('/v1/islands/items/usages');
+        const result = await api.get<Response<ItemUsage[]>>('/v1/islands/items/usages');
         return result.data.data;
     },
 };

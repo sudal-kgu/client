@@ -1,9 +1,15 @@
 import api from './axios';
-import type { IExchangeGemResponse, IGemItem, Item, Response, ShopPurchaseResponse } from './types';
+import type {
+    IExchangeGemResponse,
+    IGemItem,
+    ItemShop,
+    Response,
+    ShopPurchaseResponse,
+} from './types';
 
 const ShopAPI = {
     getItems: async () => {
-        const result = await api.get<Response<Item[]>>(`/v1/shops/items`);
+        const result = await api.get<Response<ItemShop[]>>(`/v1/shops/items`);
         return result.data.data;
     },
     purchase: async (itemId: number) => {

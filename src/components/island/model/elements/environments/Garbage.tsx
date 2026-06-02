@@ -9,17 +9,17 @@ import { KTX2Utils } from '../../../../../utils/ktx2-utils';
 import { OceanUtils } from '../../../../../utils/ocean-utils';
 import type { IGarbagePosition } from '../../config/types';
 
-GarbageUtils.preload();
-
 const ISLAND_MESH_SCALE = 1.5;
 
 interface Props {
     postion: IGarbagePosition;
     animated?: boolean;
+    smallModels: string[];
+    largeModels: string[];
 }
 
-const Garbage = ({ postion, animated = false }: Props) => {
-    const modelPath = GarbageUtils.getModelPath(postion);
+const Garbage = ({ postion, animated = false, smallModels, largeModels }: Props) => {
+    const modelPath = GarbageUtils.getModelPath(postion, smallModels, largeModels);
     const { scene } = useGLTF(modelPath, undefined, undefined, KTX2Utils.extendLoader);
     const cloned = useMemo(() => scene.clone(true), [scene]);
     const rotY = GarbageUtils.getRotationY(postion.id);

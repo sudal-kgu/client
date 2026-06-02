@@ -53,6 +53,10 @@ const usePurchasedItems = () => {
         Math.round(TREE_SPAWN_POINTS.length * treeRatio),
     );
 
+    const smallGarbageModels = smallItem?.modelUri ?? [];
+    const largeGarbageModels = largeItem?.modelUri ?? [];
+    const treeModels = treeItem?.modelUri ?? [];
+
     return {
         items,
         isLoading,
@@ -61,6 +65,9 @@ const usePurchasedItems = () => {
         soilPurificationLevel,
         waterQualityRatio,
         visibleTrees,
+        smallGarbageModels,
+        largeGarbageModels,
+        treeModels,
     };
 };
 

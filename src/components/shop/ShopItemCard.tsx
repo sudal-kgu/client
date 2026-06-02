@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
-import type { Item } from '../../api/types';
+import type { ItemShop } from '../../api/types';
 import cn from '../../utils/cn';
 
 interface Props {
-    item: Item;
+    item: ItemShop;
     onAction: (itemId: number) => void;
 }
 

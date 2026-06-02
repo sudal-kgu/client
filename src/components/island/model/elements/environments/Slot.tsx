@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
 import type { ThreeEvent } from '@react-three/fiber';
 import { toast } from 'sonner';
@@ -203,7 +203,11 @@ const Slot = ({ slot, position, canActivate }: Props) => {
                 locked={isLocked}
                 editState={editState}
             />
-            {hasBuilding && <Building building={slot.building!} />}
+            {hasBuilding && (
+                <Suspense>
+                    <Building building={slot.building!} />
+                </Suspense>
+            )}
         </group>
     );
 };

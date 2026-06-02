@@ -57,11 +57,18 @@ export interface Item {
     expReward: number;
     itemId: number;
     maxCount: number;
-    iconUri: string;
     name: string;
     price: number;
     purchasable: boolean;
     unlockLevel: number;
+}
+
+export interface ItemShop extends Item {
+    iconUri: string;
+}
+
+export interface ItemUsage extends Item {
+    modelUri: string[];
 }
 
 export interface Notice {
@@ -127,7 +134,7 @@ export interface IBuilding {
     buildingMetadataId: number;
     category: BuildingType;
     name: string;
-    model: string;
+    modelUri: string;
     fuelExpiredAt: string | null;
     lastCollectedAt: string | null;
 }

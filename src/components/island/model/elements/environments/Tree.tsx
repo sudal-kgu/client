@@ -7,15 +7,14 @@ import { KTX2Utils } from '../../../../../utils/ktx2-utils';
 import { TreeUtils } from '../../../../../utils/tree-utils';
 import type { ITreePosition } from '../../config/types';
 
-TreeUtils.preload();
-
 interface Props {
     position: ITreePosition;
+    models: string[];
 }
 
-const Tree = ({ position }: Props) => {
+const Tree = ({ position, models }: Props) => {
     const { scene } = useGLTF(
-        TreeUtils.getModelPath(position.id),
+        TreeUtils.getModelPath(position.id, models),
         undefined,
         undefined,
         KTX2Utils.extendLoader,

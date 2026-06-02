@@ -3,25 +3,20 @@ import { useGLTF } from '@react-three/drei';
 import { KTX2Utils } from './ktx2-utils';
 
 export class TreeUtils {
-    private static readonly MODELS = [
-        '/game/model/tree/tree_1.glb',
-        '/game/model/tree/tree_2.glb',
-    ] as const;
+    private static readonly preloaded = new Set<string>();
 
-    private static preloaded = false;
-
-    static preload() {
-        if (this.preloaded) return;
-        this.preloaded = true;
+    static preload(models: string[]) {
+        const fresh = models.filter((m) => !this.preloaded.has(m));
+        if (fresh.length === 0) return;
+        fresh.forEach((m) => this.preloaded.add(m));
         KTX2Utils.registerPreload(() =>
-            TreeUtils.MODELS.forEach((p) =>
-                useGLTF.preload(p, undefined, undefined, KTX2Utils.extendLoader),
-            ),
+            fresh.forEach((p) => useGLTF.preload(p, undefined, undefined, KTX2Utils.extendLoader)),
         );
     }
 
-    static getModelPath(id: string): string {
-        return TreeUtils.MODELS[this.hashId(id) % TreeUtils.MODELS.length];
+    static getModelPath(id: string, models: string[]): string {
+        if (models.length === 0) return '';
+        return models[this.hashId(id) % models.length];
     }
 
     static getRotationY(id: string): number {
