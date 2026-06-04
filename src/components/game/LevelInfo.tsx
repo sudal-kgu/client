@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { MdDeleteOutline, MdLeaderboard, MdOutlineStorefront } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -21,7 +22,40 @@ const LevelInfo = () => {
         return (
             <FloatButton onClick={() => setExpanded(true)}>
                 <HandleBar />
-                <FloatLevel>Lv.{island.level}</FloatLevel>
+                <FloatContent>
+                    <FloatLevelGroup>
+                        <FloatLevel>Lv.{island.level}</FloatLevel>
+                        <FloatExpBar>
+                            <FloatExpFill style={{ width: `${totalPercent}%` }} />
+                        </FloatExpBar>
+                    </FloatLevelGroup>
+                    <FloatActions>
+                        <FloatIconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/camera');
+                            }}
+                        >
+                            <MdDeleteOutline size={22} />
+                        </FloatIconButton>
+                        <FloatIconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/point-shop');
+                            }}
+                        >
+                            <MdOutlineStorefront size={22} />
+                        </FloatIconButton>
+                        <FloatIconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/ranking');
+                            }}
+                        >
+                            <MdLeaderboard size={22} />
+                        </FloatIconButton>
+                    </FloatActions>
+                </FloatContent>
             </FloatButton>
         );
     }
@@ -119,7 +153,7 @@ const FloatButton = styled.button`
     z-index: 100;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     gap: 6px;
     padding: 8px 20px 16px;
     background-color: ${({ theme }) => theme.colors.background};
@@ -137,12 +171,69 @@ const HandleBar = styled.div`
     height: 4px;
     background: ${({ theme }) => theme.colors.primary300};
     border-radius: 999px;
+    align-self: center;
+`;
+
+const FloatContent = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`;
+
+const FloatLevelGroup = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    margin-right: 12px;
 `;
 
 const FloatLevel = styled.span`
     font-size: 13px;
     font-weight: 600;
     color: ${({ theme }) => theme.colors.primary700};
+    text-align: left;
+`;
+
+const FloatExpBar = styled.div`
+    width: 100%;
+    height: 4px;
+    background: ${({ theme }) => theme.colors.primary300};
+    border-radius: 999px;
+    overflow: hidden;
+`;
+
+const FloatExpFill = styled.div`
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        ${({ theme }) => theme.colors.primary700},
+        ${({ theme }) => theme.colors.primary500}
+    );
+    border-radius: 999px;
+    transition: width 0.4s ease;
+`;
+
+const FloatActions = styled.div`
+    display: flex;
+    gap: 4px;
+`;
+
+const FloatIconButton = styled.button`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: ${({ theme }) => theme.colors.primary100};
+    border-radius: 12px;
+    color: ${({ theme }) => theme.colors.primary700};
+    transition: opacity 0.15s;
+
+    &:active {
+        opacity: 0.7;
+    }
 `;
 
 const LevelRow = styled.div`
