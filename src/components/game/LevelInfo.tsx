@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -6,6 +8,7 @@ import useIsland from '../../api/hooks/useIsland';
 const LevelInfo = () => {
     const navigate = useNavigate();
     const { island } = useIsland();
+    const [expanded, setExpanded] = useState(false);
 
     if (!island) return null;
 
@@ -14,8 +17,18 @@ const LevelInfo = () => {
         ? Math.min((island.cumulativeExp / nextLevel.totalRequiredExp) * 100, 100)
         : 100;
 
+    if (!expanded) {
+        return (
+            <FloatButton onClick={() => setExpanded(true)}>
+                <HandleBar />
+                <FloatLevel>Lv.{island.level}</FloatLevel>
+            </FloatButton>
+        );
+    }
+
     return (
         <Panel>
+            <PanelHandle onClick={() => setExpanded(false)} />
             <LevelRow>
                 <LevelLeft>
                     <LevelValue>Lv.{island.level}</LevelValue>
@@ -84,7 +97,52 @@ const Panel = styled.div`
     z-index: 100;
     background-color: ${({ theme }) => theme.colors.background};
     border-radius: 22px 22px 0 0;
-    padding: 14px 20px 24px;
+    padding: 8px 20px 24px;
+`;
+
+const PanelHandle = styled.div`
+    width: 36px;
+    height: 4px;
+    background: ${({ theme }) => theme.colors.primary300};
+    border-radius: 999px;
+    margin: 0 auto 12px;
+    cursor: pointer;
+`;
+
+const FloatButton = styled.button`
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 530px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px 16px;
+    background-color: ${({ theme }) => theme.colors.background};
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    transition: opacity 0.15s;
+
+    &:active {
+        opacity: 0.85;
+    }
+`;
+
+const HandleBar = styled.div`
+    width: 36px;
+    height: 4px;
+    background: ${({ theme }) => theme.colors.primary300};
+    border-radius: 999px;
+`;
+
+const FloatLevel = styled.span`
+    font-size: 13px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.colors.primary700};
 `;
 
 const LevelRow = styled.div`
